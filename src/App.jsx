@@ -13,8 +13,9 @@ import {
   identifyReviewCandidates,
   getScoreColor,
   getScoreLabel,
-  METRICS_CONFIG 
+  METRICS_CONFIG
 } from './services/scoring';
+import { applyTagRules } from './services/tagEngine';
 import dataStore from './services/dataStore';
 
 // Score badge component for visual display
@@ -230,18 +231,23 @@ const App = () => {
         // Calculate scores for all funds
         console.log('Calculating scores for', withClassAndFlags.length, 'funds...');
         const scoredFunds = calculateScores(withClassAndFlags);
+
+        // Apply automated tagging after scoring
+        const taggedFunds = applyTagRules(scoredFunds, {
+          benchmarks: assetClassBenchmarks
+        });
         
         // Generate class summaries
         const summaries = {};
         const fundsByClass = {};
-        scoredFunds.forEach(fund => {
+        taggedFunds.forEach(fund => {
           const assetClass = fund['Asset Class'];
           if (!fundsByClass[assetClass]) {
             fundsByClass[assetClass] = [];
           }
           fundsByClass[assetClass].push(fund);
         });
-        
+
         Object.entries(fundsByClass).forEach(([assetClass, funds]) => {
           summaries[assetClass] = generateClassSummary(funds);
         });
@@ -249,14 +255,14 @@ const App = () => {
         // Extract benchmark data
         const benchmarks = {};
         Object.entries(assetClassBenchmarks).forEach(([assetClass, { ticker, name }]) => {
-          const match = scoredFunds.find(f => f.cleanSymbol === clean(ticker));
+          const match = taggedFunds.find(f => f.cleanSymbol === clean(ticker));
           if (match) {
             benchmarks[assetClass] = { ...match, name };
           }
         });
 
         // Identify review candidates
-        const reviewCandidates = identifyReviewCandidates(scoredFunds);
+        const reviewCandidates = identifyReviewCandidates(taggedFunds);
 
         // Ask user for snapshot date
         const dateStr = prompt('Enter the date for this snapshot (YYYY-MM-DD):', 
@@ -266,7 +272,7 @@ const App = () => {
           // Save snapshot to IndexedDB
           await dataStore.saveSnapshot({
             date: new Date(dateStr).toISOString(),
-            funds: scoredFunds,
+            funds: taggedFunds,
             classSummaries: summaries,
             reviewCandidates: reviewCandidates,
             fileName: file.name,
@@ -277,11 +283,11 @@ const App = () => {
         }
 
         setFundData(withClassAndFlags);
-        setScoredFundData(scoredFunds);
+        setScoredFundData(taggedFunds);
         setBenchmarkData(benchmarks);
         setClassSummaries(summaries);
-        
-        console.log('Successfully loaded and scored', scoredFunds.length, 'funds');
+
+        console.log('Successfully loaded and scored', taggedFunds.length, 'funds');
       } catch (err) {
         console.error('Error parsing performance file:', err);
         alert('Error parsing file: ' + err.message);
