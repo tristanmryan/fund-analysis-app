@@ -1,6 +1,7 @@
 import React from 'react';
 import { getScoreColor } from '../../services/scoring';
 import { Layers } from 'lucide-react';
+import TagList from '../TagList.jsx';
 
 /**
  * Show summary cards for each asset class.
@@ -58,6 +59,12 @@ const AssetClassOverview = ({ funds, config }) => {
     const benchmarkTicker = config?.[assetClass]?.ticker || '-';
     const color = getScoreColor(avgScore);
 
+    const tags = Array.from(
+      new Set(
+        classFunds.flatMap(f => (Array.isArray(f.tags) ? f.tags : []))
+      )
+    );
+
     return {
       assetClass,
       count,
@@ -67,6 +74,7 @@ const AssetClassOverview = ({ funds, config }) => {
       avgStd,
       benchmarkTicker,
       color,
+      tags,
     };
   });
 
@@ -127,6 +135,11 @@ const AssetClassOverview = ({ funds, config }) => {
             <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem' }}>
               Benchmark: {info.benchmarkTicker}
             </div>
+            {info.tags.length > 0 && (
+              <div style={{ marginTop: '0.25rem' }}>
+                <TagList tags={info.tags} />
+              </div>
+            )}
           </div>
         ))}
       </div>

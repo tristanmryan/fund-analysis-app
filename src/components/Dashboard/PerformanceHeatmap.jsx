@@ -1,6 +1,7 @@
 import React from 'react';
 import { getScoreColor } from '../../services/scoring';
 import { LayoutGrid } from 'lucide-react';
+import TagList from '../TagList.jsx';
 
 /**
  * Render a heatmap of recommended fund scores grouped by asset class.
@@ -62,9 +63,7 @@ const FundTile = ({ fund }) => {
       <div style={{ fontSize: '0.875rem', color: '#374151' }}>{fund.Symbol}</div>
       <ScoreBadge score={fund.scores?.final || 0} />
       {Array.isArray(fund.tags) && fund.tags.length > 0 && (
-        <div style={{ fontSize: '0.75rem', color: '#4b5563' }}>
-          {fund.tags.join(', ')}
-        </div>
+        <TagList tags={fund.tags} />
       )}
     </div>
   );
@@ -129,4 +128,3 @@ const PerformanceHeatmap = ({ funds }) => {
 };
 
 export default PerformanceHeatmap;
-

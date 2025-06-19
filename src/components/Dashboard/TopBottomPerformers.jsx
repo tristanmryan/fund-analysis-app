@@ -1,5 +1,6 @@
 import React from 'react';
 import { getScoreColor, getScoreLabel } from '../../services/scoring';
+import TagList from '../TagList.jsx';
 import { BarChart2 } from 'lucide-react';
 
 /**
@@ -45,7 +46,7 @@ const FundRow = ({ fund }) => (
     </td>
     <td style={{ padding: '0.5rem' }}>
       {Array.isArray(fund.tags) && fund.tags.length > 0 ? (
-        <span>{fund.tags.join(', ')}</span>
+        <TagList tags={fund.tags} />
       ) : (
         <span style={{ color: '#9ca3af' }}>-</span>
       )}
@@ -139,4 +140,3 @@ const TopBottomPerformers = ({ funds }) => {
 };
 
 export default TopBottomPerformers;
-
