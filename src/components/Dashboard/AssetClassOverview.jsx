@@ -51,15 +51,9 @@ const AssetClassOverview = ({ funds, config }) => {
     const scoreSum = classFunds.reduce((s, f) => s + (f.scores?.final || 0), 0);
     const avgScore = count ? Math.round(scoreSum / count) : 0;
 
-    const sharpe = classFunds
-      .map(f => f.metrics?.sharpeRatio3Y)
-      .filter(v => !isNaN(v));
-    const expense = classFunds
-      .map(f => f.metrics?.expenseRatio)
-      .filter(v => !isNaN(v));
-    const std = classFunds
-      .map(f => f.metrics?.stdDev3Y)
-      .filter(v => !isNaN(v));
+    const sharpe  = classFunds.map(f => f.metrics?.sharpeRatio3Y).filter(v => !isNaN(v));
+    const expense = classFunds.map(f => f.metrics?.expenseRatio).filter(v => !isNaN(v));
+    const std     = classFunds.map(f => f.metrics?.stdDev3Y).filter(v => !isNaN(v));
 
     const avgSharpe  = sharpe.length  ? (sharpe.reduce((s,v)=>s+v,0)/sharpe.length).toFixed(2) : null;
     const avgExpense = expense.length ? (expense.reduce((s,v)=>s+v,0)/expense.length).toFixed(2) : null;

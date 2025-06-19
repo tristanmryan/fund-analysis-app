@@ -38,12 +38,10 @@ export const AppProvider = ({ children }) => {
   /* ---------- context value ---------- */
   const value = useMemo(
     () => ({
-      /* data */
       fundData, setFundData,
       config,   setConfig,
       historySnapshots, setHistorySnapshots,
 
-      /* filter helpers */
       availableClasses,
       availableTags,
       selectedClass, setSelectedClass,

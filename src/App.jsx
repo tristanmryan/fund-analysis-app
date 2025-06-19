@@ -315,6 +315,39 @@ const App = () => {
         }
 
         const today = new Date().toISOString().slice(0, 10);
+        // ─── attach minimal history for modal charts ──────────────────────────
+        taggedFunds.forEach(fund => {
+          const symbol = fund.cleanSymbol || fund.Symbol || fund.symbol;
+
+          // collect any prior history points for this symbol
+          const prev = [];
+          historySnapshots.forEach(snap => {
+            const match = snap.funds.find(
+              f => (f.cleanSymbol || f.Symbol || f.symbol) === symbol
+            );
+            if (match) {
+              // carry forward stored history array if it exists
+              if (Array.isArray(match.history)) {
+                match.history.forEach(pt => {
+                  if (!prev.some(p => p.date === pt.date)) prev.push(pt);
+                });
+              } else if (match.scores?.final != null) {
+                // else, create a point from the previous snapshot score
+                if (!prev.some(p => p.date === snap.date)) {
+                  prev.push({ date: snap.date, score: match.scores.final });
+                }
+              }
+            }
+          });
+
+          // add today’s point and re-attach to fund
+          const filteredPrev = prev.filter(p => p.date !== today);
+          fund.history = [
+            ...filteredPrev,
+            { date: today, score: fund.scores.final }
+          ];
+        });
+
         const newSnap = { date: today, funds: taggedFunds };
 
         setHistorySnapshots(prev => {
@@ -689,13 +722,6 @@ const App = () => {
               </table>
             </div>
 
-            {/* Details modal */}
-            {selectedFundForDetails && (
-              <FundDetailsModal
-                fund={selectedFundForDetails}
-                onClose={() => setSelectedFundForDetails(null)}
-              />
-            )}
           </div>
         ) : (
           <p style={{ color: '#6b7280' }}>No scored funds to display.</p>
