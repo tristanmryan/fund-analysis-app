@@ -1,6 +1,6 @@
 // App.jsx
 import React, { useState, useEffect, useContext } from 'react';
-import { Upload, RefreshCw, Settings, Plus, Trash2, LayoutGrid, AlertCircle, TrendingUp, Award, Clock, Database, Calendar, Download, ArrowUpDown } from 'lucide-react';
+import { Upload, RefreshCw, Settings, Plus, Trash2, LayoutGrid, AlertCircle, TrendingUp, Award, Clock, Database, Calendar, ArrowUpDown } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { getStoredConfig, saveStoredConfig } from './data/storage';
 import {
@@ -15,10 +15,10 @@ import {
   getScoreLabel,
   METRICS_CONFIG
 } from './services/scoring';
-import { exportToExcel } from './services/exportService';
 import { applyTagRules } from './services/tagEngine';
 import dataStore from './services/dataStore';
 import FundView from './components/Views/FundView.jsx';
+import DashboardView from './components/Views/DashboardView.jsx';
 import AppContext from './context/AppContext.jsx';
 
 // Score badge component for visual display
@@ -75,13 +75,17 @@ const App = () => {
   const {
     fundData,
     setFundData,
+    config,
+    setConfig,
     selectedClass,
     setSelectedClass,
     selectedTags,
     toggleTag,
     resetFilters,
     availableClasses,
-    availableTags
+    availableTags,
+    historySnapshots,
+    setHistorySnapshots,
   } = useContext(AppContext);
 
   const [scoredFundData, setScoredFundData] = useState([]);
@@ -102,6 +106,19 @@ const App = () => {
   const [recommendedFunds, setRecommendedFunds] = useState([]);
   const [assetClassBenchmarks, setAssetClassBenchmarks] = useState({});
 
+  // Load history snapshots from localStorage on startup
+  useEffect(() => {
+    const stored = JSON.parse(localStorage.getItem('ls_history') || '[]');
+    if (stored.length > 0) {
+      setHistorySnapshots(stored);
+    }
+  }, []);
+
+  // Persist history snapshots to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('ls_history', JSON.stringify(historySnapshots));
+  }, [historySnapshots]);
+
   // Initialize configuration
   useEffect(() => {
     const initializeConfig = async () => {
@@ -110,6 +127,7 @@ const App = () => {
       const initializedBenchmarks = savedBenchmarks || defaultBenchmarks;
       setRecommendedFunds(initializedFunds);
       setAssetClassBenchmarks(initializedBenchmarks);
+      setConfig(initializedBenchmarks);
       await saveStoredConfig(initializedFunds, initializedBenchmarks);
     };
     
@@ -120,6 +138,7 @@ const App = () => {
   useEffect(() => {
     if (recommendedFunds.length > 0 || Object.keys(assetClassBenchmarks).length > 0) {
       saveStoredConfig(recommendedFunds, assetClassBenchmarks);
+      setConfig(assetClassBenchmarks);
     }
   }, [recommendedFunds, assetClassBenchmarks]);
 
@@ -295,6 +314,37 @@ const App = () => {
           setCurrentSnapshotDate(dateStr);
         }
 
+        const today = new Date().toISOString().slice(0, 10);
+
+        // attach minimal history for modal charts
+        taggedFunds.forEach(fund => {
+          const symbol = fund.cleanSymbol || fund.Symbol || fund.symbol;
+          const prev = [];
+          historySnapshots.forEach(snap => {
+            const match = snap.funds.find(f => (f.cleanSymbol || f.Symbol || f.symbol) === symbol);
+            if (match) {
+              if (Array.isArray(match.history)) {
+                match.history.forEach(pt => {
+                  if (!prev.some(p => p.date === pt.date)) prev.push(pt);
+                });
+              } else if (match.scores?.final != null) {
+                if (!prev.some(p => p.date === snap.date)) {
+                  prev.push({ date: snap.date, score: match.scores.final });
+                }
+              }
+            }
+          });
+          const filteredPrev = prev.filter(p => p.date !== today);
+          fund.history = [...filteredPrev, { date: today, score: fund.scores.final }];
+        });
+
+        const newSnap = { date: today, funds: taggedFunds };
+
+        setHistorySnapshots(prev => {
+          const filtered = prev.filter(s => s.date !== today);
+          return [...filtered, newSnap].slice(-24);
+        });
+
         // after all fund-mapping transforms are finished …
         setFundData(taggedFunds);
 
@@ -366,13 +416,9 @@ const App = () => {
     const updated = { ...assetClassBenchmarks };
     updated[className] = { ...updated[className], [field]: value };
     setAssetClassBenchmarks(updated);
+    setConfig(updated);
   };
 
-  const handleExport = () => {
-    if (scoredFundData.length === 0) return;
-    const dateStr = new Date().toISOString().split('T')[0];
-    exportToExcel(scoredFundData, `Fund_Export_${dateStr}.xlsx`);
-  };
 
   // Get review candidates
   const reviewCandidates = identifyReviewCandidates(scoredFundData);
@@ -389,8 +435,8 @@ const App = () => {
       </div>
 
       <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-        <button 
-          onClick={() => setActiveTab('funds')} 
+        <button
+          onClick={() => setActiveTab('funds')}
           style={{ 
             padding: '0.5rem 1rem',
             backgroundColor: activeTab === 'funds' ? '#3b82f6' : '#e5e7eb',
@@ -405,6 +451,24 @@ const App = () => {
         >
           <Award size={16} />
           Fund Scores
+        </button>
+
+        <button
+          onClick={() => setActiveTab('dashboard')}
+          style={{
+            padding: '0.5rem 1rem',
+            backgroundColor: activeTab === 'dashboard' ? '#3b82f6' : '#e5e7eb',
+            color: activeTab === 'dashboard' ? 'white' : '#374151',
+            border: 'none',
+            borderRadius: '0.375rem',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}
+        >
+          <Database size={16} />
+          Dashboard
         </button>
         
         <button 
@@ -535,6 +599,11 @@ const App = () => {
         </div>
       )}
 
+      {/* Dashboard Tab */}
+      {activeTab === 'dashboard' && (
+        <DashboardView />
+      )}
+
       {/* Fund Scores Tab */}
       {activeTab === 'funds' && (
       <div>
@@ -559,23 +628,6 @@ const App = () => {
                 </p>
               </div>
 
-              <button
-                onClick={handleExport}
-                style={{
-                  padding: '0.5rem 1rem',
-                  backgroundColor: '#10b981',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '0.375rem',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem'
-                }}
-              >
-                <Download size={16} />
-                Export to Excel
-              </button>
             </div>
 
             {/* Main table */}
@@ -660,28 +712,11 @@ const App = () => {
               </table>
             </div>
 
-            {/* Details modal */}
-            {selectedFundForDetails && (
-              <FundDetailsModal
-                fund={selectedFundForDetails}
-                onClose={() => setSelectedFundForDetails(null)}
-              />
-            )}
           </div>
         ) : (
           <p style={{ color: '#6b7280' }}>No scored funds to display.</p>
         )}
       </div>
-
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem'
-                }}
-              >
-                <Download size={16} />
-                Export to Excel
-              </button>
-            </div>
             <FundView />
           </div>
         ) : (
@@ -1344,7 +1379,11 @@ const App = () => {
                   ...assetClassBenchmarks,
                   [newClass]: { ticker: '', name: '' }
                 });
-              }} 
+                setConfig({
+                  ...assetClassBenchmarks,
+                  [newClass]: { ticker: '', name: '' }
+                });
+              }}
               style={{ 
                 marginBottom: '0.5rem',
                 padding: '0.5rem 1rem',
@@ -1403,6 +1442,7 @@ const App = () => {
                           const copy = { ...assetClassBenchmarks };
                           delete copy[className];
                           setAssetClassBenchmarks(copy);
+                          setConfig(copy);
                         }}
                         style={{
                           padding: '0.25rem',
