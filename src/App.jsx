@@ -18,6 +18,7 @@ import {
 import { applyTagRules } from './services/tagEngine';
 import dataStore from './services/dataStore';
 import FundView from './components/Views/FundView.jsx';
+import DashboardView from './components/Views/DashboardView.jsx';
 import AppContext from './context/AppContext.jsx';
 
 // Score badge component for visual display
@@ -74,6 +75,8 @@ const App = () => {
   const {
     fundData,
     setFundData,
+    config,
+    setConfig,
     selectedClass,
     setSelectedClass,
     selectedTags,
@@ -109,6 +112,7 @@ const App = () => {
       const initializedBenchmarks = savedBenchmarks || defaultBenchmarks;
       setRecommendedFunds(initializedFunds);
       setAssetClassBenchmarks(initializedBenchmarks);
+      setConfig(initializedBenchmarks);
       await saveStoredConfig(initializedFunds, initializedBenchmarks);
     };
     
@@ -119,6 +123,7 @@ const App = () => {
   useEffect(() => {
     if (recommendedFunds.length > 0 || Object.keys(assetClassBenchmarks).length > 0) {
       saveStoredConfig(recommendedFunds, assetClassBenchmarks);
+      setConfig(assetClassBenchmarks);
     }
   }, [recommendedFunds, assetClassBenchmarks]);
 
@@ -365,6 +370,7 @@ const App = () => {
     const updated = { ...assetClassBenchmarks };
     updated[className] = { ...updated[className], [field]: value };
     setAssetClassBenchmarks(updated);
+    setConfig(updated);
   };
 
 
@@ -383,8 +389,8 @@ const App = () => {
       </div>
 
       <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-        <button 
-          onClick={() => setActiveTab('funds')} 
+        <button
+          onClick={() => setActiveTab('funds')}
           style={{ 
             padding: '0.5rem 1rem',
             backgroundColor: activeTab === 'funds' ? '#3b82f6' : '#e5e7eb',
@@ -399,6 +405,24 @@ const App = () => {
         >
           <Award size={16} />
           Fund Scores
+        </button>
+
+        <button
+          onClick={() => setActiveTab('dashboard')}
+          style={{
+            padding: '0.5rem 1rem',
+            backgroundColor: activeTab === 'dashboard' ? '#3b82f6' : '#e5e7eb',
+            color: activeTab === 'dashboard' ? 'white' : '#374151',
+            border: 'none',
+            borderRadius: '0.375rem',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}
+        >
+          <Database size={16} />
+          Dashboard
         </button>
         
         <button 
@@ -527,6 +551,11 @@ const App = () => {
             </div>
           )}
         </div>
+      )}
+
+      {/* Dashboard Tab */}
+      {activeTab === 'dashboard' && (
+        <DashboardView />
       )}
 
       {/* Fund Scores Tab */}
@@ -1311,7 +1340,11 @@ const App = () => {
                   ...assetClassBenchmarks,
                   [newClass]: { ticker: '', name: '' }
                 });
-              }} 
+                setConfig({
+                  ...assetClassBenchmarks,
+                  [newClass]: { ticker: '', name: '' }
+                });
+              }}
               style={{ 
                 marginBottom: '0.5rem',
                 padding: '0.5rem 1rem',
@@ -1370,6 +1403,7 @@ const App = () => {
                           const copy = { ...assetClassBenchmarks };
                           delete copy[className];
                           setAssetClassBenchmarks(copy);
+                          setConfig(copy);
                         }}
                         style={{
                           padding: '0.25rem',
