@@ -65,7 +65,6 @@ const AssetClassOverview = ({ funds, config }) => {
       )
     );
 
-
     return {
       assetClass,
       count,
