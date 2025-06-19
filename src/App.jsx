@@ -1,6 +1,6 @@
 // App.jsx
 import React, { useState, useEffect, useContext } from 'react';
-import { Upload, RefreshCw, Settings, Plus, Trash2, LayoutGrid, AlertCircle, TrendingUp, Award, Clock, Database, Calendar, Download, ArrowUpDown } from 'lucide-react';
+import { Upload, RefreshCw, Settings, Plus, Trash2, LayoutGrid, AlertCircle, TrendingUp, Award, Clock, Database, Calendar, ArrowUpDown } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { getStoredConfig, saveStoredConfig } from './data/storage';
 import {
@@ -15,7 +15,6 @@ import {
   getScoreLabel,
   METRICS_CONFIG
 } from './services/scoring';
-import { exportToExcel } from './services/exportService';
 import { applyTagRules } from './services/tagEngine';
 import dataStore from './services/dataStore';
 import FundView from './components/Views/FundView.jsx';
@@ -368,11 +367,6 @@ const App = () => {
     setAssetClassBenchmarks(updated);
   };
 
-  const handleExport = () => {
-    if (scoredFundData.length === 0) return;
-    const dateStr = new Date().toISOString().split('T')[0];
-    exportToExcel(scoredFundData, `Fund_Export_${dateStr}.xlsx`);
-  };
 
   // Get review candidates
   const reviewCandidates = identifyReviewCandidates(scoredFundData);
@@ -559,23 +553,6 @@ const App = () => {
                 </p>
               </div>
 
-              <button
-                onClick={handleExport}
-                style={{
-                  padding: '0.5rem 1rem',
-                  backgroundColor: '#10b981',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '0.375rem',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem'
-                }}
-              >
-                <Download size={16} />
-                Export to Excel
-              </button>
             </div>
 
             {/* Main table */}
@@ -672,16 +649,6 @@ const App = () => {
           <p style={{ color: '#6b7280' }}>No scored funds to display.</p>
         )}
       </div>
-
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem'
-                }}
-              >
-                <Download size={16} />
-                Export to Excel
-              </button>
-            </div>
             <FundView />
           </div>
         ) : (
