@@ -9,7 +9,9 @@ import TagList from '../TagList.jsx';
  *  - config  : object mapping asset classes to benchmark info { ticker, name }
  */
 const AssetClassOverview = ({ funds, config }) => {
-  if (!Array.isArray(funds) || funds.length === 0) return null;
+  if (!Array.isArray(funds) || funds.length === 0) {
+    return <p style={{ color: '#6b7280' }}>No data loaded yet.</p>;
+  }
 
   const recommended = funds.filter(f => f.isRecommended);
   if (recommended.length === 0) return null;
