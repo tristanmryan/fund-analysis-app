@@ -5,7 +5,6 @@ import TagList from '../TagList.jsx';
 
 /**
  * Show summary cards for each asset class.
- * Props:
  *  - funds   : array of all loaded fund objects with scores and metrics
  *  - config  : object mapping asset classes to benchmark info { ticker, name }
  */
@@ -15,7 +14,7 @@ const AssetClassOverview = ({ funds, config }) => {
   const recommended = funds.filter(f => f.isRecommended);
   if (recommended.length === 0) return null;
 
-  // group funds by asset class
+  /* ---------- group funds by asset class ---------- */
   const byClass = {};
   recommended.forEach(f => {
     const assetClass = f['Asset Class'] || 'Uncategorized';
@@ -23,7 +22,7 @@ const AssetClassOverview = ({ funds, config }) => {
     byClass[assetClass].push(f);
   });
 
-  // build summary info per class
+  /* ---------- build summary info per class ---------- */
   const classInfo = Object.entries(byClass).map(([assetClass, classFunds]) => {
     const count     = classFunds.length;
     const scoreSum  = classFunds.reduce((s, f) => s + (f.scores?.final || 0), 0);
@@ -57,6 +56,7 @@ const AssetClassOverview = ({ funds, config }) => {
     };
   });
 
+  /* ---------- render ---------- */
   return (
     <div style={{ marginBottom: '1.5rem' }}>
       <h3

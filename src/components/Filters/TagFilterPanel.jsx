@@ -33,14 +33,14 @@ const TagFilterPanel = ({ availableTags = [], selectedTags = [], onToggleTag }) 
             type="button"
             onClick={() => handleToggle(tag)}
             style={{
-              cursor       : 'pointer',
-              borderRadius : '9999px',
-              padding      : '0.25rem 0.75rem',
-              fontSize     : '0.75rem',
-              border       : `1px solid ${active ? color : '#d1d5db'}`,
+              cursor         : 'pointer',
+              borderRadius   : '9999px',
+              padding        : '0.25rem 0.75rem',
+              fontSize       : '0.75rem',
+              border         : `1px solid ${active ? color : '#d1d5db'}`,
               backgroundColor: active ? `${color}20` : 'transparent',
-              color        : active ? color : '#374151',
-              fontWeight   : active ? 600 : 400
+              color          : active ? color : '#374151',
+              fontWeight     : active ? 600 : 400
             }}
           >
             {tag}
