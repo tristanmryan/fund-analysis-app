@@ -65,7 +65,6 @@ const AssetClassOverview = ({ funds, config }) => {
       )
     );
 
-
     return {
       assetClass,
       count,
@@ -77,7 +76,7 @@ const AssetClassOverview = ({ funds, config }) => {
       color,
       tags,
     };
-  });
+
 
   return (
     <div style={{ marginBottom: '1.5rem' }}>
