@@ -4,51 +4,62 @@ import { assetClassBenchmarks as defaultBenchmarks } from '../data/config';
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
-  const [fundData, setFundData] = useState([]);
-  const [selectedClass, setSelectedClass] = useState(null);
-  const [selectedTags, setSelectedTags] = useState([]);
-  const [config, setConfig] = useState(defaultBenchmarks);
-  const [historySnapshots, setHistorySnapshots] = useState([]);
+  /* ---------- core data ---------- */
+  const [fundData, setFundData]             = useState([]);
+  const [config, setConfig]                 = useState(defaultBenchmarks);
+  const [historySnapshots, setHistorySnapshots] = useState([]); // monthly history
 
-  const toggleTag = (tag) => {
-    setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+  /* ---------- filter state ---------- */
+  const [selectedClass, setSelectedClass] = useState(null);
+  const [selectedTags,  setSelectedTags]  = useState([]);
+
+  const toggleTag = tag =>
+    setSelectedTags(prev =>
+      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
     );
-  };
 
   const resetFilters = () => {
     setSelectedClass(null);
     setSelectedTags([]);
   };
 
+  /* ---------- derived options ---------- */
   const availableClasses = useMemo(
     () =>
-      [...new Set(fundData.map((f) => f['Asset Class'] || f.assetClass).filter(Boolean))].sort(),
+      [...new Set(fundData.map(f => f['Asset Class'] || f.assetClass).filter(Boolean))].sort(),
     [fundData]
   );
 
   const availableTags = useMemo(
-    () => [...new Set(fundData.flatMap((f) => f.tags || []))].sort(),
+    () => [...new Set(fundData.flatMap(f => f.tags || []))].sort(),
     [fundData]
   );
 
+  /* ---------- context value ---------- */
   const value = useMemo(
     () => ({
+      /* data */
+      fundData, setFundData,
+      config,   setConfig,
+      historySnapshots, setHistorySnapshots,
+
+      /* filter helpers */
+      availableClasses,
+      availableTags,
+      selectedClass, setSelectedClass,
+      selectedTags,
+      toggleTag,
+      resetFilters
+    }),
+    [
       fundData,
-      setFundData,
       config,
-      setConfig,
       historySnapshots,
-      setHistorySnapshots,
       availableClasses,
       availableTags,
       selectedClass,
-      selectedTags,
-      setSelectedClass,
-      toggleTag,
-      resetFilters,
-    }),
-    [fundData, config, historySnapshots, availableClasses, availableTags, selectedClass, selectedTags]
+      selectedTags
+    ]
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
