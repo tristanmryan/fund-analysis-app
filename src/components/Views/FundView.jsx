@@ -1,13 +1,14 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import GlobalFilterBar from '../Filters/GlobalFilterBar.jsx';
 import TagList from '../TagList.jsx';
 import { Download } from 'lucide-react';
 import { exportToExcel } from '../../services/exportService';
 import { getScoreColor, getScoreLabel } from '../../services/scoring';
 import AppContext from '../../context/AppContext.jsx';
+import FundDetailsModal from '../Modals/FundDetailsModal.jsx';
 
 /* ---------- simple table component ---------- */
-const FundTable = ({ funds = [] }) => (
+const FundTable = ({ funds = [], onRowClick = () => {} }) => (
   <div style={{ overflowX: 'auto' }}>
     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
       <thead>
@@ -21,7 +22,11 @@ const FundTable = ({ funds = [] }) => (
       </thead>
       <tbody>
         {funds.map(fund => (
-          <tr key={fund.Symbol} style={{ borderBottom: '1px solid #f3f4f6' }}>
+          <tr
+            key={fund.Symbol}
+            style={{ borderBottom: '1px solid #f3f4f6', cursor: 'pointer' }}
+            onClick={() => onRowClick(fund)}
+          >
             <td style={{ padding: '0.5rem' }}>{fund.Symbol}</td>
             <td style={{ padding: '0.5rem' }}>{fund['Fund Name']}</td>
             <td style={{ padding: '0.5rem' }}>{fund['Asset Class']}</td>
@@ -69,6 +74,8 @@ const FundView = () => {
     toggleTag,
     resetFilters
   } = useContext(AppContext);
+
+  const [selectedFund, setSelectedFund] = useState(null);
 
   /* apply filters */
   const filteredFunds = fundData.filter(f => {
@@ -119,7 +126,11 @@ const FundView = () => {
       {filteredFunds.length === 0 ? (
         <p style={{ color: '#6b7280' }}>No funds match your current filter selection.</p>
       ) : (
-        <FundTable funds={filteredFunds} />
+        <FundTable funds={filteredFunds} onRowClick={setSelectedFund} />
+      )}
+
+      {selectedFund && (
+        <FundDetailsModal fund={selectedFund} onClose={() => setSelectedFund(null)} />
       )}
     </div>
   );
