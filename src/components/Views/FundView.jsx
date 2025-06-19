@@ -1,6 +1,8 @@
 import React, { useContext } from 'react';
 import GlobalFilterBar from '../Filters/GlobalFilterBar.jsx';
 import TagList from '../TagList.jsx';
+import { Download } from 'lucide-react';
+import { exportToExcel } from '../../services/exportService';
 import { getScoreColor, getScoreLabel } from '../../services/scoring';
 import AppContext from '../../context/AppContext.jsx';
 
@@ -78,6 +80,11 @@ const FundView = () => {
     return classMatch && tagMatch;
   });
 
+  const handleExport = () => {
+    if (filteredFunds.length === 0) return;
+    exportToExcel(filteredFunds);
+  };
+
   return (
     <div>
       <GlobalFilterBar
@@ -89,8 +96,31 @@ const FundView = () => {
         onTagToggle={toggleTag}
         onReset={resetFilters}
       />
+      <div style={{ marginBottom: '1rem' }}>
+        <button
+          onClick={handleExport}
+          style={{
+            padding: '0.5rem 1rem',
+            backgroundColor: '#10b981',
+            color: 'white',
+            border: 'none',
+            borderRadius: '0.375rem',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}
+        >
+          <Download size={16} />
+          Export to Excel
+        </button>
+      </div>
 
-      <FundTable funds={filteredFunds} />
+      {filteredFunds.length === 0 ? (
+        <p style={{ color: '#6b7280' }}>No funds match your current filter selection.</p>
+      ) : (
+        <FundTable funds={filteredFunds} />
+      )}
     </div>
   );
 };
