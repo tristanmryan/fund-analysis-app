@@ -12,16 +12,18 @@ import AppContext from '../../context/AppContext.jsx';
  */
 const AssetClassOverview = ({ funds, config }) => {
   const { historySnapshots } = useContext(AppContext);
+
   if (!Array.isArray(funds) || funds.length === 0) {
     return <p style={{ color: '#6b7280' }}>No data loaded yet.</p>;
   }
 
-  const getTrendData = (assetClass) => {
-    return historySnapshots
+  /* ---------- helper: last-6-months spark data ---------- */
+  const getTrendData = assetClass =>
+    historySnapshots
       .slice(-6)
-      .map((snap) => {
+      .map(snap => {
         const rec = snap.funds.filter(
-          (f) => f.isRecommended && f['Asset Class'] === assetClass
+          f => f.isRecommended && f['Asset Class'] === assetClass
         );
         const avg = rec.length
           ? Math.round(
@@ -31,8 +33,7 @@ const AssetClassOverview = ({ funds, config }) => {
           : null;
         return { date: snap.date, value: avg };
       })
-      .filter((d) => d.value !== null);
-  };
+      .filter(d => d.value !== null);
 
   const recommended = funds.filter(f => f.isRecommended);
   if (recommended.length === 0) return null;
