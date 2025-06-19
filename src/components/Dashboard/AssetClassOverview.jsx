@@ -58,6 +58,7 @@ const AssetClassOverview = ({ funds, config }) => {
 
     const benchmarkTicker = config?.[assetClass]?.ticker || '-';
     const color = getScoreColor(avgScore);
+
     const tags = Array.from(
       new Set(
         classFunds.flatMap(f => (Array.isArray(f.tags) ? f.tags : []))
@@ -75,7 +76,7 @@ const AssetClassOverview = ({ funds, config }) => {
       color,
       tags,
     };
-  });
+
 
   return (
     <div style={{ marginBottom: '1.5rem' }}>
