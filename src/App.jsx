@@ -1,5 +1,5 @@
 // App.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Upload, RefreshCw, Settings, Plus, Trash2, LayoutGrid, AlertCircle, TrendingUp, Award, Clock, Database, Calendar, Download, ArrowUpDown } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { getStoredConfig, saveStoredConfig } from './data/storage';
@@ -7,15 +7,19 @@ import {
   recommendedFunds as defaultRecommendedFunds,
   assetClassBenchmarks as defaultBenchmarks
 } from './data/config';
-import { 
-  calculateScores, 
-  generateClassSummary, 
+import {
+  calculateScores,
+  generateClassSummary,
   identifyReviewCandidates,
   getScoreColor,
   getScoreLabel,
-  METRICS_CONFIG 
+  METRICS_CONFIG
 } from './services/scoring';
+import { exportToExcel } from './services/exportService';
+import { applyTagRules } from './services/tagEngine';
 import dataStore from './services/dataStore';
+import FundView from './components/Views/FundView.jsx';
+import AppContext from './context/AppContext.jsx';
 
 // Score badge component for visual display
 const ScoreBadge = ({ score, size = 'normal' }) => {
@@ -68,13 +72,23 @@ const MetricBreakdown = ({ breakdown }) => {
 };
 
 const App = () => {
-  const [fundData, setFundData] = useState([]);
+  const {
+    fundData,
+    setFundData,
+    selectedClass,
+    setSelectedClass,
+    selectedTags,
+    toggleTag,
+    resetFilters,
+    availableClasses,
+    availableTags
+  } = useContext(AppContext);
+
   const [scoredFundData, setScoredFundData] = useState([]);
   const [benchmarkData, setBenchmarkData] = useState({});
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('funds');
-  const [selectedClass, setSelectedClass] = useState('');
-  const [selectedFundForDetails, setSelectedFundForDetails] = useState(null);
+  const [selectedClassView, setSelectedClassView] = useState('');
   const [classSummaries, setClassSummaries] = useState({});
   const [currentSnapshotDate, setCurrentSnapshotDate] = useState(null);
   const [uploadedFileName, setUploadedFileName] = useState('');
@@ -230,18 +244,23 @@ const App = () => {
         // Calculate scores for all funds
         console.log('Calculating scores for', withClassAndFlags.length, 'funds...');
         const scoredFunds = calculateScores(withClassAndFlags);
+
+        // Apply automated tagging after scoring
+        const taggedFunds = applyTagRules(scoredFunds, {
+          benchmarks: assetClassBenchmarks
+        });
         
         // Generate class summaries
         const summaries = {};
         const fundsByClass = {};
-        scoredFunds.forEach(fund => {
+        taggedFunds.forEach(fund => {
           const assetClass = fund['Asset Class'];
           if (!fundsByClass[assetClass]) {
             fundsByClass[assetClass] = [];
           }
           fundsByClass[assetClass].push(fund);
         });
-        
+
         Object.entries(fundsByClass).forEach(([assetClass, funds]) => {
           summaries[assetClass] = generateClassSummary(funds);
         });
@@ -249,14 +268,14 @@ const App = () => {
         // Extract benchmark data
         const benchmarks = {};
         Object.entries(assetClassBenchmarks).forEach(([assetClass, { ticker, name }]) => {
-          const match = scoredFunds.find(f => f.cleanSymbol === clean(ticker));
+          const match = taggedFunds.find(f => f.cleanSymbol === clean(ticker));
           if (match) {
             benchmarks[assetClass] = { ...match, name };
           }
         });
 
         // Identify review candidates
-        const reviewCandidates = identifyReviewCandidates(scoredFunds);
+        const reviewCandidates = identifyReviewCandidates(taggedFunds);
 
         // Ask user for snapshot date
         const dateStr = prompt('Enter the date for this snapshot (YYYY-MM-DD):', 
@@ -266,7 +285,7 @@ const App = () => {
           // Save snapshot to IndexedDB
           await dataStore.saveSnapshot({
             date: new Date(dateStr).toISOString(),
-            funds: scoredFunds,
+            funds: taggedFunds,
             classSummaries: summaries,
             reviewCandidates: reviewCandidates,
             fileName: file.name,
@@ -276,12 +295,12 @@ const App = () => {
           setCurrentSnapshotDate(dateStr);
         }
 
-        setFundData(withClassAndFlags);
-        setScoredFundData(scoredFunds);
+        setFundData(taggedFunds);
+        setScoredFundData(taggedFunds);
         setBenchmarkData(benchmarks);
         setClassSummaries(summaries);
-        
-        console.log('Successfully loaded and scored', scoredFunds.length, 'funds');
+
+        console.log('Successfully loaded and scored', taggedFunds.length, 'funds');
       } catch (err) {
         console.error('Error parsing performance file:', err);
         alert('Error parsing file: ' + err.message);
@@ -295,6 +314,7 @@ const App = () => {
 
   const loadSnapshot = async (snapshot) => {
     setSelectedSnapshot(snapshot);
+    setFundData(snapshot.funds);
     setScoredFundData(snapshot.funds);
     setClassSummaries(snapshot.classSummaries || {});
     setCurrentSnapshotDate(new Date(snapshot.date).toLocaleDateString());
@@ -344,6 +364,12 @@ const App = () => {
     const updated = { ...assetClassBenchmarks };
     updated[className] = { ...updated[className], [field]: value };
     setAssetClassBenchmarks(updated);
+  };
+
+  const handleExport = () => {
+    if (scoredFundData.length === 0) return;
+    const dateStr = new Date().toISOString().split('T')[0];
+    exportToExcel(scoredFundData, `Fund_Export_${dateStr}.xlsx`);
   };
 
   // Get review candidates
@@ -509,167 +535,51 @@ const App = () => {
 
       {/* Fund Scores Tab */}
       {activeTab === 'funds' && (
-        <div>
-          {scoredFundData.length > 0 ? (
-            <div>
-              <div style={{ marginBottom: '1rem' }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>All Funds with Scores</h2>
-                <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                  Scores calculated using weighted Z-score methodology within each asset class
-                </p>
-              </div>
-              
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
-                      <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Symbol</th>
-                      <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Fund Name</th>
-                      <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Asset Class</th>
-                      <th style={{ textAlign: 'center', padding: '0.75rem', fontWeight: '600' }}>Score</th>
-                      <th style={{ textAlign: 'right', padding: '0.75rem', fontWeight: '600' }}>1Y Return</th>
-                      <th style={{ textAlign: 'right', padding: '0.75rem', fontWeight: '600' }}>Sharpe</th>
-                      <th style={{ textAlign: 'right', padding: '0.75rem', fontWeight: '600' }}>Expense</th>
-                      <th style={{ textAlign: 'center', padding: '0.75rem', fontWeight: '600' }}>Type</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {scoredFundData
-                      .sort((a, b) => (b.scores?.final || 0) - (a.scores?.final || 0))
-                      .map((fund, i) => (
-                        <tr 
-                          key={i} 
-                          style={{ 
-                            borderBottom: '1px solid #f3f4f6',
-                            backgroundColor: fund.isRecommended ? '#eff6ff' : 'white',
-                            cursor: 'pointer'
-                          }}
-                          onClick={() => setSelectedFundForDetails(fund)}
-                        >
-                          <td style={{ padding: '0.75rem', fontWeight: fund.isBenchmark ? 'bold' : 'normal' }}>
-                            {fund.Symbol}
-                          </td>
-                          <td style={{ padding: '0.75rem' }}>{fund['Fund Name']}</td>
-                          <td style={{ padding: '0.75rem' }}>{fund['Asset Class']}</td>
-                          <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-                            {fund.scores ? (
-                              <ScoreBadge score={fund.scores.final} />
-                            ) : (
-                              <span style={{ color: '#9ca3af' }}>-</span>
-                            )}
-                          </td>
-                          <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                            {fund['1 Year'] != null ? `${fund['1 Year'].toFixed(2)}%` : 'N/A'}
-                          </td>
-                          <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                            {fund['Sharpe Ratio'] != null ? fund['Sharpe Ratio'].toFixed(2) : 'N/A'}
-                          </td>
-                          <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                            {fund['Net Expense Ratio'] != null ? `${fund['Net Expense Ratio'].toFixed(2)}%` : 'N/A'}
-                          </td>
-                          <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-                            {fund.isBenchmark && (
-                              <span style={{ 
-                                backgroundColor: '#fbbf24', 
-                                color: '#78350f',
-                                padding: '0.125rem 0.5rem',
-                                borderRadius: '0.25rem',
-                                fontSize: '0.75rem',
-                                fontWeight: '500'
-                              }}>
-                                Benchmark
-                              </span>
-                            )}
-                            {fund.isRecommended && !fund.isBenchmark && (
-                              <span style={{ 
-                                backgroundColor: '#34d399', 
-                                color: '#064e3b',
-                                padding: '0.125rem 0.5rem',
-                                borderRadius: '0.25rem',
-                                fontSize: '0.75rem',
-                                fontWeight: '500'
-                              }}>
-                                Recommended
-                              </span>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Fund Details Modal */}
-              {selectedFundForDetails && (
-                <div style={{
-                  position: 'fixed',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        scoredFundData.length > 0 ? (
+          <div>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '1rem'
+              }}
+            >
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Fund Scores</h2>
+              <button
+                onClick={handleExport}
+                style={{
+                  padding: '0.5rem 1rem',
+                  backgroundColor: '#10b981',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '0.375rem',
+                  cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  zIndex: 1000
-                }} onClick={() => setSelectedFundForDetails(null)}>
-                  <div style={{
-                    backgroundColor: 'white',
-                    padding: '2rem',
-                    borderRadius: '0.5rem',
-                    maxWidth: '600px',
-                    maxHeight: '80vh',
-                    overflow: 'auto'
-                  }} onClick={e => e.stopPropagation()}>
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-                      {selectedFundForDetails['Fund Name']}
-                    </h3>
-                    <div style={{ marginBottom: '1rem' }}>
-                      <strong>Symbol:</strong> {selectedFundForDetails.Symbol} | 
-                      <strong> Asset Class:</strong> {selectedFundForDetails['Asset Class']}
-                    </div>
-                    {selectedFundForDetails.scores && (
-                      <>
-                        <div style={{ marginBottom: '1rem' }}>
-                          <strong>Overall Score: </strong>
-                          <ScoreBadge score={selectedFundForDetails.scores.final} size="large" />
-                          <span style={{ marginLeft: '1rem', color: '#6b7280' }}>
-                            (Percentile: {selectedFundForDetails.scores.percentile}%)
-                          </span>
-                        </div>
-                        <MetricBreakdown breakdown={selectedFundForDetails.scores.breakdown} />
-                      </>
-                    )}
-                    <button 
-                      onClick={() => setSelectedFundForDetails(null)}
-                      style={{
-                        marginTop: '1rem',
-                        padding: '0.5rem 1rem',
-                        backgroundColor: '#e5e7eb',
-                        border: 'none',
-                        borderRadius: '0.25rem',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      Close
-                    </button>
-                  </div>
-                </div>
-              )}
+                  gap: '0.5rem'
+                }}
+              >
+                <Download size={16} />
+                Export to Excel
+              </button>
             </div>
-          ) : (
-            <div style={{ 
-              textAlign: 'center', 
-              padding: '3rem', 
-              backgroundColor: '#f9fafb', 
+            <FundView />
+          </div>
+        ) : (
+          <div
+            style={{
+              textAlign: 'center',
+              padding: '3rem',
+              backgroundColor: '#f9fafb',
               borderRadius: '0.5rem',
-              color: '#6b7280' 
-            }}>
-              <TrendingUp size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-              <p>Upload a fund performance file to see scores</p>
-            </div>
-          )}
-        </div>
+              color: '#6b7280'
+            }}
+          >
+            <TrendingUp size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
+            <p>Upload a fund performance file to see scores</p>
+          </div>
+        )
       )}
 
       {/* Asset Class View Tab */}
@@ -680,8 +590,8 @@ const App = () => {
           </h2>
           
           <select
-            value={selectedClass}
-            onChange={e => setSelectedClass(e.target.value)}
+            value={selectedClassView}
+            onChange={e => setSelectedClassView(e.target.value)}
             style={{ 
               padding: '0.5rem', 
               marginBottom: '1rem',
@@ -696,48 +606,48 @@ const App = () => {
             ))}
           </select>
           
-          {selectedClass && (
+          {selectedClassView && (
             <>
-              {classSummaries[selectedClass] && (
-                <div style={{ 
+              {classSummaries[selectedClassView] && (
+                <div style={{
                   marginBottom: '1.5rem', 
                   padding: '1rem', 
                   backgroundColor: '#f3f4f6', 
                   borderRadius: '0.5rem' 
                 }}>
                   <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
-                    {selectedClass} Summary
+                    {selectedClassView} Summary
                   </h3>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem' }}>
                     <div>
                       <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>Fund Count</div>
                       <div style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
-                        {classSummaries[selectedClass].fundCount}
+                        {classSummaries[selectedClassView].fundCount}
                       </div>
                     </div>
                     <div>
                       <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>Average Score</div>
                       <div style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
-                        {classSummaries[selectedClass].averageScore}
+                        {classSummaries[selectedClassView].averageScore}
                       </div>
                     </div>
                     <div>
                       <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>Benchmark Score</div>
                       <div style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
-                        {classSummaries[selectedClass].benchmarkScore || 'N/A'}
+                        {classSummaries[selectedClassView].benchmarkScore || 'N/A'}
                       </div>
                     </div>
                     <div>
                       <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>Distribution</div>
                       <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.875rem' }}>
                         <span style={{ color: '#16a34a' }}>
-                          {classSummaries[selectedClass].distribution.excellent} excellent
+                          {classSummaries[selectedClassView].distribution.excellent} excellent
                         </span>
                         <span style={{ color: '#eab308' }}>
-                          {classSummaries[selectedClass].distribution.good} good
+                          {classSummaries[selectedClassView].distribution.good} good
                         </span>
                         <span style={{ color: '#dc2626' }}>
-                          {classSummaries[selectedClass].distribution.poor} poor
+                          {classSummaries[selectedClassView].distribution.poor} poor
                         </span>
                       </div>
                     </div>
@@ -759,10 +669,10 @@ const App = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {benchmarkData[selectedClass] && (
+                  {benchmarkData[selectedClassView] && (
                     <tr style={{ backgroundColor: '#fef3c7', fontWeight: '600' }}>
                       <td style={{ padding: '0.75rem' }}>
-                        {benchmarkData[selectedClass].Symbol}
+                        {benchmarkData[selectedClassView].Symbol}
                         <span style={{ 
                           marginLeft: '0.5rem',
                           backgroundColor: '#fbbf24', 
@@ -776,32 +686,32 @@ const App = () => {
                         </span>
                       </td>
                       <td style={{ padding: '0.75rem' }}>
-                        {benchmarkData[selectedClass]['Fund Name'] || benchmarkData[selectedClass].name}
+                        {benchmarkData[selectedClassView]['Fund Name'] || benchmarkData[selectedClassView].name}
                       </td>
                       <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-                        {benchmarkData[selectedClass].scores ? (
-                          <ScoreBadge score={benchmarkData[selectedClass].scores.final} />
+                        {benchmarkData[selectedClassView].scores ? (
+                          <ScoreBadge score={benchmarkData[selectedClassView].scores.final} />
                         ) : '-'}
                       </td>
                       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                        {benchmarkData[selectedClass]['1 Year']?.toFixed(2) ?? 'N/A'}%
+                        {benchmarkData[selectedClassView]['1 Year']?.toFixed(2) ?? 'N/A'}%
                       </td>
                       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                        {benchmarkData[selectedClass]['3 Year']?.toFixed(2) ?? 'N/A'}%
+                        {benchmarkData[selectedClassView]['3 Year']?.toFixed(2) ?? 'N/A'}%
                       </td>
                       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                        {benchmarkData[selectedClass]['Sharpe Ratio']?.toFixed(2) ?? 'N/A'}
+                        {benchmarkData[selectedClassView]['Sharpe Ratio']?.toFixed(2) ?? 'N/A'}
                       </td>
                       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                        {benchmarkData[selectedClass]['Standard Deviation']?.toFixed(2) ?? 'N/A'}%
+                        {benchmarkData[selectedClassView]['Standard Deviation']?.toFixed(2) ?? 'N/A'}%
                       </td>
                       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                        {benchmarkData[selectedClass]['Net Expense Ratio']?.toFixed(2) ?? 'N/A'}%
+                        {benchmarkData[selectedClassView]['Net Expense Ratio']?.toFixed(2) ?? 'N/A'}%
                       </td>
                     </tr>
                   )}
                   {scoredFundData
-                    .filter(f => f['Asset Class'] === selectedClass && !f.isBenchmark)
+                    .filter(f => f['Asset Class'] === selectedClassView && !f.isBenchmark)
                     .sort((a, b) => (b.scores?.final || 0) - (a.scores?.final || 0))
                     .map((fund, idx) => (
                       <tr 
