@@ -7,14 +7,15 @@ import {
   recommendedFunds as defaultRecommendedFunds,
   assetClassBenchmarks as defaultBenchmarks
 } from './data/config';
-import { 
-  calculateScores, 
-  generateClassSummary, 
+import {
+  calculateScores,
+  generateClassSummary,
   identifyReviewCandidates,
   getScoreColor,
   getScoreLabel,
   METRICS_CONFIG
 } from './services/scoring';
+import { exportToExcel } from './services/exportService';
 import { applyTagRules } from './services/tagEngine';
 import dataStore from './services/dataStore';
 
@@ -352,6 +353,12 @@ const App = () => {
     setAssetClassBenchmarks(updated);
   };
 
+  const handleExport = () => {
+    if (scoredFundData.length === 0) return;
+    const dateStr = new Date().toISOString().split('T')[0];
+    exportToExcel(scoredFundData, `Fund_Export_${dateStr}.xlsx`);
+  };
+
   // Get review candidates
   const reviewCandidates = identifyReviewCandidates(scoredFundData);
 
@@ -518,11 +525,39 @@ const App = () => {
         <div>
           {scoredFundData.length > 0 ? (
             <div>
-              <div style={{ marginBottom: '1rem' }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>All Funds with Scores</h2>
-                <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                  Scores calculated using weighted Z-score methodology within each asset class
-                </p>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '1rem'
+                }}
+              >
+                <div>
+                  <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+                    All Funds with Scores
+                  </h2>
+                  <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+                    Scores calculated using weighted Z-score methodology within each asset class
+                  </p>
+                </div>
+                <button
+                  onClick={handleExport}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    backgroundColor: '#10b981',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '0.375rem',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                  }}
+                >
+                  <Download size={16} />
+                  Export to Excel
+                </button>
               </div>
               
               <div style={{ overflowX: 'auto' }}>
