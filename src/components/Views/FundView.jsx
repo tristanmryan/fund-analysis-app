@@ -103,6 +103,7 @@ const FundView = () => {
         onTagToggle={toggleTag}
         onReset={resetFilters}
       />
+
       <div style={{ marginBottom: '1rem' }}>
         <button
           onClick={handleExport}
@@ -130,7 +131,10 @@ const FundView = () => {
       )}
 
       {selectedFund && (
-        <FundDetailsModal fund={selectedFund} onClose={() => setSelectedFund(null)} />
+        <FundDetailsModal
+          fund={selectedFund}
+          onClose={() => setSelectedFund(null)}
+        />
       )}
     </div>
   );
