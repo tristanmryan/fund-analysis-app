@@ -83,7 +83,9 @@ const App = () => {
     toggleTag,
     resetFilters,
     availableClasses,
-    availableTags
+    availableTags,
+    historySnapshots,
+    setHistorySnapshots,
   } = useContext(AppContext);
 
   const [scoredFundData, setScoredFundData] = useState([]);
@@ -103,6 +105,19 @@ const App = () => {
 
   const [recommendedFunds, setRecommendedFunds] = useState([]);
   const [assetClassBenchmarks, setAssetClassBenchmarks] = useState({});
+
+  // Load history snapshots from localStorage on startup
+  useEffect(() => {
+    const stored = JSON.parse(localStorage.getItem('ls_history') || '[]');
+    if (stored.length > 0) {
+      setHistorySnapshots(stored);
+    }
+  }, []);
+
+  // Persist history snapshots to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('ls_history', JSON.stringify(historySnapshots));
+  }, [historySnapshots]);
 
   // Initialize configuration
   useEffect(() => {
@@ -298,6 +313,14 @@ const App = () => {
           
           setCurrentSnapshotDate(dateStr);
         }
+
+        const today = new Date().toISOString().slice(0, 10);
+        const newSnap = { date: today, funds: taggedFunds };
+
+        setHistorySnapshots(prev => {
+          const filtered = prev.filter(s => s.date !== today);
+          return [...filtered, newSnap].slice(-24);
+        });
 
         // after all fund-mapping transforms are finished …
         setFundData(taggedFunds);

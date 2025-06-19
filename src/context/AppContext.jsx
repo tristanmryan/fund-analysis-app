@@ -6,8 +6,8 @@ const AppContext = createContext();
 export const AppProvider = ({ children }) => {
   /* ---------- core data ---------- */
   const [fundData, setFundData]             = useState([]);
-  const [config,   setConfig]               = useState(defaultBenchmarks);
-  const [historySnapshots, setHistorySnapshots] = useState([]);  // monthly history
+  const [config, setConfig]                 = useState(defaultBenchmarks);
+  const [historySnapshots, setHistorySnapshots] = useState([]); // monthly history
 
   /* ---------- filter state ---------- */
   const [selectedClass, setSelectedClass] = useState(null);
@@ -39,19 +39,15 @@ export const AppProvider = ({ children }) => {
   const value = useMemo(
     () => ({
       /* data */
-      fundData,
-      setFundData,
-      config,
-      setConfig,
-      historySnapshots,
-      setHistorySnapshots,
+      fundData, setFundData,
+      config,   setConfig,
+      historySnapshots, setHistorySnapshots,
 
       /* filter helpers */
       availableClasses,
       availableTags,
-      selectedClass,
+      selectedClass, setSelectedClass,
       selectedTags,
-      setSelectedClass,
       toggleTag,
       resetFilters
     }),
