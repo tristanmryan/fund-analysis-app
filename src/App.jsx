@@ -299,12 +299,17 @@ const App = () => {
           fund.history = [...filteredPrev, { date: today, score: fund.scores.final }];
         });
 
-        const newSnap = { date: today, funds: taggedFunds };
-        setHistorySnapshots(prev => {
-          const filtered = prev.filter(s => s.date !== today);
-          return [...filtered, newSnap].slice(-24);
-        });
-        setCurrentSnapshotDate(today);
+// (…you’re still inside the file-upload handler…)
+
+const newSnap = { date: today, funds: taggedFunds };
+
+setHistorySnapshots(prev => {
+  const filtered = prev.filter(s => s.date !== today);
+  return [...filtered, newSnap].slice(-24); // keep only 2 years of monthly snapshots
+});
+
+setCurrentSnapshotDate(today); // mark this as the latest processed file
+
         setFundData(taggedFunds);
         setScoredFundData(taggedFunds);
         setBenchmarkData(benchmarks);
@@ -563,12 +568,15 @@ const App = () => {
 
       {/* Fund Scores Tab */}
       {activeTab === 'funds' && (
+
         fundData.length > 0 ? (
           <>
             <div>
               {scoredFundData.length > 0 ? (
                 <div>
+
                   {/* Header with title and subtitle */}
+
                   <div
                     style={{
                       display: 'flex',
@@ -582,6 +590,7 @@ const App = () => {
                         All Funds with Scores
                       </h2>
                       <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+
                         Scores calculated using weighted&nbsp;Z-score methodology within each asset class
                       </p>
                     </div>
@@ -672,11 +681,13 @@ const App = () => {
                       </tbody>
                     </table>
                   </div>
+
                 </div>
               ) : (
                 <p style={{ color: '#6b7280' }}>No scored funds to display.</p>
               )}
             </div>
+
             <FundView />
           </>
         ) : (
