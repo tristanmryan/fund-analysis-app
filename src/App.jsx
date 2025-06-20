@@ -12,12 +12,11 @@ import {
   generateClassSummary,
   identifyReviewCandidates,
   getScoreColor,
-  getScoreLabel,
-  METRICS_CONFIG
+  getScoreLabel
 } from './services/scoring';
 import { applyTagRules } from './services/tagEngine';
 import dataStore from './services/dataStore';
-import { loadAssetClassMap, lookupAssetClass } from './services/dataLoader';
+import { loadAssetClassMap } from './services/dataLoader';
 import parseFundFile from './services/parseFundFile';
 import FundScores from './components/Views/FundScores.jsx';
 import DashboardView from './components/Views/DashboardView.jsx';
@@ -48,44 +47,13 @@ const ScoreBadge = ({ score, size = 'normal' }) => {
   );
 };
 
-// Metric breakdown tooltip component
-const MetricBreakdown = ({ breakdown }) => {
-  if (!breakdown || Object.keys(breakdown).length === 0) return null;
-  
-  return (
-    <div className="metric-breakdown" style={{ 
-      fontSize: '0.75rem', 
-      marginTop: '0.5rem',
-      padding: '0.5rem',
-      backgroundColor: '#f3f4f6',
-      borderRadius: '0.25rem'
-    }}>
-      <div style={{ fontWeight: 'bold', marginBottom: '0.25rem' }}>Score Breakdown:</div>
-      {Object.entries(breakdown).map(([metric, data]) => (
-        <div key={metric} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.125rem' }}>
-          <span>{METRICS_CONFIG.labels[metric]}:</span>
-          <span style={{ color: data.weightedZScore >= 0 ? '#16a34a' : '#dc2626' }}>
-            {data.weightedZScore >= 0 ? '+' : ''}{data.weightedZScore.toFixed(3)}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-};
 
 const App = () => {
   const {
     fundData,
     setFundData,
-    config,
     setConfig,
-    selectedClass,
-    setSelectedClass,
-    selectedTags,
-    toggleTag,
-    resetFilters,
     availableClasses,
-    availableTags,
     historySnapshots,
     setHistorySnapshots,
   } = useContext(AppContext);
@@ -114,7 +82,7 @@ const App = () => {
     if (stored.length > 0) {
       setHistorySnapshots(stored);
     }
-  }, []);
+  }, [setHistorySnapshots]);
 
   // Persist history snapshots to localStorage whenever they change
   useEffect(() => {
@@ -124,7 +92,7 @@ const App = () => {
   // Initialize configuration
   useEffect(() => {
     loadAssetClassMap().catch(err => console.error('Error loading asset class map', err));
-  }, []);
+  }, [setConfig]);
 
   // Initialize configuration
   useEffect(() => {
@@ -139,7 +107,7 @@ const App = () => {
     };
     
     initializeConfig();
-  }, []);
+  }, [setConfig]);
 
   // Save configuration when changed
   useEffect(() => {
@@ -147,7 +115,7 @@ const App = () => {
       saveStoredConfig(recommendedFunds, assetClassBenchmarks);
       setConfig(assetClassBenchmarks);
     }
-  }, [recommendedFunds, assetClassBenchmarks]);
+  }, [recommendedFunds, assetClassBenchmarks, setConfig]);
 
   // Load snapshots when history tab is selected
   useEffect(() => {
@@ -565,89 +533,6 @@ const App = () => {
                     </div>
                   </div>
 
-                  {/* Main table */}
-                  <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                      <thead>
-                        <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
-                          <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: 600 }}>Symbol</th>
-                          <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: 600 }}>Fund Name</th>
-                          <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: 600 }}>Asset Class</th>
-                          <th style={{ textAlign: 'center', padding: '0.75rem', fontWeight: 600 }}>Score</th>
-                          <th style={{ textAlign: 'right', padding: '0.75rem', fontWeight: 600 }}>1Y Return</th>
-                          <th style={{ textAlign: 'right', padding: '0.75rem', fontWeight: 600 }}>Sharpe</th>
-                          <th style={{ textAlign: 'right', padding: '0.75rem', fontWeight: 600 }}>Expense</th>
-                          <th style={{ textAlign: 'center', padding: '0.75rem', fontWeight: 600 }}>Type</th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        {scoredFundData
-                          .sort((a, b) => (b.scores?.final || 0) - (a.scores?.final || 0))
-                          .map((fund, i) => (
-                            <tr
-                              key={i}
-                              style={{
-                                borderBottom: '1px solid #f3f4f6',
-                                backgroundColor: fund.isRecommended ? '#eff6ff' : 'white'
-                              }}
-                            >
-                              <td style={{ padding: '0.75rem', fontWeight: fund.isBenchmark ? 'bold' : 'normal' }}>
-                                {fund.Symbol}
-                              </td>
-                              <td style={{ padding: '0.75rem' }}>{fund['Fund Name']}</td>
-                              <td style={{ padding: '0.75rem' }}>{fund['Asset Class']}</td>
-                              <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-                                {fund.scores ? (
-                                  <ScoreBadge score={fund.scores.final} />
-                                ) : (
-                                  <span style={{ color: '#9ca3af' }}>-</span>
-                                )}
-                              </td>
-                              <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                                {fund['1 Year'] != null ? `${fund['1 Year'].toFixed(2)}%` : 'N/A'}
-                              </td>
-                              <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                                {fund['Sharpe Ratio'] != null ? fund['Sharpe Ratio'].toFixed(2) : 'N/A'}
-                              </td>
-                              <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                                {fund['Net Expense Ratio'] != null ? `${fund['Net Expense Ratio'].toFixed(2)}%` : 'N/A'}
-                              </td>
-                              <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-                                {fund.isBenchmark && (
-                                  <span
-                                    style={{
-                                      backgroundColor: '#fbbf24',
-                                      color: '#78350f',
-                                      padding: '0.125rem 0.5rem',
-                                      borderRadius: '0.25rem',
-                                      fontSize: '0.75rem',
-                                      fontWeight: 500
-                                    }}
-                                  >
-                                    Benchmark
-                                  </span>
-                                )}
-                                {fund.isRecommended && !fund.isBenchmark && (
-                                  <span
-                                    style={{
-                                      backgroundColor: '#34d399',
-                                      color: '#064e3b',
-                                      padding: '0.125rem 0.5rem',
-                                      borderRadius: '0.25rem',
-                                      fontSize: '0.75rem',
-                                      fontWeight: 500
-                                    }}
-                                  >
-                                    Recommended
-                                  </span>
-                                )}
-                              </td>
-                            </tr>
-                          ))}
-                      </tbody>
-                    </table>
-                  </div>
                 </div>
               ) : (
                 <p style={{ color: '#6b7280' }}>No scored funds to display.</p>

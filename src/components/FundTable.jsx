@@ -47,6 +47,7 @@ const FundTable = ({ funds = [], onRowClick = () => {} }) => (
           <tr
             key={fund.Symbol}
             style={{ borderBottom: '1px solid #f3f4f6', cursor: 'pointer' }}
+            role="button"
             tabIndex={0}
             onKeyDown={e => e.key === 'Enter' && onRowClick(fund)}
             onClick={() => onRowClick(fund)}

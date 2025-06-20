@@ -66,6 +66,7 @@ exports[`renders table snapshot 1`] = `
       </thead>
       <tbody>
         <tr
+          role="button"
           style="border-bottom: 1px solid #f3f4f6; cursor: pointer;"
           tabindex="0"
         >

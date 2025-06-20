@@ -19,16 +19,17 @@ export default async function parseFundFile(rows, options = {}) {
   const columnMap = {};
   headers.forEach((h, idx) => {
     if (typeof h !== 'string') return;
-    const header = h.trim();
-    if (header.includes('Symbol')) columnMap.Symbol = idx;
-    if (header.includes('Product Name')) columnMap['Fund Name'] = idx;
-    if (header.includes('Asset Class')) columnMap['Asset Class'] = idx;
-    if (header.includes('1 Year')) columnMap['1 Year'] = idx;
-    if (header.includes('Sharpe')) columnMap['Sharpe Ratio'] = idx;
-    if (header.includes('Standard Deviation - 5')) columnMap['Std Dev (5Y)'] = idx;
-    if (header.includes('Standard Deviation - 3')) columnMap['Std Dev (3Y)'] = idx;
-    if (header.includes('Net Exp')) columnMap.Expense = idx;
-    if (header.includes('Vehicle Type') || header.trim() === 'Type') columnMap.Type = idx;
+    const header = h.toString().trim();
+    const headerLower = header.toLowerCase();
+    if (headerLower.includes('symbol')) columnMap.Symbol = idx;
+    if (headerLower.includes('product name')) columnMap['Fund Name'] = idx;
+    if (headerLower === 'asset class') columnMap['Asset Class'] = idx;
+    if (headerLower.includes('1 year')) columnMap['1 Year'] = idx;
+    if (headerLower.includes('sharpe')) columnMap['Sharpe Ratio'] = idx;
+    if (headerLower.includes('standard deviation - 5')) columnMap['Std Dev (5Y)'] = idx;
+    if (headerLower.includes('standard deviation - 3')) columnMap['Std Dev (3Y)'] = idx;
+    if (headerLower.includes('net exp')) columnMap.expense = idx;
+    if (headerLower.includes('vehicle type') || headerLower === 'type') columnMap.type = idx;
   });
 
   const cleanNumber = val => {
@@ -46,9 +47,11 @@ export default async function parseFundFile(rows, options = {}) {
       const obj = {};
       Object.entries(columnMap).forEach(([key, idx]) => {
         const val = row[idx];
-        obj[key] = key === 'Expense' || key.startsWith('Std Dev') || key === 'Sharpe Ratio' || key === '1 Year'
-          ? cleanNumber(val)
-          : cleanText(val);
+        if (key === 'expense' || key.startsWith('Std Dev') || key === 'Sharpe Ratio' || key === '1 Year') {
+          obj[key] = cleanNumber(val);
+        } else {
+          obj[key] = cleanText(val);
+        }
       });
       return obj;
     })
@@ -72,16 +75,18 @@ export default async function parseFundFile(rows, options = {}) {
     }
     if (!assetClass) assetClass = lookupAssetClass(symbolClean);
 
+    const assetClassFinal = assetClass || 'Unknown';
+
     return {
       Symbol: f.Symbol,
       'Fund Name': f['Fund Name'],
-      'Asset Class': assetClass,
-      assetClass,
+      'Asset Class': assetClassFinal,
+      assetClass: assetClassFinal,
       '1 Year': f['1 Year'],
       'Sharpe Ratio': f['Sharpe Ratio'],
       'Std Dev (5Y)': f['Std Dev (5Y)'],
-      Expense: f.Expense,
-      Type: f.Type || '',
+      Expense: f.expense,
+      Type: f.type || '',
     };
   });
 }

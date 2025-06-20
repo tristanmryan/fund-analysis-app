@@ -7,8 +7,6 @@ const AppContext = createContext();
 export const AppProvider = ({ children }) => {
   /* ---------- core data ---------- */
   const [fundData, setFundData] = useState([]);
-  const [config, setConfig] = useState(defaultBenchmarks);
-  const [historySnapshots, setHistorySnapshots] = useState([]); // monthly history
 
   /* ---------- filter state ---------- */
   const [selectedClass, setSelectedClass] = useState(null);
