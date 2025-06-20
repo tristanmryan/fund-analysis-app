@@ -1,7 +1,9 @@
-import React from 'react';
-import { getScoreColor } from '../../services/scoring';
+import React, { useContext } from 'react';
+import { getScoreColor as scoreColor } from '../../services/scoring';
 import { Layers } from 'lucide-react';
 import TagList from '../TagList.jsx';
+import { LineChart, Line } from 'recharts';
+import AppContext from '../../context/AppContext.jsx';
 
 /**
  * Show summary cards for each asset class.
@@ -9,7 +11,28 @@ import TagList from '../TagList.jsx';
  *  - config  : object mapping asset classes to benchmark info { ticker, name }
  */
 const AssetClassOverview = ({ funds, config }) => {
-  if (!Array.isArray(funds) || funds.length === 0) return null;
+  const { historySnapshots } = useContext(AppContext);
+  if (!Array.isArray(funds) || funds.length === 0) {
+    return <p style={{ color: '#6b7280' }}>No data loaded yet.</p>;
+  }
+
+  const getTrendData = (assetClass) => {
+    return historySnapshots
+      .slice(-6)
+      .map((snap) => {
+        const rec = snap.funds.filter(
+          (f) => f.isRecommended && f['Asset Class'] === assetClass
+        );
+        const avg = rec.length
+          ? Math.round(
+              rec.reduce((sum, f) => sum + (f.scores?.final || 0), 0) /
+                rec.length
+            )
+          : null;
+        return { date: snap.date, value: avg };
+      })
+      .filter((d) => d.value !== null);
+  };
 
   const recommended = funds.filter(f => f.isRecommended);
   if (recommended.length === 0) return null;
@@ -37,11 +60,13 @@ const AssetClassOverview = ({ funds, config }) => {
     const avgStd     = stdVals.length     ? (stdVals.reduce((s, v)     => s + v, 0) / stdVals.length    ).toFixed(2) : null;
 
     const benchmarkTicker = config?.[assetClass]?.ticker || '-';
-    const color           = getScoreColor(avgScore);
+    const color           = scoreColor(avgScore);
 
     const tags = Array.from(
       new Set(classFunds.flatMap(f => (Array.isArray(f.tags) ? f.tags : [])))
     );
+
+    const trend = getTrendData(assetClass);
 
     return {
       assetClass,
@@ -52,7 +77,8 @@ const AssetClassOverview = ({ funds, config }) => {
       avgStd,
       benchmarkTicker,
       color,
-      tags
+      tags,
+      trend
     };
   });
 
@@ -94,9 +120,22 @@ const AssetClassOverview = ({ funds, config }) => {
           >
             <div style={{ fontWeight: 600 }}>{info.assetClass}</div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}
+            >
               <span>Funds: {info.count}</span>
-              <span style={{ color: info.color }}>Avg {info.avgScore}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                <span style={{ color: info.color }}>Avg {info.avgScore}</span>
+                {info.trend && info.trend.length > 0 && (
+                  <LineChart width={120} height={30} data={info.trend}>
+                    <Line type="monotone" dataKey="value" stroke={info.color} dot={false} />
+                  </LineChart>
+                )}
+              </div>
             </div>
 
             {info.avgSharpe && (

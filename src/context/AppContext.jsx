@@ -1,4 +1,5 @@
 import React, { createContext, useState, useMemo } from 'react';
+import { assetClassBenchmarks as defaultBenchmarks } from '../data/config';
 
 const AppContext = createContext();
 
@@ -6,6 +7,9 @@ export const AppProvider = ({ children }) => {
   const [fundData, setFundData] = useState([]);
   const [selectedClass, setSelectedClass] = useState(null);
   const [selectedTags, setSelectedTags] = useState([]);
+  // store benchmark configuration separately to avoid naming clashes
+  const [benchmarks, setBenchmarks] = useState(defaultBenchmarks);
+  const [historySnapshots, setHistorySnapshots] = useState([]);
 
   const toggleTag = (tag) => {
     setSelectedTags((prev) =>
@@ -33,6 +37,10 @@ export const AppProvider = ({ children }) => {
     () => ({
       fundData,
       setFundData,
+      config: benchmarks,
+      setConfig: setBenchmarks,
+      historySnapshots,
+      setHistorySnapshots,
       availableClasses,
       availableTags,
       selectedClass,
@@ -41,7 +49,7 @@ export const AppProvider = ({ children }) => {
       toggleTag,
       resetFilters,
     }),
-    [fundData, availableClasses, availableTags, selectedClass, selectedTags]
+    [fundData, benchmarks, historySnapshots, availableClasses, availableTags, selectedClass, selectedTags]
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
