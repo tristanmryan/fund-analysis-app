@@ -17,6 +17,7 @@ import {
 } from './services/scoring';
 import { applyTagRules } from './services/tagEngine';
 import dataStore from './services/dataStore';
+import { loadAssetClassMap, lookupAssetClass } from './services/dataLoader';
 import FundView from './components/Views/FundView.jsx';
 import DashboardView from './components/Views/DashboardView.jsx';
 import AppContext from './context/AppContext.jsx';
@@ -118,6 +119,11 @@ const App = () => {
   useEffect(() => {
     localStorage.setItem('ls_history', JSON.stringify(historySnapshots));
   }, [historySnapshots]);
+
+  // Initialize configuration
+  useEffect(() => {
+    loadAssetClassMap().catch(err => console.error('Error loading asset class map', err));
+  }, []);
 
   // Initialize configuration
   useEffect(() => {
@@ -234,15 +240,18 @@ const App = () => {
             }
           });
 
+          const assetClass = recommendedMatch
+            ? recommendedMatch.assetClass
+            : benchmarkForClass
+              ? benchmarkForClass
+              : lookupAssetClass(parsedSymbol);
+
           return {
             ...f,
             Symbol: f.Symbol,
             cleanSymbol: parsedSymbol,
-            'Asset Class': recommendedMatch
-              ? recommendedMatch.assetClass
-              : benchmarkForClass
-                ? benchmarkForClass
-                : 'Unknown',
+            'Asset Class': assetClass,
+            assetClass,
             isRecommended: !!recommendedMatch,
             isBenchmark: isBenchmark,
             benchmarkForClass: benchmarkForClass,
