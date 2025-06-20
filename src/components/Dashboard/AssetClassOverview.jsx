@@ -1,9 +1,14 @@
 import React, { useContext } from 'react';
-import { LineChart, Line } from 'recharts';
+
+import { getScoreColor } from '../../services/scoring';
+
 import { Layers } from 'lucide-react';
 
 import { getScoreColor } from '../../services/scoring';
 import TagList from '../TagList.jsx';
+
+import { LineChart, Line } from 'recharts';
+
 import AppContext from '../../context/AppContext.jsx';
 
 /**
@@ -20,13 +25,14 @@ const AssetClassOverview = ({ funds, config }) => {
     return <p style={{ color: '#6b7280' }}>No data loaded yet.</p>;
   }
 
-  /* ---------- helper: sparkline data (last 6 snapshots) ---------- */
-  const getTrendData = assetClass =>
-    historySnapshots
+
+  const getTrendData = (assetClass) => {
+    return historySnapshots
       .slice(-6)
-      .map(snap => {
+      .map((snap) => {
         const rec = snap.funds.filter(
-          f => f.isRecommended && f['Asset Class'] === assetClass
+          (f) => f.isRecommended && f['Asset Class'] === assetClass
+
         );
         const avg = rec.length
           ? Math.round(
@@ -36,9 +42,11 @@ const AssetClassOverview = ({ funds, config }) => {
           : null;
         return { date: snap.date, value: avg };
       })
-      .filter(d => d.value !== null);
 
-  /* ---------- compute summaries ---------- */
+      .filter((d) => d.value !== null);
+  };
+
+
   const recommended = funds.filter(f => f.isRecommended);
   if (recommended.length === 0) return null;
 
@@ -68,6 +76,8 @@ const AssetClassOverview = ({ funds, config }) => {
     const benchmarkTicker = config?.[assetClass]?.ticker || '-';
     const color = getScoreColor(avgScore);
     const tags  = Array.from(new Set(classFunds.flatMap(f => f.tags || [])));
+    const trend = getTrendData(assetClass);
+
     const trend = getTrendData(assetClass);
 
     return {
@@ -132,14 +142,11 @@ const AssetClassOverview = ({ funds, config }) => {
               <span>Funds: {info.count}</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                 <span style={{ color: info.color }}>Avg {info.avgScore}</span>
-                {info.trend.length > 0 && (
+
+                {info.trend && info.trend.length > 0 && (
                   <LineChart width={120} height={30} data={info.trend}>
-                    <Line
-                      type="monotone"
-                      dataKey="value"
-                      stroke={info.color}
-                      dot={false}
-                    />
+                    <Line type="monotone" dataKey="value" stroke={info.color} dot={false} />
+
                   </LineChart>
                 )}
               </div>

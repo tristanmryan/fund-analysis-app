@@ -12,6 +12,8 @@ export const AppProvider = ({ children }) => {
   /* ---------- filter state ---------- */
   const [selectedClass, setSelectedClass] = useState(null);
   const [selectedTags, setSelectedTags] = useState([]);
+  const [config, setConfig] = useState(defaultBenchmarks);
+  const [historySnapshots, setHistorySnapshots] = useState([]);
 
   const toggleTag = tag =>
     setSelectedTags(prev =>
@@ -52,15 +54,9 @@ export const AppProvider = ({ children }) => {
       toggleTag,
       resetFilters
     }),
-    [
-      fundData,
-      config,
-      historySnapshots,
-      availableClasses,
-      availableTags,
-      selectedClass,
-      selectedTags
-    ]
+
+    [fundData, config, historySnapshots, availableClasses, availableTags, selectedClass, selectedTags]
+
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
