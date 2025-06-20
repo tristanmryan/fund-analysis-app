@@ -174,10 +174,9 @@ const App = () => {
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
         // Find header row (looking for Symbol/CUSIP)
-        let headerRowIndex = jsonData.findIndex(row => 
+        let headerRowIndex = jsonData.findIndex(row =>
           row.some(cell => typeof cell === 'string' && cell.includes('Symbol'))
         );
-        
         if (headerRowIndex === -1) {
           throw new Error('Could not find header row with Symbol column');
         }
@@ -185,23 +184,17 @@ const App = () => {
         const headers = jsonData[headerRowIndex];
         const dataRows = jsonData.slice(headerRowIndex + 1);
 
-        // Create comprehensive column mapping
         const columnMap = {};
         headers.forEach((header, index) => {
           if (typeof header === 'string') {
-            // Basic fields
             if (header.includes('Symbol')) columnMap['Symbol'] = index;
             if (header.includes('Product Name')) columnMap['Fund Name'] = index;
             if (header.includes('Asset Class')) columnMap['Asset Class'] = index;
-            
-            // Performance metrics
             if (header.includes('YTD')) columnMap['YTD'] = index;
             if (header.includes('1 Year') || header.includes('1 Yr')) columnMap['1 Year'] = index;
             if (header.includes('3 Year') || header.includes('3 Yr')) columnMap['3 Year'] = index;
             if (header.includes('5 Year') || header.includes('5 Yr')) columnMap['5 Year'] = index;
             if (header.includes('10 Year') || header.includes('10 Yr')) columnMap['10 Year'] = index;
-            
-            // Risk metrics
             if (header.includes('Alpha')) columnMap['Alpha'] = index;
             if (header.includes('Sharpe')) columnMap['Sharpe Ratio'] = index;
             if (header.includes('Standard Deviation') || header.includes('Std Dev')) {
@@ -209,14 +202,11 @@ const App = () => {
             }
             if (header.includes('Up Capture')) columnMap['Up Capture Ratio'] = index;
             if (header.includes('Down Capture')) columnMap['Down Capture Ratio'] = index;
-            
-            // Other metrics
             if (header.includes('Expense') && header.includes('Net')) columnMap['Net Expense Ratio'] = index;
             if (header.includes('Manager Tenure')) columnMap['Manager Tenure'] = index;
           }
         });
 
-        // Parse the data rows
         const parsed = dataRows.map(row => {
           const fund = {};
           Object.entries(columnMap).forEach(([key, idx]) => {
@@ -227,17 +217,14 @@ const App = () => {
             fund[key] = isNaN(val) ? val : parseFloat(val);
           });
           return fund;
-        }).filter(f => f.Symbol && f.Symbol !== ''); // Filter out empty rows
+        }).filter(f => f.Symbol && f.Symbol !== '');
 
-        // Clean function for symbol matching
         const clean = (s) => s?.toUpperCase().trim().replace(/[^A-Z0-9]/g, '');
 
-        // Assign asset classes and identify benchmarks/recommended funds
         const withClassAndFlags = parsed.map(f => {
           const parsedSymbol = clean(f.Symbol);
           const recommendedMatch = recommendedFunds.find(r => clean(r.symbol) === parsedSymbol);
-          
-          // Check if this fund is a benchmark for any asset class
+
           let isBenchmark = false;
           let benchmarkForClass = null;
           Object.entries(assetClassBenchmarks).forEach(([assetClass, benchmark]) => {
@@ -246,30 +233,28 @@ const App = () => {
               benchmarkForClass = assetClass;
             }
           });
-          
+
           return {
             ...f,
-            Symbol: f.Symbol, // Keep original symbol for display
-            cleanSymbol: parsedSymbol, // Add clean version for matching
-            'Asset Class': recommendedMatch ? recommendedMatch.assetClass : 
-                          benchmarkForClass ? benchmarkForClass : 
-                          'Unknown',
+            Symbol: f.Symbol,
+            cleanSymbol: parsedSymbol,
+            'Asset Class': recommendedMatch
+              ? recommendedMatch.assetClass
+              : benchmarkForClass
+                ? benchmarkForClass
+                : 'Unknown',
             isRecommended: !!recommendedMatch,
             isBenchmark: isBenchmark,
-            benchmarkForClass: benchmarkForClass
+            benchmarkForClass: benchmarkForClass,
           };
         });
 
-        // Calculate scores for all funds
-        console.log('Calculating scores for', withClassAndFlags.length, 'funds...');
         const scoredFunds = calculateScores(withClassAndFlags);
 
-        // Apply automated tagging after scoring
         const taggedFunds = applyTagRules(scoredFunds, {
-          benchmarks: assetClassBenchmarks
+          benchmarks: assetClassBenchmarks,
         });
-        
-        // Generate class summaries
+
         const summaries = {};
         const fundsByClass = {};
         taggedFunds.forEach(fund => {
@@ -279,12 +264,10 @@ const App = () => {
           }
           fundsByClass[assetClass].push(fund);
         });
-
         Object.entries(fundsByClass).forEach(([assetClass, funds]) => {
           summaries[assetClass] = generateClassSummary(funds);
         });
 
-        // Extract benchmark data
         const benchmarks = {};
         Object.entries(assetClassBenchmarks).forEach(([assetClass, { ticker, name }]) => {
           const match = taggedFunds.find(f => f.cleanSymbol === clean(ticker));
@@ -293,77 +276,44 @@ const App = () => {
           }
         });
 
-        // Identify review candidates
-        const reviewCandidates = identifyReviewCandidates(taggedFunds);
-
-        // Ask user for snapshot date
-        const dateStr = prompt('Enter the date for this snapshot (YYYY-MM-DD):', 
-          new Date().toISOString().split('T')[0]);
-        
-        if (dateStr) {
-          // Save snapshot to IndexedDB
-          await dataStore.saveSnapshot({
-            date: new Date(dateStr).toISOString(),
-            funds: taggedFunds,
-            classSummaries: summaries,
-            reviewCandidates: reviewCandidates,
-            fileName: file.name,
-            uploadedBy: 'user'
-          });
-          
-          setCurrentSnapshotDate(dateStr);
-        }
-
         const today = new Date().toISOString().slice(0, 10);
-        // ─── attach minimal history for modal charts ──────────────────────────
+
         taggedFunds.forEach(fund => {
           const symbol = fund.cleanSymbol || fund.Symbol || fund.symbol;
-
-          // collect any prior history points for this symbol
           const prev = [];
           historySnapshots.forEach(snap => {
-            const match = snap.funds.find(
-              f => (f.cleanSymbol || f.Symbol || f.symbol) === symbol
-            );
+            const match = snap.funds.find(f => (f.cleanSymbol || f.Symbol || f.symbol) === symbol);
             if (match) {
-              // carry forward stored history array if it exists
               if (Array.isArray(match.history)) {
                 match.history.forEach(pt => {
                   if (!prev.some(p => p.date === pt.date)) prev.push(pt);
                 });
               } else if (match.scores?.final != null) {
-                // else, create a point from the previous snapshot score
                 if (!prev.some(p => p.date === snap.date)) {
                   prev.push({ date: snap.date, score: match.scores.final });
                 }
               }
             }
           });
-
-          // add today’s point and re-attach to fund
           const filteredPrev = prev.filter(p => p.date !== today);
-          fund.history = [
-            ...filteredPrev,
-            { date: today, score: fund.scores.final }
-          ];
+          fund.history = [...filteredPrev, { date: today, score: fund.scores.final }];
         });
 
-        });
+        // (…you’re still inside the file-upload handler…)
 
         const newSnap = { date: today, funds: taggedFunds };
 
         setHistorySnapshots(prev => {
           const filtered = prev.filter(s => s.date !== today);
-          return [...filtered, newSnap].slice(-24);
+          return [...filtered, newSnap].slice(-24); // keep only 2 years of monthly snapshots
         });
 
-        // after all fund-mapping transforms are finished …
-        setFundData(taggedFunds);
+        setCurrentSnapshotDate(today); // mark this as the latest processed file
 
+        setFundData(taggedFunds);
         setScoredFundData(taggedFunds);
         setBenchmarkData(benchmarks);
         setClassSummaries(summaries);
-
         console.log('Successfully loaded and scored', taggedFunds.length, 'funds');
       } catch (err) {
         console.error('Error parsing performance file:', err);
@@ -646,6 +596,7 @@ const App = () => {
 
                   </div>
 
+
                   {/* Main table */}
                   <div style={{ overflowX: 'auto' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -662,72 +613,73 @@ const App = () => {
                         </tr>
                       </thead>
 
-
-                      <tbody>
-                        {scoredFundData
-                          .sort((a, b) => (b.scores?.final || 0) - (a.scores?.final || 0))
-                          .map((fund, i) => (
-                            <tr
-                              key={i}
-                              style={{
-                                borderBottom   : '1px solid #f3f4f6',
-                                backgroundColor: fund.isRecommended ? '#eff6ff' : 'white',
-                                cursor         : 'pointer'
-                              }}
-                              onClick={() => setSelectedFundForDetails(fund)}
-                            >
-                              <td style={{ padding: '0.75rem', fontWeight: fund.isBenchmark ? 'bold' : 'normal' }}>
-                                {fund.Symbol}
-                              </td>
-                              <td style={{ padding: '0.75rem' }}>{fund['Fund Name']}</td>
-                              <td style={{ padding: '0.75rem' }}>{fund['Asset Class']}</td>
-                              <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-                                {fund.scores ? (
-                                  <ScoreBadge score={fund.scores.final} />
-                                ) : (
-                                  <span style={{ color: '#9ca3af' }}>-</span>
-                                )}
-                              </td>
-                              <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                                {fund['1 Year'] != null ? `${fund['1 Year'].toFixed(2)}%` : 'N/A'}
-                              </td>
-                              <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                                {fund['Sharpe Ratio'] != null ? fund['Sharpe Ratio'].toFixed(2) : 'N/A'}
-                              </td>
-                              <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                                {fund['Net Expense Ratio'] != null ? `${fund['Net Expense Ratio'].toFixed(2)}%` : 'N/A'}
-                              </td>
-                              <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-                                {fund.isBenchmark && (
-                                  <span style={{
-                                    backgroundColor: '#fbbf24',
-                                    color          : '#78350f',
-                                    padding        : '0.125rem 0.5rem',
-                                    borderRadius   : '0.25rem',
-                                    fontSize       : '0.75rem',
-                                    fontWeight     : 500
-                                  }}>
-                                    Benchmark
-                                  </span>
-                                )}
-                                {fund.isRecommended && !fund.isBenchmark && (
-                                  <span style={{
-                                    backgroundColor: '#34d399',
-                                    color          : '#064e3b',
-                                    padding        : '0.125rem 0.5rem',
-                                    borderRadius   : '0.25rem',
-                                    fontSize       : '0.75rem',
-                                    fontWeight     : 500
-                                  }}>
-                                    Recommended
-                                  </span>
-                                )}
-                              </td>
-                            </tr>
-                          ))}
-                      </tbody>
-                    </table>
-                  </div>
+            <tbody>
+              {scoredFundData
+                .sort((a, b) => (b.scores?.final || 0) - (a.scores?.final || 0))
+                .map((fund, i) => (
+                  <tr
+                    key={i}
+                    style={{
+                      borderBottom   : '1px solid #f3f4f6',
+                      backgroundColor: fund.isRecommended ? '#eff6ff' : 'white',
+                      cursor         : 'pointer'
+                    }}
+                    onClick={() => setSelectedFundForDetails(fund)}
+                  >
+                    <td style={{ padding: '0.75rem', fontWeight: fund.isBenchmark ? 'bold' : 'normal' }}>
+                      {fund.Symbol}
+                    </td>
+                    <td style={{ padding: '0.75rem' }}>{fund['Fund Name']}</td>
+                    <td style={{ padding: '0.75rem' }}>{fund['Asset Class']}</td>
+                    <td style={{ padding: '0.75rem', textAlign: 'center' }}>
+                      {fund.scores ? (
+                        <ScoreBadge score={fund.scores.final} />
+                      ) : (
+                        <span style={{ color: '#9ca3af' }}>-</span>
+                      )}
+                    </td>
+                    <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+                      {fund['1 Year'] != null ? `${fund['1 Year'].toFixed(2)}%` : 'N/A'}
+                    </td>
+                    <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+                      {fund['Sharpe Ratio'] != null ? fund['Sharpe Ratio'].toFixed(2) : 'N/A'}
+                    </td>
+                    <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+                      {fund['Net Expense Ratio'] != null ? `${fund['Net Expense Ratio'].toFixed(2)}%` : 'N/A'}
+                    </td>
+                    <td style={{ padding: '0.75rem', textAlign: 'center' }}>
+                      {fund.isBenchmark && (
+                        <span
+                          style={{
+                            backgroundColor: '#fbbf24',
+                            color          : '#78350f',
+                            padding        : '0.125rem 0.5rem',
+                            borderRadius   : '0.25rem',
+                            fontSize       : '0.75rem',
+                            fontWeight     : 500
+                          }}
+                        >
+                          Benchmark
+                        </span>
+                      )}
+                      {fund.isRecommended && !fund.isBenchmark && (
+                        <span
+                          style={{
+                            backgroundColor: '#34d399',
+                            color          : '#064e3b',
+                            padding        : '0.125rem 0.5rem',
+                            borderRadius   : '0.25rem',
+                            fontSize       : '0.75rem',
+                            fontWeight     : 500
+                          }}
+                        >
+                          Recommended
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
 
                 </div>
               ) : (

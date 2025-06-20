@@ -50,7 +50,7 @@ const AssetClassOverview = ({ funds, config }) => {
   });
 
   const classInfo = Object.entries(byClass).map(([assetClass, classFunds]) => {
-    const count    = classFunds.length;
+    const count = classFunds.length;
     const scoreSum = classFunds.reduce(
       (s, f) => s + (f.scores?.final || 0),
       0
