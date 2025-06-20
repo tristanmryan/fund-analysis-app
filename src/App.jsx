@@ -16,12 +16,12 @@ import {
 } from './services/scoring';
 import { applyTagRules } from './services/tagEngine';
 import dataStore from './services/dataStore';
-import { loadAssetClassMap, lookupAssetClass } from './services/dataLoader';
+import { loadAssetClassMap, lookupAssetClass, ensureBenchmarkRows } from './services/dataLoader';
 import parseFundFile from './services/parseFundFile';
 import { fmtPct, fmtNumber } from './utils/formatters';
 import FundScores from './components/Views/FundScores.jsx';
 import DashboardView from './components/Views/DashboardView.jsx';
-import BenchmarkRow from './components/BenchmarkRow.jsx';
+import ClassView from './components/ClassView.jsx';
 import AppContext from './context/AppContext.jsx';
 
 // Score badge component for visual display
@@ -61,7 +61,6 @@ const App = () => {
   } = useContext(AppContext);
 
   const [scoredFundData, setScoredFundData] = useState([]);
-  const [benchmarkData, setBenchmarkData] = useState({});
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('funds');
   const [selectedClassView, setSelectedClassView] = useState('');
@@ -187,21 +186,7 @@ const App = () => {
           };
           });
 
-          // ensure benchmark rows exist
-          Object.entries(assetClassBenchmarks).forEach(([ac, { ticker }]) => {
-            const tickerClean = clean(ticker);
-            if (!withClassAndFlags.some(f => f.cleanSymbol === tickerClean)) {
-              withClassAndFlags.push({
-                Symbol: ticker,
-                'Fund Name': assetClassBenchmarks[ac].name,
-                'Asset Class': ac,
-                assetClass: ac,
-                cleanSymbol: tickerClean,
-                isBenchmark: true,
-                benchmarkForClass: ac,
-              });
-            }
-          });
+          withClassAndFlags = ensureBenchmarkRows(withClassAndFlags);
 
         const scoredFunds = calculateScores(withClassAndFlags);
 
@@ -273,7 +258,6 @@ const App = () => {
         setCurrentSnapshotDate(today);
         setFundData(taggedFunds);
         setScoredFundData(taggedFunds);
-        setBenchmarkData(benchmarks);
         setClassSummaries(summaries);
         console.log('Successfully loaded and scored', taggedFunds.length, 'funds');
       } catch (err) {
@@ -304,7 +288,6 @@ const App = () => {
         benchmarks[assetClass] = { ...match, name };
       }
     });
-    setBenchmarkData(benchmarks);
   };
 
   const compareSnapshots = async () => {
@@ -626,9 +609,11 @@ const App = () => {
                       </div>
                     </div>
                     <div>
-                  <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>Benchmark Score</div>
+                      <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>Benchmark Score</div>
                       <div style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
-                        {scoredFundData.find(f => f['Asset Class'] === selectedClassView && f.isBenchmark)?.scores?.final ?? 'N/A'}
+                        {classSummaries[selectedClassView].benchmarkScore != null
+                          ? classSummaries[selectedClassView].benchmarkScore
+                          : 'N/A'}
                       </div>
                     </div>
                     <div>
@@ -649,83 +634,9 @@ const App = () => {
                 </div>
               )}
               
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
-                    <th style={{ padding: '0.75rem', textAlign: 'left' }}>Symbol</th>
-                    <th style={{ padding: '0.75rem', textAlign: 'left' }}>Name</th>
-                    <th style={{ padding: '0.75rem', textAlign: 'center' }}>Score</th>
-                    <th style={{ padding: '0.75rem', textAlign: 'right' }}>YTD</th>
-                    <th style={{ padding: '0.75rem', textAlign: 'right' }}>1Y</th>
-                    <th style={{ padding: '0.75rem', textAlign: 'right' }}>3Y</th>
-                    <th style={{ padding: '0.75rem', textAlign: 'right' }}>5Y</th>
-                    <th style={{ padding: '0.75rem', textAlign: 'right' }}>Sharpe</th>
-                    <th style={{ padding: '0.75rem', textAlign: 'right' }}>Std Dev</th>
-                    <th style={{ padding: '0.75rem', textAlign: 'right' }}>Expense</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {scoredFundData.find(f => f['Asset Class'] === selectedClassView && f.isBenchmark) && (
-                    <BenchmarkRow fund={scoredFundData.find(f => f['Asset Class'] === selectedClassView && f.isBenchmark)} />
-                  )}
-                  {scoredFundData
-                    .filter(f => f['Asset Class'] === selectedClassView && !f.isBenchmark)
-                    .sort((a, b) => (b.scores?.final || 0) - (a.scores?.final || 0))
-                    .map((fund, idx) => (
-                      <tr 
-                        key={idx} 
-                        style={{ 
-                          borderBottom: '1px solid #f3f4f6',
-                          backgroundColor: fund.isRecommended ? '#eff6ff' : 'white'
-                        }}
-                      >
-                        <td style={{ padding: '0.75rem' }}>
-                          {fund.Symbol}
-                          {fund.isRecommended && (
-                            <span style={{ 
-                              marginLeft: '0.5rem',
-                              backgroundColor: '#34d399', 
-                              color: '#064e3b',
-                              padding: '0.125rem 0.5rem',
-                              borderRadius: '0.25rem',
-                              fontSize: '0.75rem',
-                              fontWeight: '500'
-                            }}>
-                              Rec
-                            </span>
-                          )}
-                        </td>
-                        <td style={{ padding: '0.75rem' }}>{fund['Fund Name']}</td>
-                          <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-                            {fund.scores ? (
-                              <ScoreBadge score={fund.scores.final} />
-                            ) : '-'}
-                          </td>
-                          <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                            {fmtPct(fund.ytd ?? fund.YTD)}
-                          </td>
-                          <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                            {fmtPct(fund.oneYear ?? fund['1 Year'])}
-                          </td>
-                          <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                            {fmtPct(fund.threeYear ?? fund['3 Year'])}
-                          </td>
-                          <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                            {fmtPct(fund.fiveYear ?? fund['5 Year'])}
-                          </td>
-                          <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                            {fmtNumber(fund.sharpe ?? fund['Sharpe Ratio'])}
-                          </td>
-                          <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                            {fmtPct(fund.stdDev5y ?? fund['Standard Deviation'])}
-                          </td>
-                          <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                            {fmtPct(fund.expense ?? fund['Net Expense Ratio'])}
-                          </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
+              <ClassView
+                funds={scoredFundData.filter(f => f['Asset Class'] === selectedClassView)}
+              />
             </>
           )}
         </div>

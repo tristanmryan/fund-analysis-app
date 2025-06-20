@@ -1,4 +1,5 @@
 import Papa from 'papaparse';
+import { assetClassBenchmarks } from '../data/config';
 
 let assetClassMap = null;
 
@@ -66,5 +67,42 @@ export function getAssetClassOptions(funds = []) {
     if (cls && cls !== 'Benchmark') set.add(cls);
   });
   return Array.from(set).sort();
+}
+
+export function ensureBenchmarkRows(list = []) {
+  const map = new Map(
+    list.map(f => [
+      (f.Symbol || f.symbol || '').toString().toUpperCase(),
+      f,
+    ]),
+  );
+  Object.entries(assetClassBenchmarks).forEach(([assetClass, { ticker, name }]) => {
+    const key = ticker.toString().toUpperCase();
+    if (!map.has(key)) {
+      console.info('[benchmark-inject]', assetClass, ticker);
+      list.push({
+        Symbol: ticker,
+        symbol: ticker,
+        'Fund Name': name,
+        name,
+        'Asset Class': assetClass,
+        assetClass,
+        isBenchmark: true,
+        benchmarkForClass: assetClass,
+        ytd: null,
+        oneYear: null,
+        threeYear: null,
+        fiveYear: null,
+        sharpe: null,
+        stdDev5y: null,
+        expense: null,
+      });
+    } else {
+      const row = map.get(key);
+      row.isBenchmark = true;
+      if (!row.benchmarkForClass) row.benchmarkForClass = assetClass;
+    }
+  });
+  return list;
 }
 

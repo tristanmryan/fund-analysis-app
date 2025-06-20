@@ -7,6 +7,7 @@ import BenchmarkRow from '../BenchmarkRow.jsx';
 import parseFundFile from '../../services/parseFundFile';
 import { recommendedFunds, assetClassBenchmarks } from '../../data/config';
 import { calculateScores } from '../../services/scoring';
+import { ensureBenchmarkRows } from '../../services/dataLoader';
 
 const clean = s => s?.toUpperCase().trim().replace(/[^A-Z0-9]/g, '');
 
@@ -51,7 +52,8 @@ test('benchmark row and summary rendered', async () => {
       benchmarkForClass,
     };
   });
-  const scored = calculateScores(withFlags);
+  const withBench = ensureBenchmarkRows(withFlags);
+  const scored = calculateScores(withBench);
   const funds = scored.filter(f => f['Asset Class'] === 'Large Cap Growth');
   render(<ClassView funds={funds} />);
   expect(screen.getByText('IWF')).toBeInTheDocument();
