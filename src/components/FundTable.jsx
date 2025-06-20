@@ -32,13 +32,14 @@ const FundTable = ({ funds = [], onRowClick = () => {} }) => (
         <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
           <th style={{ padding: '0.75rem', textAlign: 'left' }}>Symbol</th>
           <th style={{ padding: '0.75rem', textAlign: 'left' }}>Fund Name</th>
-          <th style={{ padding: '0.75rem', textAlign: 'left' }}>Asset Class</th>
           <th style={{ padding: '0.75rem', textAlign: 'center' }}>Score</th>
-          <th style={{ padding: '0.75rem', textAlign: 'right' }}>1Y Return</th>
+          <th style={{ padding: '0.75rem', textAlign: 'right' }}>YTD</th>
+          <th style={{ padding: '0.75rem', textAlign: 'right' }}>1Y</th>
+          <th style={{ padding: '0.75rem', textAlign: 'right' }}>3Y</th>
+          <th style={{ padding: '0.75rem', textAlign: 'right' }}>5Y</th>
           <th style={{ padding: '0.75rem', textAlign: 'right' }}>Sharpe</th>
           <th style={{ padding: '0.75rem', textAlign: 'right' }}>Std Dev (5Y)</th>
           <th style={{ padding: '0.75rem', textAlign: 'right' }}>Expense</th>
-          <th style={{ padding: '0.75rem', textAlign: 'left' }}>Type</th>
           <th style={{ padding: '0.75rem', textAlign: 'left' }}>Tags</th>
         </tr>
       </thead>
@@ -54,23 +55,30 @@ const FundTable = ({ funds = [], onRowClick = () => {} }) => (
           >
             <td style={{ padding: '0.5rem' }}>{fund.Symbol}</td>
             <td style={{ padding: '0.5rem' }}>{fund['Fund Name']}</td>
-            <td style={{ padding: '0.5rem' }}>{fund['Asset Class']}</td>
             <td style={{ padding: '0.5rem', textAlign: 'center' }}>
               {fund.scores ? <ScoreBadge score={fund.scores.final} /> : '-'}
+            </td>
+            <td style={{ padding: '0.5rem', textAlign: 'right' }}>
+              {formatPercent(fund.YTD)}
             </td>
             <td style={{ padding: '0.5rem', textAlign: 'right' }}>
               {formatPercent(fund['1 Year'])}
             </td>
             <td style={{ padding: '0.5rem', textAlign: 'right' }}>
+              {formatPercent(fund['3 Year'])}
+            </td>
+            <td style={{ padding: '0.5rem', textAlign: 'right' }}>
+              {formatPercent(fund['5 Year'])}
+            </td>
+            <td style={{ padding: '0.5rem', textAlign: 'right' }}>
               {fund['Sharpe Ratio'] != null ? fund['Sharpe Ratio'].toFixed(2) : 'N/A'}
             </td>
             <td style={{ padding: '0.5rem', textAlign: 'right' }}>
-              {fund['Std Dev (5Y)'] != null ? `${fund['Std Dev (5Y)'].toFixed(2)}%` : 'N/A'}
+              {fund['Standard Deviation'] != null ? `${fund['Standard Deviation'].toFixed(2)}%` : 'N/A'}
             </td>
             <td style={{ padding: '0.5rem', textAlign: 'right' }}>
-              {formatPercent(fund.Expense)}
+              {formatPercent(fund['Net Expense Ratio'])}
             </td>
-            <td style={{ padding: '0.5rem' }}>{fund.Type || 'N/A'}</td>
             <td style={{ padding: '0.5rem' }}>
               {Array.isArray(fund.tags) && fund.tags.length > 0 ? (
                 <TagList tags={fund.tags} />

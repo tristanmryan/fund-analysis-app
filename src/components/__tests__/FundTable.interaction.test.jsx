@@ -8,11 +8,13 @@ test('row click calls handler', async () => {
     'Fund Name': 'XYZ Fund',
     'Asset Class': 'Bond',
     scores: { final: 60 },
+    YTD: 1,
     '1 Year': 5,
+    '3 Year': 6,
+    '5 Year': 7,
     'Sharpe Ratio': 0.5,
-    'Std Dev (5Y)': 12,
-    Expense: 0.3,
-    Type: 'ETF',
+    'Standard Deviation': 12,
+    'Net Expense Ratio': 0.3,
     tags: []
   };
   const handler = jest.fn();

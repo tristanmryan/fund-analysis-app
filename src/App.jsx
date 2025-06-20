@@ -16,10 +16,11 @@ import {
 } from './services/scoring';
 import { applyTagRules } from './services/tagEngine';
 import dataStore from './services/dataStore';
-import { loadAssetClassMap } from './services/dataLoader';
+import { loadAssetClassMap, lookupAssetClass } from './services/dataLoader';
 import parseFundFile from './services/parseFundFile';
 import FundScores from './components/Views/FundScores.jsx';
 import DashboardView from './components/Views/DashboardView.jsx';
+import BenchmarkRow from './components/BenchmarkRow.jsx';
 import AppContext from './context/AppContext.jsx';
 
 // Score badge component for visual display
@@ -155,9 +156,9 @@ const App = () => {
 
         const clean = s => s?.toUpperCase().trim().replace(/[^A-Z0-9]/g, '');
 
-        const withClassAndFlags = parsedFunds.map(f => {
-          const parsedSymbol = clean(f.Symbol);
-          const recommendedMatch = recommendedFunds.find(r => clean(r.symbol) === parsedSymbol);
+          let withClassAndFlags = parsedFunds.map(f => {
+            const parsedSymbol = clean(f.Symbol);
+            const recommendedMatch = recommendedFunds.find(r => clean(r.symbol) === parsedSymbol);
 
           let isBenchmark = false;
           let benchmarkForClass = null;
@@ -168,7 +169,7 @@ const App = () => {
             }
           });
 
-          const assetClass = recommendedMatch
+          const resolvedClass = recommendedMatch
             ? recommendedMatch.assetClass
             : benchmarkForClass
               ? benchmarkForClass
@@ -180,8 +181,26 @@ const App = () => {
             isRecommended: !!recommendedMatch,
             isBenchmark,
             benchmarkForClass,
+            'Asset Class': resolvedClass || f['Asset Class'],
+            assetClass: resolvedClass || f['Asset Class'],
           };
-        });
+          });
+
+          // ensure benchmark rows exist
+          Object.entries(assetClassBenchmarks).forEach(([ac, { ticker }]) => {
+            const tickerClean = clean(ticker);
+            if (!withClassAndFlags.some(f => f.cleanSymbol === tickerClean)) {
+              withClassAndFlags.push({
+                Symbol: ticker,
+                'Fund Name': assetClassBenchmarks[ac].name,
+                'Asset Class': ac,
+                assetClass: ac,
+                cleanSymbol: tickerClean,
+                isBenchmark: true,
+                benchmarkForClass: ac,
+              });
+            }
+          });
 
         const scoredFunds = calculateScores(withClassAndFlags);
 
@@ -635,8 +654,10 @@ const App = () => {
                     <th style={{ padding: '0.75rem', textAlign: 'left' }}>Symbol</th>
                     <th style={{ padding: '0.75rem', textAlign: 'left' }}>Name</th>
                     <th style={{ padding: '0.75rem', textAlign: 'center' }}>Score</th>
+                    <th style={{ padding: '0.75rem', textAlign: 'right' }}>YTD</th>
                     <th style={{ padding: '0.75rem', textAlign: 'right' }}>1Y</th>
                     <th style={{ padding: '0.75rem', textAlign: 'right' }}>3Y</th>
+                    <th style={{ padding: '0.75rem', textAlign: 'right' }}>5Y</th>
                     <th style={{ padding: '0.75rem', textAlign: 'right' }}>Sharpe</th>
                     <th style={{ padding: '0.75rem', textAlign: 'right' }}>Std Dev</th>
                     <th style={{ padding: '0.75rem', textAlign: 'right' }}>Expense</th>
@@ -644,45 +665,7 @@ const App = () => {
                 </thead>
                 <tbody>
                   {benchmarkData[selectedClassView] && (
-                    <tr style={{ backgroundColor: '#fef3c7', fontWeight: '600' }}>
-                      <td style={{ padding: '0.75rem' }}>
-                        {benchmarkData[selectedClassView].Symbol}
-                        <span style={{ 
-                          marginLeft: '0.5rem',
-                          backgroundColor: '#fbbf24', 
-                          color: '#78350f',
-                          padding: '0.125rem 0.5rem',
-                          borderRadius: '0.25rem',
-                          fontSize: '0.75rem',
-                          fontWeight: '500'
-                        }}>
-                          Benchmark
-                        </span>
-                      </td>
-                      <td style={{ padding: '0.75rem' }}>
-                        {benchmarkData[selectedClassView]['Fund Name'] || benchmarkData[selectedClassView].name}
-                      </td>
-                      <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-                        {benchmarkData[selectedClassView].scores ? (
-                          <ScoreBadge score={benchmarkData[selectedClassView].scores.final} />
-                        ) : '-'}
-                      </td>
-                      <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                        {benchmarkData[selectedClassView]['1 Year']?.toFixed(2) ?? 'N/A'}%
-                      </td>
-                      <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                        {benchmarkData[selectedClassView]['3 Year']?.toFixed(2) ?? 'N/A'}%
-                      </td>
-                      <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                        {benchmarkData[selectedClassView]['Sharpe Ratio']?.toFixed(2) ?? 'N/A'}
-                      </td>
-                      <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                        {benchmarkData[selectedClassView]['Standard Deviation']?.toFixed(2) ?? 'N/A'}%
-                      </td>
-                      <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                        {benchmarkData[selectedClassView]['Net Expense Ratio']?.toFixed(2) ?? 'N/A'}%
-                      </td>
-                    </tr>
+                    <BenchmarkRow data={benchmarkData[selectedClassView]} />
                   )}
                   {scoredFundData
                     .filter(f => f['Asset Class'] === selectedClassView && !f.isBenchmark)
@@ -712,26 +695,32 @@ const App = () => {
                           )}
                         </td>
                         <td style={{ padding: '0.75rem' }}>{fund['Fund Name']}</td>
-                        <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-                          {fund.scores ? (
-                            <ScoreBadge score={fund.scores.final} />
-                          ) : '-'}
-                        </td>
-                        <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                          {fund['1 Year']?.toFixed(2) ?? 'N/A'}%
-                        </td>
-                        <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                          {fund['3 Year']?.toFixed(2) ?? 'N/A'}%
-                        </td>
-                        <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                          {fund['Sharpe Ratio']?.toFixed(2) ?? 'N/A'}
-                        </td>
-                        <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                          {fund['Standard Deviation']?.toFixed(2) ?? 'N/A'}%
-                        </td>
-                        <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                          {fund['Net Expense Ratio']?.toFixed(2) ?? 'N/A'}%
-                        </td>
+                          <td style={{ padding: '0.75rem', textAlign: 'center' }}>
+                            {fund.scores ? (
+                              <ScoreBadge score={fund.scores.final} />
+                            ) : '-'}
+                          </td>
+                          <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+                            {fund.YTD != null ? `${fund.YTD.toFixed(2)}%` : 'N/A'}
+                          </td>
+                          <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+                            {fund['1 Year'] != null ? `${fund['1 Year'].toFixed(2)}%` : 'N/A'}
+                          </td>
+                          <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+                            {fund['3 Year'] != null ? `${fund['3 Year'].toFixed(2)}%` : 'N/A'}
+                          </td>
+                          <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+                            {fund['5 Year'] != null ? `${fund['5 Year'].toFixed(2)}%` : 'N/A'}
+                          </td>
+                          <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+                            {fund['Sharpe Ratio'] != null ? fund['Sharpe Ratio'].toFixed(2) : 'N/A'}
+                          </td>
+                          <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+                            {fund['Standard Deviation'] != null ? `${fund['Standard Deviation'].toFixed(2)}%` : 'N/A'}
+                          </td>
+                          <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+                            {fund['Net Expense Ratio'] != null ? `${fund['Net Expense Ratio'].toFixed(2)}%` : 'N/A'}
+                          </td>
                       </tr>
                     ))}
                 </tbody>

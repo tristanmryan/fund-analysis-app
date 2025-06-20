@@ -24,11 +24,14 @@ export default async function parseFundFile(rows, options = {}) {
     if (headerLower.includes('symbol')) columnMap.Symbol = idx;
     if (headerLower.includes('product name')) columnMap['Fund Name'] = idx;
     if (headerLower === 'asset class') columnMap['Asset Class'] = idx;
+    if (headerLower.includes('ytd')) columnMap.YTD = idx;
     if (headerLower.includes('1 year')) columnMap['1 Year'] = idx;
+    if (headerLower.includes('3 year')) columnMap['3 Year'] = idx;
+    if (headerLower.includes('5 year')) columnMap['5 Year'] = idx;
     if (headerLower.includes('sharpe')) columnMap['Sharpe Ratio'] = idx;
-    if (headerLower.includes('standard deviation - 5')) columnMap['Std Dev (5Y)'] = idx;
-    if (headerLower.includes('standard deviation - 3')) columnMap['Std Dev (3Y)'] = idx;
-    if (headerLower.includes('net exp')) columnMap.expense = idx;
+    if (headerLower.includes('standard deviation - 5')) columnMap['Standard Deviation'] = idx;
+    if (headerLower.includes('net exp')) columnMap['Net Expense Ratio'] = idx;
+    if (headerLower.includes('manager tenure')) columnMap['Manager Tenure'] = idx;
     if (headerLower.includes('vehicle type') || headerLower === 'type') columnMap.type = idx;
   });
 
@@ -47,7 +50,13 @@ export default async function parseFundFile(rows, options = {}) {
       const obj = {};
       Object.entries(columnMap).forEach(([key, idx]) => {
         const val = row[idx];
-        if (key === 'expense' || key.startsWith('Std Dev') || key === 'Sharpe Ratio' || key === '1 Year') {
+        if (
+          key === 'Net Expense Ratio' ||
+          key === 'Manager Tenure' ||
+          key === 'Sharpe Ratio' ||
+          key.includes('Year') ||
+          key.includes('Deviation')
+        ) {
           obj[key] = cleanNumber(val);
         } else {
           obj[key] = cleanText(val);
@@ -75,7 +84,7 @@ export default async function parseFundFile(rows, options = {}) {
     }
     if (!assetClass) {
       const lookedUp = lookupAssetClass(symbolClean);
-      assetClass = lookedUp || 'Unknown';
+      assetClass = lookedUp == null ? 'Unknown' : lookedUp;
     }
 
     const assetClassFinal = assetClass || 'Unknown';
@@ -85,10 +94,14 @@ export default async function parseFundFile(rows, options = {}) {
       'Fund Name': f['Fund Name'],
       'Asset Class': assetClassFinal,
       assetClass: assetClassFinal,
+      YTD: f.YTD,
       '1 Year': f['1 Year'],
+      '3 Year': f['3 Year'],
+      '5 Year': f['5 Year'],
       'Sharpe Ratio': f['Sharpe Ratio'],
-      'Std Dev (5Y)': f['Std Dev (5Y)'],
-      Expense: f.expense,
+      'Standard Deviation': f['Standard Deviation'],
+      'Net Expense Ratio': f['Net Expense Ratio'],
+      'Manager Tenure': f['Manager Tenure'],
       Type: f.type || '',
     };
   });
