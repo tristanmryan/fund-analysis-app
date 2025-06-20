@@ -20,9 +20,7 @@ export async function loadAssetClassMap() {
   if (assetClassMap) return assetClassMap;
 
   if (process.env.NODE_ENV === 'test') {
-    // Jest environment doesn't serve static files so read directly from disk
-    // The conditional ensures these Node-specific requires are stripped from the
-    // production bundle.
+    // Jest environment doesn't serve static files so read directly from disk.
     const fs = require('fs');
     const path = require('path');
     const filePath = path.resolve(__dirname, '../../data/FundListAssetClasses.csv');
@@ -32,7 +30,8 @@ export async function loadAssetClassMap() {
   }
 
   try {
-    const res = await fetch('/data/FundListAssetClasses.csv');
+    const url = `${process.env.PUBLIC_URL || ''}/data/FundListAssetClasses.csv`;
+    const res = await fetch(url);
     if (res.ok) {
       const csv = await res.text();
       assetClassMap = parseMap(csv);
