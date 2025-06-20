@@ -620,8 +620,7 @@ const App = () => {
                               key={i}
                               style={{
                                 borderBottom: '1px solid #f3f4f6',
-                                backgroundColor: fund.isRecommended ? '#eff6ff' : 'white',
-                                cursor: 'pointer'
+                                backgroundColor: fund.isRecommended ? '#eff6ff' : 'white'
                               }}
                             >
                               <td style={{ padding: '0.75rem', fontWeight: fund.isBenchmark ? 'bold' : 'normal' }}>
@@ -680,35 +679,28 @@ const App = () => {
                       </tbody>
                     </table>
                   </div>
-
-</div> {/* closes inner wrapper that contains header + table */}
-) : (
-  <p style={{ color: '#6b7280' }}>No scored funds to display.</p>
-)}
-
-</div> {/* closes outer wrapper around scoredFundData check */}
-
-<FundView />
-</>
-) : (
-  <div
-    style={{
-      textAlign: 'center',
-      padding: '3rem',
-      backgroundColor: '#f9fafb',
-      borderRadius: '0.5rem',
-      color: '#6b7280'
-    }}
-  >
-    <TrendingUp size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-    <p>Upload a fund performance file to see scores</p>
-  </div>
-)
-))}  {/* 1st ) closes fundData ternary, 2nd ) closes && (, } closes the JSX expr */}
-
-
-
-
+                </div>
+              ) : (
+                <p style={{ color: '#6b7280' }}>No scored funds to display.</p>
+              )}
+            </div>
+            <FundView />
+          </>
+        ) : (
+          <div
+            style={{
+              textAlign: 'center',
+              padding: '3rem',
+              backgroundColor: '#f9fafb',
+              borderRadius: '0.5rem',
+              color: '#6b7280'
+            }}
+          >
+            <TrendingUp size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
+            <p>Upload a fund performance file to see scores</p>
+          </div>
+        )
+      )}
 
       {/* Asset Class View Tab */}
       {activeTab === 'class' && (

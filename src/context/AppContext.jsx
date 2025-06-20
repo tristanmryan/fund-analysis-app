@@ -12,6 +12,8 @@ export const AppProvider = ({ children }) => {
   /* ---------- filter state ---------- */
   const [selectedClass, setSelectedClass] = useState(null);
   const [selectedTags, setSelectedTags] = useState([]);
+  const [config, setConfig] = useState(defaultBenchmarks);
+  const [historySnapshots, setHistorySnapshots] = useState([]);
 
   const toggleTag = tag =>
     setSelectedTags(prev =>
