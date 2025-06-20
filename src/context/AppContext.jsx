@@ -12,6 +12,9 @@ export const AppProvider = ({ children }) => {
   /* ---------- filter state ---------- */
   const [selectedClass, setSelectedClass] = useState(null);
   const [selectedTags, setSelectedTags] = useState([]);
+  // store benchmark configuration separately to avoid naming clashes
+  const [benchmarks, setBenchmarks] = useState(defaultBenchmarks);
+  const [snapshots, setSnapshots] = useState([]);
 
   // store benchmark configuration separately to avoid naming clashes
   const [benchmarks, setBenchmarks] = useState(defaultBenchmarks);
@@ -45,12 +48,10 @@ export const AppProvider = ({ children }) => {
     () => ({
       fundData,
       setFundData,
-
       config: benchmarks,
       setConfig: setBenchmarks,
-
-      historySnapshots,
-      setHistorySnapshots,
+      historySnapshots: snapshots,
+      setHistorySnapshots: setSnapshots,
       availableClasses,
       availableTags,
       selectedClass,
@@ -59,9 +60,7 @@ export const AppProvider = ({ children }) => {
       toggleTag,
       resetFilters
     }),
-
-    [fundData, benchmarks, historySnapshots, availableClasses, availableTags, selectedClass, selectedTags]
-
+    [fundData, benchmarks, snapshots, availableClasses, availableTags, selectedClass, selectedTags]
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

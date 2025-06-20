@@ -1,9 +1,7 @@
 import React, { useContext, useState } from 'react';
-
 import GlobalFilterBar from '../Filters/GlobalFilterBar.jsx';
 import TagList from '../TagList.jsx';
 import { Download } from 'lucide-react';
-
 import { exportToExcel } from '../../services/exportService';
 import { getScoreColor, getScoreLabel } from '../../services/scoring';
 import AppContext from '../../context/AppContext.jsx';
@@ -132,10 +130,8 @@ const FundView = () => {
         <FundTable funds={filteredFunds} onRowClick={setSelectedFund} />
       )}
 
-
       {selectedFund && (
         <FundDetailsModal fund={selectedFund} onClose={() => setSelectedFund(null)} />
-
       )}
     </div>
   );

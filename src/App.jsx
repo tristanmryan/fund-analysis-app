@@ -1,7 +1,7 @@
 // App.jsx
 import React, { useState, useEffect, useContext } from 'react';
 
-import { Upload, RefreshCw, Settings, Plus, Trash2, LayoutGrid, AlertCircle, TrendingUp, Award, Clock, Database, Calendar } from 'lucide-react';
+import { RefreshCw, Settings, Plus, Trash2, LayoutGrid, AlertCircle, TrendingUp, Award, Clock, Database, Calendar } from 'lucide-react';
 
 import * as XLSX from 'xlsx';
 import { getStoredConfig, saveStoredConfig } from './data/storage';
