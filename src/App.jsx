@@ -17,6 +17,7 @@ import {
 } from './services/scoring';
 import { applyTagRules } from './services/tagEngine';
 import dataStore from './services/dataStore';
+import { loadAssetClassMap, lookupAssetClass } from './services/dataLoader';
 import FundView from './components/Views/FundView.jsx';
 import DashboardView from './components/Views/DashboardView.jsx';
 import AppContext from './context/AppContext.jsx';
@@ -118,6 +119,11 @@ const App = () => {
   useEffect(() => {
     localStorage.setItem('ls_history', JSON.stringify(historySnapshots));
   }, [historySnapshots]);
+
+  // Initialize configuration
+  useEffect(() => {
+    loadAssetClassMap().catch(err => console.error('Error loading asset class map', err));
+  }, []);
 
   // Initialize configuration
   useEffect(() => {
@@ -234,15 +240,18 @@ const App = () => {
             }
           });
 
+          const assetClass = recommendedMatch
+            ? recommendedMatch.assetClass
+            : benchmarkForClass
+              ? benchmarkForClass
+              : lookupAssetClass(parsedSymbol);
+
           return {
             ...f,
             Symbol: f.Symbol,
             cleanSymbol: parsedSymbol,
-            'Asset Class': recommendedMatch
-              ? recommendedMatch.assetClass
-              : benchmarkForClass
-                ? benchmarkForClass
-                : 'Unknown',
+            'Asset Class': assetClass,
+            assetClass,
             isRecommended: !!recommendedMatch,
             isBenchmark: isBenchmark,
             benchmarkForClass: benchmarkForClass,
@@ -299,11 +308,23 @@ const App = () => {
           fund.history = [...filteredPrev, { date: today, score: fund.scores.final }];
         });
 
-        const newSnap = { date: today, funds: taggedFunds };
+        const newSnap = {
+          date: today,
+          funds: taggedFunds,
+          metadata: { fileName: file.name }
+        };
+
         setHistorySnapshots(prev => {
           const filtered = prev.filter(s => s.date !== today);
           return [...filtered, newSnap].slice(-24);
         });
+
+        try {
+          await dataStore.saveSnapshot(newSnap);
+          loadSnapshots();
+        } catch (err) {
+          console.error('Failed to save snapshot', err);
+        }
         setCurrentSnapshotDate(today);
         setFundData(taggedFunds);
         setScoredFundData(taggedFunds);
@@ -712,7 +733,7 @@ const App = () => {
             }}
           >
             <option value="">-- Choose an asset class --</option>
-            {Object.keys(assetClassBenchmarks).sort().map(ac => (
+            {availableClasses.map(ac => (
               <option key={ac} value={ac}>{ac}</option>
             ))}
           </select>
