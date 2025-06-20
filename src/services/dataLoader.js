@@ -16,7 +16,7 @@ function parseMap(csvText) {
   return map;
 }
 
-export async function loadAssetClassMap() {
+async function loadAssetClassMap() {
   if (assetClassMap) return assetClassMap;
 
   if (process.env.NODE_ENV === 'test') {
@@ -46,11 +46,14 @@ export async function loadAssetClassMap() {
   return assetClassMap;
 }
 
-export function lookupAssetClass(symbol) {
-  if (!assetClassMap || !symbol) return 'Unknown';
+function lookupAssetClass(symbol) {
+  if (!assetClassMap || !symbol) return null;
   const key = symbol.toString().trim().toUpperCase();
-  return assetClassMap.get(key) || 'Unknown';
+  return assetClassMap.get(key) || null;
 }
+
+export { loadAssetClassMap, lookupAssetClass };
+
 
 export function clearAssetClassMap() {
   assetClassMap = null;
