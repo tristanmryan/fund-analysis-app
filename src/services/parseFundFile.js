@@ -54,6 +54,7 @@ export default async function parseFundFile(rows, options = {}) {
           key === 'Net Expense Ratio' ||
           key === 'Manager Tenure' ||
           key === 'Sharpe Ratio' ||
+          key === 'YTD' ||
           key.includes('Year') ||
           key.includes('Deviation')
         ) {
@@ -89,20 +90,35 @@ export default async function parseFundFile(rows, options = {}) {
 
     const assetClassFinal = assetClass || 'Unknown';
 
+    const ytd = cleanNumber(f['1 Year']);
+    const oneYear = cleanNumber(f['1 Year']);
+    const threeYear = cleanNumber(f['3 Year']);
+    const fiveYear = cleanNumber(f['5 Year']);
+    const sharpe = cleanNumber(f['Sharpe Ratio']);
+    const stdDev5y = cleanNumber(f['Standard Deviation']);
+    const expense = cleanNumber(f['Net Expense Ratio']);
+
     return {
       Symbol: f.Symbol,
       'Fund Name': f['Fund Name'],
       'Asset Class': assetClassFinal,
       assetClass: assetClassFinal,
-      YTD: f.YTD,
-      '1 Year': f['1 Year'],
-      '3 Year': f['3 Year'],
-      '5 Year': f['5 Year'],
-      'Sharpe Ratio': f['Sharpe Ratio'],
-      'Standard Deviation': f['Standard Deviation'],
-      'Net Expense Ratio': f['Net Expense Ratio'],
+      YTD: ytd,
+      '1 Year': oneYear,
+      '3 Year': threeYear,
+      '5 Year': fiveYear,
+      'Sharpe Ratio': sharpe,
+      'Standard Deviation': stdDev5y,
+      'Net Expense Ratio': expense,
       'Manager Tenure': f['Manager Tenure'],
       Type: f.type || '',
+      ytd,
+      oneYear,
+      threeYear,
+      fiveYear,
+      sharpe,
+      stdDev5y,
+      expense,
     };
   });
 }

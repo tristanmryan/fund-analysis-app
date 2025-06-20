@@ -18,6 +18,7 @@ import { applyTagRules } from './services/tagEngine';
 import dataStore from './services/dataStore';
 import { loadAssetClassMap, lookupAssetClass } from './services/dataLoader';
 import parseFundFile from './services/parseFundFile';
+import { fmtPct, fmtNumber } from './utils/formatters';
 import FundScores from './components/Views/FundScores.jsx';
 import DashboardView from './components/Views/DashboardView.jsx';
 import BenchmarkRow from './components/BenchmarkRow.jsx';
@@ -701,25 +702,25 @@ const App = () => {
                             ) : '-'}
                           </td>
                           <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                            {fund.YTD != null ? `${fund.YTD.toFixed(2)}%` : 'N/A'}
+                            {fmtPct(fund.ytd ?? fund.YTD)}
                           </td>
                           <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                            {fund['1 Year'] != null ? `${fund['1 Year'].toFixed(2)}%` : 'N/A'}
+                            {fmtPct(fund.oneYear ?? fund['1 Year'])}
                           </td>
                           <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                            {fund['3 Year'] != null ? `${fund['3 Year'].toFixed(2)}%` : 'N/A'}
+                            {fmtPct(fund.threeYear ?? fund['3 Year'])}
                           </td>
                           <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                            {fund['5 Year'] != null ? `${fund['5 Year'].toFixed(2)}%` : 'N/A'}
+                            {fmtPct(fund.fiveYear ?? fund['5 Year'])}
                           </td>
                           <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                            {fund['Sharpe Ratio'] != null ? fund['Sharpe Ratio'].toFixed(2) : 'N/A'}
+                            {fmtNumber(fund.sharpe ?? fund['Sharpe Ratio'])}
                           </td>
                           <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                            {fund['Standard Deviation'] != null ? `${fund['Standard Deviation'].toFixed(2)}%` : 'N/A'}
+                            {fmtPct(fund.stdDev5y ?? fund['Standard Deviation'])}
                           </td>
                           <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                            {fund['Net Expense Ratio'] != null ? `${fund['Net Expense Ratio'].toFixed(2)}%` : 'N/A'}
+                            {fmtPct(fund.expense ?? fund['Net Expense Ratio'])}
                           </td>
                       </tr>
                     ))}
@@ -802,15 +803,15 @@ const App = () => {
                     }}>
                       <div>
                         <span style={{ color: '#6b7280' }}>1Y Return:</span>{' '}
-                        <strong>{fund['1 Year']?.toFixed(2) ?? 'N/A'}%</strong>
+                        <strong>{fmtPct(fund.oneYear ?? fund['1 Year'])}</strong>
                       </div>
                       <div>
                         <span style={{ color: '#6b7280' }}>Sharpe:</span>{' '}
-                        <strong>{fund['Sharpe Ratio']?.toFixed(2) ?? 'N/A'}</strong>
+                        <strong>{fmtNumber(fund.sharpe ?? fund['Sharpe Ratio'])}</strong>
                       </div>
                       <div>
                         <span style={{ color: '#6b7280' }}>Expense:</span>{' '}
-                        <strong>{fund['Net Expense Ratio']?.toFixed(2) ?? 'N/A'}%</strong>
+                        <strong>{fmtPct(fund.expense ?? fund['Net Expense Ratio'])}</strong>
                       </div>
                     </div>
                   </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import TagList from './TagList.jsx';
 import { getScoreColor, getScoreLabel } from '../services/scoring';
-import { formatPercent } from '../utils/formatters';
+import { fmtPct, fmtNumber } from '../utils/formatters';
 
 const ScoreBadge = ({ score }) => {
   const color = getScoreColor(score);
@@ -59,25 +59,25 @@ const FundTable = ({ funds = [], onRowClick = () => {} }) => (
               {fund.scores ? <ScoreBadge score={fund.scores.final} /> : '-'}
             </td>
             <td style={{ padding: '0.5rem', textAlign: 'right' }}>
-              {formatPercent(fund.YTD)}
+              {fmtPct(fund.ytd ?? fund.YTD)}
             </td>
             <td style={{ padding: '0.5rem', textAlign: 'right' }}>
-              {formatPercent(fund['1 Year'])}
+              {fmtPct(fund.oneYear ?? fund['1 Year'])}
             </td>
             <td style={{ padding: '0.5rem', textAlign: 'right' }}>
-              {formatPercent(fund['3 Year'])}
+              {fmtPct(fund.threeYear ?? fund['3 Year'])}
             </td>
             <td style={{ padding: '0.5rem', textAlign: 'right' }}>
-              {formatPercent(fund['5 Year'])}
+              {fmtPct(fund.fiveYear ?? fund['5 Year'])}
             </td>
             <td style={{ padding: '0.5rem', textAlign: 'right' }}>
-              {fund['Sharpe Ratio'] != null ? fund['Sharpe Ratio'].toFixed(2) : 'N/A'}
+              {fmtNumber(fund.sharpe ?? fund['Sharpe Ratio'])}
             </td>
             <td style={{ padding: '0.5rem', textAlign: 'right' }}>
-              {fund['Standard Deviation'] != null ? `${fund['Standard Deviation'].toFixed(2)}%` : 'N/A'}
+              {fmtPct(fund.stdDev5y ?? fund['Standard Deviation'])}
             </td>
             <td style={{ padding: '0.5rem', textAlign: 'right' }}>
-              {formatPercent(fund['Net Expense Ratio'])}
+              {fmtPct(fund.expense ?? fund['Net Expense Ratio'])}
             </td>
             <td style={{ padding: '0.5rem' }}>
               {Array.isArray(fund.tags) && fund.tags.length > 0 ? (
