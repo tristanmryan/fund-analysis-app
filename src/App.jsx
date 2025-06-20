@@ -18,7 +18,8 @@ import {
 import { applyTagRules } from './services/tagEngine';
 import dataStore from './services/dataStore';
 import { loadAssetClassMap, lookupAssetClass } from './services/dataLoader';
-import FundView from './components/Views/FundView.jsx';
+import parseFundFile from './services/parseFundFile';
+import FundScores from './components/Views/FundScores.jsx';
 import DashboardView from './components/Views/DashboardView.jsx';
 import AppContext from './context/AppContext.jsx';
 
@@ -179,55 +180,14 @@ const App = () => {
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-        // Find header row (looking for Symbol/CUSIP)
-        let headerRowIndex = jsonData.findIndex(row =>
-          row.some(cell => typeof cell === 'string' && cell.includes('Symbol'))
-        );
-        if (headerRowIndex === -1) {
-          throw new Error('Could not find header row with Symbol column');
-        }
-
-        const headers = jsonData[headerRowIndex];
-        const dataRows = jsonData.slice(headerRowIndex + 1);
-
-        const columnMap = {};
-        headers.forEach((header, index) => {
-          if (typeof header === 'string') {
-            if (header.includes('Symbol')) columnMap['Symbol'] = index;
-            if (header.includes('Product Name')) columnMap['Fund Name'] = index;
-            if (header.includes('Asset Class')) columnMap['Asset Class'] = index;
-            if (header.includes('YTD')) columnMap['YTD'] = index;
-            if (header.includes('1 Year') || header.includes('1 Yr')) columnMap['1 Year'] = index;
-            if (header.includes('3 Year') || header.includes('3 Yr')) columnMap['3 Year'] = index;
-            if (header.includes('5 Year') || header.includes('5 Yr')) columnMap['5 Year'] = index;
-            if (header.includes('10 Year') || header.includes('10 Yr')) columnMap['10 Year'] = index;
-            if (header.includes('Alpha')) columnMap['Alpha'] = index;
-            if (header.includes('Sharpe')) columnMap['Sharpe Ratio'] = index;
-            if (header.includes('Standard Deviation') || header.includes('Std Dev')) {
-              columnMap['Standard Deviation'] = index;
-            }
-            if (header.includes('Up Capture')) columnMap['Up Capture Ratio'] = index;
-            if (header.includes('Down Capture')) columnMap['Down Capture Ratio'] = index;
-            if (header.includes('Expense') && header.includes('Net')) columnMap['Net Expense Ratio'] = index;
-            if (header.includes('Manager Tenure')) columnMap['Manager Tenure'] = index;
-          }
+        const parsedFunds = await parseFundFile(jsonData, {
+          recommendedFunds,
+          assetClassBenchmarks,
         });
 
-        const parsed = dataRows.map(row => {
-          const fund = {};
-          Object.entries(columnMap).forEach(([key, idx]) => {
-            let val = row[idx];
-            if (typeof val === 'string') {
-              val = val.replace('%', '').replace(',', '');
-            }
-            fund[key] = isNaN(val) ? val : parseFloat(val);
-          });
-          return fund;
-        }).filter(f => f.Symbol && f.Symbol !== '');
+        const clean = s => s?.toUpperCase().trim().replace(/[^A-Z0-9]/g, '');
 
-        const clean = (s) => s?.toUpperCase().trim().replace(/[^A-Z0-9]/g, '');
-
-        const withClassAndFlags = parsed.map(f => {
+        const withClassAndFlags = parsedFunds.map(f => {
           const parsedSymbol = clean(f.Symbol);
           const recommendedMatch = recommendedFunds.find(r => clean(r.symbol) === parsedSymbol);
 
@@ -248,13 +208,10 @@ const App = () => {
 
           return {
             ...f,
-            Symbol: f.Symbol,
             cleanSymbol: parsedSymbol,
-            'Asset Class': assetClass,
-            assetClass,
             isRecommended: !!recommendedMatch,
-            isBenchmark: isBenchmark,
-            benchmarkForClass: benchmarkForClass,
+            isBenchmark,
+            benchmarkForClass,
           };
         });
 
@@ -696,7 +653,7 @@ const App = () => {
                 <p style={{ color: '#6b7280' }}>No scored funds to display.</p>
               )}
             </div>
-            <FundView />
+            <FundScores />
           </>
         ) : (
           <div

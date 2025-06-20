@@ -1,0 +1,139 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders table snapshot 1`] = `
+<DocumentFragment>
+  <div
+    style="overflow-x: auto;"
+  >
+    <table
+      style="width: 100%; border-collapse: collapse;"
+    >
+      <thead>
+        <tr
+          style="border-bottom: 2px solid #e5e7eb;"
+        >
+          <th
+            style="padding: 0.75rem; text-align: left;"
+          >
+            Symbol
+          </th>
+          <th
+            style="padding: 0.75rem; text-align: left;"
+          >
+            Fund Name
+          </th>
+          <th
+            style="padding: 0.75rem; text-align: left;"
+          >
+            Asset Class
+          </th>
+          <th
+            style="padding: 0.75rem; text-align: center;"
+          >
+            Score
+          </th>
+          <th
+            style="padding: 0.75rem; text-align: right;"
+          >
+            1Y Return
+          </th>
+          <th
+            style="padding: 0.75rem; text-align: right;"
+          >
+            Sharpe
+          </th>
+          <th
+            style="padding: 0.75rem; text-align: right;"
+          >
+            Std Dev (5Y)
+          </th>
+          <th
+            style="padding: 0.75rem; text-align: right;"
+          >
+            Expense
+          </th>
+          <th
+            style="padding: 0.75rem; text-align: left;"
+          >
+            Type
+          </th>
+          <th
+            style="padding: 0.75rem; text-align: left;"
+          >
+            Tags
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          style="border-bottom: 1px solid #f3f4f6; cursor: pointer;"
+          tabindex="0"
+        >
+          <td
+            style="padding: 0.5rem;"
+          >
+            ABC
+          </td>
+          <td
+            style="padding: 0.5rem;"
+          >
+            Alpha Fund
+          </td>
+          <td
+            style="padding: 0.5rem;"
+          >
+            Large Cap
+          </td>
+          <td
+            style="padding: 0.5rem; text-align: center;"
+          >
+            <span
+              style="background-color: rgba(22, 163, 74, 0.125); color: rgb(22, 163, 74); border: 1px solid #16a34a50; border-radius: 9999px; font-size: 0.75rem; padding: 0.25rem 0.5rem; display: inline-block; min-width: 3rem; text-align: center;"
+            >
+              75 - Strong
+            </span>
+          </td>
+          <td
+            style="padding: 0.5rem; text-align: right;"
+          >
+            10.00%
+          </td>
+          <td
+            style="padding: 0.5rem; text-align: right;"
+          >
+            0.80
+          </td>
+          <td
+            style="padding: 0.5rem; text-align: right;"
+          >
+            15.00%
+          </td>
+          <td
+            style="padding: 0.5rem; text-align: right;"
+          >
+            0.50%
+          </td>
+          <td
+            style="padding: 0.5rem;"
+          >
+            MF
+          </td>
+          <td
+            style="padding: 0.5rem;"
+          >
+            <div
+              style="display: flex; flex-wrap: wrap; gap: 0.25rem;"
+            >
+              <span
+                style="background-color: rgba(22, 163, 74, 0.125); color: rgb(22, 163, 74); border: 1px solid #16a34a40; border-radius: 9999px; font-size: 0.7rem; padding: 0.125rem 0.5rem;"
+              >
+                outperformer
+              </span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</DocumentFragment>
+`;
