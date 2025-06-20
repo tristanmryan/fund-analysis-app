@@ -12,12 +12,13 @@ import {
   generateClassSummary,
   identifyReviewCandidates,
   getScoreColor,
-  getScoreLabel,
-  METRICS_CONFIG
+  getScoreLabel
 } from './services/scoring';
 import { applyTagRules } from './services/tagEngine';
 import dataStore from './services/dataStore';
-import FundView from './components/Views/FundView.jsx';
+import { loadAssetClassMap } from './services/dataLoader';
+import parseFundFile from './services/parseFundFile';
+import FundScores from './components/Views/FundScores.jsx';
 import DashboardView from './components/Views/DashboardView.jsx';
 import AppContext from './context/AppContext.jsx';
 
@@ -46,44 +47,13 @@ const ScoreBadge = ({ score, size = 'normal' }) => {
   );
 };
 
-// Metric breakdown tooltip component
-const MetricBreakdown = ({ breakdown }) => {
-  if (!breakdown || Object.keys(breakdown).length === 0) return null;
-  
-  return (
-    <div className="metric-breakdown" style={{ 
-      fontSize: '0.75rem', 
-      marginTop: '0.5rem',
-      padding: '0.5rem',
-      backgroundColor: '#f3f4f6',
-      borderRadius: '0.25rem'
-    }}>
-      <div style={{ fontWeight: 'bold', marginBottom: '0.25rem' }}>Score Breakdown:</div>
-      {Object.entries(breakdown).map(([metric, data]) => (
-        <div key={metric} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.125rem' }}>
-          <span>{METRICS_CONFIG.labels[metric]}:</span>
-          <span style={{ color: data.weightedZScore >= 0 ? '#16a34a' : '#dc2626' }}>
-            {data.weightedZScore >= 0 ? '+' : ''}{data.weightedZScore.toFixed(3)}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-};
 
 const App = () => {
   const {
     fundData,
     setFundData,
-    config,
     setConfig,
-    selectedClass,
-    setSelectedClass,
-    selectedTags,
-    toggleTag,
-    resetFilters,
     availableClasses,
-    availableTags,
     historySnapshots,
     setHistorySnapshots,
   } = useContext(AppContext);
@@ -112,12 +82,17 @@ const App = () => {
     if (stored.length > 0) {
       setHistorySnapshots(stored);
     }
-  }, []);
+  }, [setHistorySnapshots]);
 
   // Persist history snapshots to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem('ls_history', JSON.stringify(historySnapshots));
   }, [historySnapshots]);
+
+  // Initialize configuration
+  useEffect(() => {
+    loadAssetClassMap().catch(err => console.error('Error loading asset class map', err));
+  }, [setConfig]);
 
   // Initialize configuration
   useEffect(() => {
@@ -132,7 +107,7 @@ const App = () => {
     };
     
     initializeConfig();
-  }, []);
+  }, [setConfig]);
 
   // Save configuration when changed
   useEffect(() => {
@@ -140,7 +115,7 @@ const App = () => {
       saveStoredConfig(recommendedFunds, assetClassBenchmarks);
       setConfig(assetClassBenchmarks);
     }
-  }, [recommendedFunds, assetClassBenchmarks]);
+  }, [recommendedFunds, assetClassBenchmarks, setConfig]);
 
   // Load snapshots when history tab is selected
   useEffect(() => {
@@ -173,55 +148,14 @@ const App = () => {
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-        // Find header row (looking for Symbol/CUSIP)
-        let headerRowIndex = jsonData.findIndex(row =>
-          row.some(cell => typeof cell === 'string' && cell.includes('Symbol'))
-        );
-        if (headerRowIndex === -1) {
-          throw new Error('Could not find header row with Symbol column');
-        }
-
-        const headers = jsonData[headerRowIndex];
-        const dataRows = jsonData.slice(headerRowIndex + 1);
-
-        const columnMap = {};
-        headers.forEach((header, index) => {
-          if (typeof header === 'string') {
-            if (header.includes('Symbol')) columnMap['Symbol'] = index;
-            if (header.includes('Product Name')) columnMap['Fund Name'] = index;
-            if (header.includes('Asset Class')) columnMap['Asset Class'] = index;
-            if (header.includes('YTD')) columnMap['YTD'] = index;
-            if (header.includes('1 Year') || header.includes('1 Yr')) columnMap['1 Year'] = index;
-            if (header.includes('3 Year') || header.includes('3 Yr')) columnMap['3 Year'] = index;
-            if (header.includes('5 Year') || header.includes('5 Yr')) columnMap['5 Year'] = index;
-            if (header.includes('10 Year') || header.includes('10 Yr')) columnMap['10 Year'] = index;
-            if (header.includes('Alpha')) columnMap['Alpha'] = index;
-            if (header.includes('Sharpe')) columnMap['Sharpe Ratio'] = index;
-            if (header.includes('Standard Deviation') || header.includes('Std Dev')) {
-              columnMap['Standard Deviation'] = index;
-            }
-            if (header.includes('Up Capture')) columnMap['Up Capture Ratio'] = index;
-            if (header.includes('Down Capture')) columnMap['Down Capture Ratio'] = index;
-            if (header.includes('Expense') && header.includes('Net')) columnMap['Net Expense Ratio'] = index;
-            if (header.includes('Manager Tenure')) columnMap['Manager Tenure'] = index;
-          }
+        const parsedFunds = await parseFundFile(jsonData, {
+          recommendedFunds,
+          assetClassBenchmarks,
         });
 
-        const parsed = dataRows.map(row => {
-          const fund = {};
-          Object.entries(columnMap).forEach(([key, idx]) => {
-            let val = row[idx];
-            if (typeof val === 'string') {
-              val = val.replace('%', '').replace(',', '');
-            }
-            fund[key] = isNaN(val) ? val : parseFloat(val);
-          });
-          return fund;
-        }).filter(f => f.Symbol && f.Symbol !== '');
+        const clean = s => s?.toUpperCase().trim().replace(/[^A-Z0-9]/g, '');
 
-        const clean = (s) => s?.toUpperCase().trim().replace(/[^A-Z0-9]/g, '');
-
-        const withClassAndFlags = parsed.map(f => {
+        const withClassAndFlags = parsedFunds.map(f => {
           const parsedSymbol = clean(f.Symbol);
           const recommendedMatch = recommendedFunds.find(r => clean(r.symbol) === parsedSymbol);
 
@@ -236,16 +170,10 @@ const App = () => {
 
           return {
             ...f,
-            Symbol: f.Symbol,
             cleanSymbol: parsedSymbol,
-            'Asset Class': recommendedMatch
-              ? recommendedMatch.assetClass
-              : benchmarkForClass
-                ? benchmarkForClass
-                : 'Unknown',
             isRecommended: !!recommendedMatch,
-            isBenchmark: isBenchmark,
-            benchmarkForClass: benchmarkForClass,
+            isBenchmark,
+            benchmarkForClass,
           };
         });
 
@@ -299,11 +227,23 @@ const App = () => {
           fund.history = [...filteredPrev, { date: today, score: fund.scores.final }];
         });
 
-        const newSnap = { date: today, funds: taggedFunds };
+        const newSnap = {
+          date: today,
+          funds: taggedFunds,
+          metadata: { fileName: file.name }
+        };
+
         setHistorySnapshots(prev => {
           const filtered = prev.filter(s => s.date !== today);
           return [...filtered, newSnap].slice(-24);
         });
+
+        try {
+          await dataStore.saveSnapshot(newSnap);
+          loadSnapshots();
+        } catch (err) {
+          console.error('Failed to save snapshot', err);
+        }
         setCurrentSnapshotDate(today);
         setFundData(taggedFunds);
         setScoredFundData(taggedFunds);
@@ -587,95 +527,12 @@ const App = () => {
                     </div>
                   </div>
 
-                  {/* Main table */}
-                  <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                      <thead>
-                        <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
-                          <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: 600 }}>Symbol</th>
-                          <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: 600 }}>Fund Name</th>
-                          <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: 600 }}>Asset Class</th>
-                          <th style={{ textAlign: 'center', padding: '0.75rem', fontWeight: 600 }}>Score</th>
-                          <th style={{ textAlign: 'right', padding: '0.75rem', fontWeight: 600 }}>1Y Return</th>
-                          <th style={{ textAlign: 'right', padding: '0.75rem', fontWeight: 600 }}>Sharpe</th>
-                          <th style={{ textAlign: 'right', padding: '0.75rem', fontWeight: 600 }}>Expense</th>
-                          <th style={{ textAlign: 'center', padding: '0.75rem', fontWeight: 600 }}>Type</th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        {scoredFundData
-                          .sort((a, b) => (b.scores?.final || 0) - (a.scores?.final || 0))
-                          .map((fund, i) => (
-                            <tr
-                              key={i}
-                              style={{
-                                borderBottom: '1px solid #f3f4f6',
-                                backgroundColor: fund.isRecommended ? '#eff6ff' : 'white'
-                              }}
-                            >
-                              <td style={{ padding: '0.75rem', fontWeight: fund.isBenchmark ? 'bold' : 'normal' }}>
-                                {fund.Symbol}
-                              </td>
-                              <td style={{ padding: '0.75rem' }}>{fund['Fund Name']}</td>
-                              <td style={{ padding: '0.75rem' }}>{fund['Asset Class']}</td>
-                              <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-                                {fund.scores ? (
-                                  <ScoreBadge score={fund.scores.final} />
-                                ) : (
-                                  <span style={{ color: '#9ca3af' }}>-</span>
-                                )}
-                              </td>
-                              <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                                {fund['1 Year'] != null ? `${fund['1 Year'].toFixed(2)}%` : 'N/A'}
-                              </td>
-                              <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                                {fund['Sharpe Ratio'] != null ? fund['Sharpe Ratio'].toFixed(2) : 'N/A'}
-                              </td>
-                              <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                                {fund['Net Expense Ratio'] != null ? `${fund['Net Expense Ratio'].toFixed(2)}%` : 'N/A'}
-                              </td>
-                              <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-                                {fund.isBenchmark && (
-                                  <span
-                                    style={{
-                                      backgroundColor: '#fbbf24',
-                                      color: '#78350f',
-                                      padding: '0.125rem 0.5rem',
-                                      borderRadius: '0.25rem',
-                                      fontSize: '0.75rem',
-                                      fontWeight: 500
-                                    }}
-                                  >
-                                    Benchmark
-                                  </span>
-                                )}
-                                {fund.isRecommended && !fund.isBenchmark && (
-                                  <span
-                                    style={{
-                                      backgroundColor: '#34d399',
-                                      color: '#064e3b',
-                                      padding: '0.125rem 0.5rem',
-                                      borderRadius: '0.25rem',
-                                      fontSize: '0.75rem',
-                                      fontWeight: 500
-                                    }}
-                                  >
-                                    Recommended
-                                  </span>
-                                )}
-                              </td>
-                            </tr>
-                          ))}
-                      </tbody>
-                    </table>
-                  </div>
                 </div>
               ) : (
                 <p style={{ color: '#6b7280' }}>No scored funds to display.</p>
               )}
             </div>
-            <FundView />
+            <FundScores />
           </>
         ) : (
           <div
@@ -712,7 +569,7 @@ const App = () => {
             }}
           >
             <option value="">-- Choose an asset class --</option>
-            {Object.keys(assetClassBenchmarks).sort().map(ac => (
+            {availableClasses.map(ac => (
               <option key={ac} value={ac}>{ac}</option>
             ))}
           </select>
