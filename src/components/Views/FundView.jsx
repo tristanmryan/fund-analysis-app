@@ -1,7 +1,8 @@
 import React, { useContext, useState } from 'react';
+import { Download } from 'lucide-react';
+
 import GlobalFilterBar from '../Filters/GlobalFilterBar.jsx';
 import TagList from '../TagList.jsx';
-import { Download } from 'lucide-react';
 import { exportToExcel } from '../../services/exportService';
 import { getScoreColor, getScoreLabel } from '../../services/scoring';
 import AppContext from '../../context/AppContext.jsx';
@@ -94,6 +95,7 @@ const FundView = () => {
 
   return (
     <div>
+      {/* filter bar */}
       <GlobalFilterBar
         availableClasses={availableClasses}
         availableTags={availableTags}
@@ -103,6 +105,8 @@ const FundView = () => {
         onTagToggle={toggleTag}
         onReset={resetFilters}
       />
+
+      {/* export button */}
       <div style={{ marginBottom: '1rem' }}>
         <button
           onClick={handleExport}
@@ -123,14 +127,19 @@ const FundView = () => {
         </button>
       </div>
 
+      {/* table or empty-state */}
       {filteredFunds.length === 0 ? (
         <p style={{ color: '#6b7280' }}>No funds match your current filter selection.</p>
       ) : (
         <FundTable funds={filteredFunds} onRowClick={setSelectedFund} />
       )}
 
+      {/* details modal */}
       {selectedFund && (
-        <FundDetailsModal fund={selectedFund} onClose={() => setSelectedFund(null)} />
+        <FundDetailsModal
+          fund={selectedFund}
+          onClose={() => setSelectedFund(null)}
+        />
       )}
     </div>
   );

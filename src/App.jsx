@@ -315,27 +315,39 @@ const App = () => {
         }
 
         const today = new Date().toISOString().slice(0, 10);
-
-        // attach minimal history for modal charts
+        // ─── attach minimal history for modal charts ──────────────────────────
         taggedFunds.forEach(fund => {
           const symbol = fund.cleanSymbol || fund.Symbol || fund.symbol;
+
+          // collect any prior history points for this symbol
           const prev = [];
           historySnapshots.forEach(snap => {
-            const match = snap.funds.find(f => (f.cleanSymbol || f.Symbol || f.symbol) === symbol);
+            const match = snap.funds.find(
+              f => (f.cleanSymbol || f.Symbol || f.symbol) === symbol
+            );
             if (match) {
+              // carry forward stored history array if it exists
               if (Array.isArray(match.history)) {
                 match.history.forEach(pt => {
                   if (!prev.some(p => p.date === pt.date)) prev.push(pt);
                 });
               } else if (match.scores?.final != null) {
+                // else, create a point from the previous snapshot score
                 if (!prev.some(p => p.date === snap.date)) {
                   prev.push({ date: snap.date, score: match.scores.final });
                 }
               }
             }
           });
+
+          // add today’s point and re-attach to fund
           const filteredPrev = prev.filter(p => p.date !== today);
-          fund.history = [...filteredPrev, { date: today, score: fund.scores.final }];
+          fund.history = [
+            ...filteredPrev,
+            { date: today, score: fund.scores.final }
+          ];
+        });
+
         });
 
         const newSnap = { date: today, funds: taggedFunds };
@@ -606,6 +618,7 @@ const App = () => {
 
       {/* Fund Scores Tab */}
       {activeTab === 'funds' && (
+
         fundData.length > 0 ? (
           <>
             <div>
@@ -630,6 +643,7 @@ const App = () => {
                       </p>
                     </div>
 
+
                   </div>
 
                   {/* Main table */}
@@ -647,6 +661,7 @@ const App = () => {
                           <th style={{ textAlign: 'center',padding: '0.75rem', fontWeight: 600 }}>Type</th>
                         </tr>
                       </thead>
+
 
                       <tbody>
                         {scoredFundData
@@ -719,6 +734,7 @@ const App = () => {
                 <p style={{ color: '#6b7280' }}>No scored funds to display.</p>
               )}
             </div>
+
             <FundView />
           </>
         ) : (
