@@ -5,13 +5,13 @@ const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
   /* ---------- core data ---------- */
-  const [fundData, setFundData]             = useState([]);
-  const [config, setConfig]                 = useState(defaultBenchmarks);
+  const [fundData, setFundData] = useState([]);
+  const [config, setConfig] = useState(defaultBenchmarks);
   const [historySnapshots, setHistorySnapshots] = useState([]); // monthly history
 
   /* ---------- filter state ---------- */
   const [selectedClass, setSelectedClass] = useState(null);
-  const [selectedTags,  setSelectedTags]  = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
 
   const toggleTag = tag =>
     setSelectedTags(prev =>
@@ -38,13 +38,16 @@ export const AppProvider = ({ children }) => {
   /* ---------- context value ---------- */
   const value = useMemo(
     () => ({
-      fundData, setFundData,
-      config,   setConfig,
-      historySnapshots, setHistorySnapshots,
-
+      fundData,
+      setFundData,
+      config,
+      setConfig,
+      historySnapshots,
+      setHistorySnapshots,
       availableClasses,
       availableTags,
-      selectedClass, setSelectedClass,
+      selectedClass,
+      setSelectedClass,
       selectedTags,
       toggleTag,
       resetFilters
