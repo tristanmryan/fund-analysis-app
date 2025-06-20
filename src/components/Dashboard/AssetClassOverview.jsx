@@ -81,6 +81,8 @@ const AssetClassOverview = ({ funds, config }) => {
 
     const trendData = getTrendData(assetClass);
 
+    const trendPoints = getTrendData(assetClass);
+
     return {
       assetClass,
       count,
@@ -91,7 +93,7 @@ const AssetClassOverview = ({ funds, config }) => {
       benchmarkTicker,
       color: scoreCol,
       tags,
-      trend: trendData
+      trend: trendPoints
     };
   });
 
