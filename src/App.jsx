@@ -1,8 +1,6 @@
 // App.jsx
 import React, { useState, useEffect, useContext } from 'react';
-
 import { RefreshCw, Settings, Plus, Trash2, LayoutGrid, AlertCircle, TrendingUp, Award, Clock, Database, Calendar } from 'lucide-react';
-
 import * as XLSX from 'xlsx';
 import { getStoredConfig, saveStoredConfig } from './data/storage';
 import {
@@ -301,14 +299,12 @@ const App = () => {
           fund.history = [...filteredPrev, { date: today, score: fund.scores.final }];
         });
 
-
         const newSnap = { date: today, funds: taggedFunds };
         setHistorySnapshots(prev => {
           const filtered = prev.filter(s => s.date !== today);
           return [...filtered, newSnap].slice(-24);
         });
         setCurrentSnapshotDate(today);
-
         setFundData(taggedFunds);
         setScoredFundData(taggedFunds);
         setBenchmarkData(benchmarks);
@@ -567,15 +563,12 @@ const App = () => {
 
       {/* Fund Scores Tab */}
       {activeTab === 'funds' && (
-
         fundData.length > 0 ? (
           <>
             <div>
               {scoredFundData.length > 0 ? (
                 <div>
-
                   {/* Header with title and subtitle */}
-
                   <div
                     style={{
                       display: 'flex',
@@ -589,12 +582,10 @@ const App = () => {
                         All Funds with Scores
                       </h2>
                       <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-
                         Scores calculated using weighted&nbsp;Z-score methodology within each asset class
                       </p>
                     </div>
                   </div>
-
 
                   {/* Main table */}
                   <div style={{ overflowX: 'auto' }}>
@@ -611,7 +602,6 @@ const App = () => {
                           <th style={{ textAlign: 'center', padding: '0.75rem', fontWeight: 600 }}>Type</th>
                         </tr>
                       </thead>
-
 
                       <tbody>
                         {scoredFundData

@@ -1,5 +1,4 @@
 import React, { useContext } from 'react';
-
 import { getScoreColor as scoreColor } from '../../services/scoring';
 import { Layers } from 'lucide-react';
 
@@ -36,9 +35,9 @@ const AssetClassOverview = ({ funds, config }) => {
           : null;
         return { date: snap.date, value: avg };
       })
-
       .filter((d) => d.value !== null);
   };
+
   const recommended = funds.filter(f => f.isRecommended);
   if (recommended.length === 0) return null;
 
@@ -66,6 +65,7 @@ const AssetClassOverview = ({ funds, config }) => {
     const avgStd     = std.length     ? (std.reduce((s, v) => s + v, 0) / std.length).toFixed(2)        : null;
 
     const benchmarkTicker = config?.[assetClass]?.ticker || '-';
+    const classColor      = scoreColor(avgScore);
 
     const color           = scoreColor(avgScore);
 
@@ -82,6 +82,8 @@ const AssetClassOverview = ({ funds, config }) => {
 
     const trendData = getTrendData(assetClass);
 
+    const trendData = getTrendData(assetClass);
+
     return {
       assetClass,
       count,
@@ -90,11 +92,9 @@ const AssetClassOverview = ({ funds, config }) => {
       avgExpense,
       avgStd,
       benchmarkTicker,
-      color,
+      color: classColor,
       tags,
-
       trend: trendData
-
     };
   });
 

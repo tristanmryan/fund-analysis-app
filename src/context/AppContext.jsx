@@ -13,13 +13,8 @@ export const AppProvider = ({ children }) => {
   const [selectedClass, setSelectedClass] = useState(null);
   const [selectedTags, setSelectedTags] = useState([]);
   // store benchmark configuration separately to avoid naming clashes
-  const [benchmarks, setBenchmarks] = useState(defaultBenchmarks);
+  const [benchmarksState, setBenchmarksState] = useState(defaultBenchmarks);
   const [snapshots, setSnapshots] = useState([]);
-
-  // store benchmark configuration separately to avoid naming clashes
-  const [benchmarks, setBenchmarks] = useState(defaultBenchmarks);
-
-  const [historySnapshots, setHistorySnapshots] = useState([]);
 
   const toggleTag = tag =>
     setSelectedTags(prev =>
@@ -48,8 +43,8 @@ export const AppProvider = ({ children }) => {
     () => ({
       fundData,
       setFundData,
-      config: benchmarks,
-      setConfig: setBenchmarks,
+      config: benchmarksState,
+      setConfig: setBenchmarksState,
       historySnapshots: snapshots,
       setHistorySnapshots: setSnapshots,
       availableClasses,
@@ -60,7 +55,7 @@ export const AppProvider = ({ children }) => {
       toggleTag,
       resetFilters
     }),
-    [fundData, benchmarks, snapshots, availableClasses, availableTags, selectedClass, selectedTags]
+    [fundData, benchmarksState, snapshots, availableClasses, availableTags, selectedClass, selectedTags]
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
