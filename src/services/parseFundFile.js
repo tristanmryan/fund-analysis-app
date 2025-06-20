@@ -75,7 +75,7 @@ export default async function parseFundFile(rows, options = {}) {
     }
     if (!assetClass) {
       const lookedUp = lookupAssetClass(symbolClean);
-      assetClass = lookedUp || 'Unknown';
+      assetClass = lookedUp == null ? 'Unknown' : lookedUp;
     }
 
     const assetClassFinal = assetClass || 'Unknown';

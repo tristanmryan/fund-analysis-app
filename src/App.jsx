@@ -16,7 +16,7 @@ import {
 } from './services/scoring';
 import { applyTagRules } from './services/tagEngine';
 import dataStore from './services/dataStore';
-import { loadAssetClassMap } from './services/dataLoader';
+import { loadAssetClassMap, lookupAssetClass } from './services/dataLoader';
 import parseFundFile from './services/parseFundFile';
 import FundScores from './components/Views/FundScores.jsx';
 import DashboardView from './components/Views/DashboardView.jsx';
