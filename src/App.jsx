@@ -168,6 +168,12 @@ const App = () => {
             }
           });
 
+          const assetClass = recommendedMatch
+            ? recommendedMatch.assetClass
+            : benchmarkForClass
+              ? benchmarkForClass
+              : lookupAssetClass(parsedSymbol);
+
           return {
             ...f,
             cleanSymbol: parsedSymbol,
