@@ -299,8 +299,10 @@ const METRIC_WEIGHTS = {
         metrics: extractMetrics(fund)
       }));
       
-      // Calculate statistics for the asset class
-      const statistics = calculateMetricStatistics(fundsWithMetrics);
+      // Calculate statistics for the asset class using peer funds only
+      // Benchmarks should not affect the averages or standard deviations
+      const peerFunds = fundsWithMetrics.filter(f => !f.isBenchmark);
+      const statistics = calculateMetricStatistics(peerFunds);
       
       // Calculate raw scores for all funds
       const fundsWithRawScores = fundsWithMetrics.map(fund => {
