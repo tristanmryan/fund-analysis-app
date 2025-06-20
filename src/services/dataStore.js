@@ -611,7 +611,7 @@ export async function clearAllData() {
   logAction('data_cleared', { timestamp: new Date().toISOString() });
 }
 
-export default {
+const dataStoreApi = {
   saveSnapshot,
   getAllSnapshots,
   getSnapshot,
@@ -627,3 +627,5 @@ export default {
   importData,
   clearAllData
 };
+
+export default dataStoreApi;
