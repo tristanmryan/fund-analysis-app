@@ -626,9 +626,9 @@ const App = () => {
                       </div>
                     </div>
                     <div>
-                      <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>Benchmark Score</div>
+                  <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>Benchmark Score</div>
                       <div style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
-                        {classSummaries[selectedClassView].benchmarkScore || 'N/A'}
+                        {scoredFundData.find(f => f['Asset Class'] === selectedClassView && f.isBenchmark)?.scores?.final ?? 'N/A'}
                       </div>
                     </div>
                     <div>
@@ -665,8 +665,8 @@ const App = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {benchmarkData[selectedClassView] && (
-                    <BenchmarkRow data={benchmarkData[selectedClassView]} />
+                  {scoredFundData.find(f => f['Asset Class'] === selectedClassView && f.isBenchmark) && (
+                    <BenchmarkRow fund={scoredFundData.find(f => f['Asset Class'] === selectedClassView && f.isBenchmark)} />
                   )}
                   {scoredFundData
                     .filter(f => f['Asset Class'] === selectedClassView && !f.isBenchmark)

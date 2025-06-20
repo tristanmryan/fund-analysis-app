@@ -13,7 +13,8 @@ test('BUYZ metrics parsed correctly', async () => {
   const buyz = result.find(r => r.Symbol === 'BUYZ');
   expect(buyz).toBeDefined();
   expect(typeof buyz.ytd).toBe('number');
-  expect(buyz.ytd).toBeCloseTo(28.12, 2);
+  expect(buyz.ytd).toBeCloseTo(5.31, 2);
+  expect(buyz.ytd).not.toBeCloseTo(buyz.oneYear ?? 0, 2);
   expect(buyz['Net Expense Ratio']).toBeCloseTo(0.5);
   expect(typeof buyz['3 Year']).toBe('number');
 });

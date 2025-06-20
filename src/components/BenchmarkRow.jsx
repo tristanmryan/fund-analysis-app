@@ -24,12 +24,13 @@ const ScoreBadge = ({ score }) => {
   );
 };
 
-const BenchmarkRow = ({ data }) => {
-  if (!data) return null;
+const BenchmarkRow = ({ data, fund }) => {
+  const row = data || fund;
+  if (!row) return null;
   return (
     <tr style={{ backgroundColor: '#f3f4f6', fontWeight: 600 }}>
       <td style={{ padding: '0.75rem' }}>
-        {data.Symbol}
+        {row.Symbol}
         <span
           style={{
             marginLeft: '0.5rem',
@@ -44,30 +45,30 @@ const BenchmarkRow = ({ data }) => {
           Benchmark
         </span>
       </td>
-      <td style={{ padding: '0.75rem' }}>{data['Fund Name'] || data.name}</td>
+      <td style={{ padding: '0.75rem' }}>{row['Fund Name'] || row.name}</td>
       <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-        {data.scores ? <ScoreBadge score={data.scores.final} /> : '-'}
+        {row.scores ? <ScoreBadge score={row.scores.final} /> : '-'}
       </td>
       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-        {fmtPct(data.ytd ?? data.YTD)}
+        {fmtPct(row.ytd ?? row.YTD)}
       </td>
       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-        {fmtPct(data.oneYear ?? data['1 Year'])}
+        {fmtPct(row.oneYear ?? row['1 Year'])}
       </td>
       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-        {fmtPct(data.threeYear ?? data['3 Year'])}
+        {fmtPct(row.threeYear ?? row['3 Year'])}
       </td>
       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-        {fmtPct(data.fiveYear ?? data['5 Year'])}
+        {fmtPct(row.fiveYear ?? row['5 Year'])}
       </td>
       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-        {fmtNumber(data.sharpe ?? data['Sharpe Ratio'])}
+        {fmtNumber(row.sharpe ?? row['Sharpe Ratio'])}
       </td>
       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-        {fmtPct(data.stdDev5y ?? data['Standard Deviation'])}
+        {fmtPct(row.stdDev5y ?? row['Standard Deviation'])}
       </td>
       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-        {fmtPct(data.expense ?? data['Net Expense Ratio'])}
+        {fmtPct(row.expense ?? row['Net Expense Ratio'])}
       </td>
     </tr>
   );

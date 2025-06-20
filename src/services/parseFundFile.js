@@ -24,8 +24,16 @@ export default async function parseFundFile(rows, options = {}) {
     if (headerLower.includes('symbol')) columnMap.Symbol = idx;
     if (headerLower.includes('product name')) columnMap['Fund Name'] = idx;
     if (headerLower === 'asset class') columnMap['Asset Class'] = idx;
-    if (headerLower.includes('ytd')) columnMap.YTD = idx;
-    if (headerLower.includes('1 year')) columnMap['1 Year'] = idx;
+    if (
+      (headerLower === 'ytd return' || headerLower.includes('total return - ytd')) &&
+      !headerLower.includes('category')
+    )
+      columnMap.YTD = idx;
+    if (
+      (headerLower === '1 year return' || headerLower.includes('total return - 1 year')) &&
+      !headerLower.includes('category')
+    )
+      columnMap['1 Year'] = idx;
     if (headerLower.includes('3 year')) columnMap['3 Year'] = idx;
     if (headerLower.includes('5 year')) columnMap['5 Year'] = idx;
     if (headerLower.includes('sharpe')) columnMap['Sharpe Ratio'] = idx;
@@ -90,8 +98,8 @@ export default async function parseFundFile(rows, options = {}) {
 
     const assetClassFinal = assetClass || 'Unknown';
 
-    const ytd = cleanNumber(f['1 Year']);
-    const oneYear = cleanNumber(f['1 Year']);
+    const ytd = cleanNumber(f.YTD ?? f['YTD Return']);
+    const oneYear = cleanNumber(f['1 Year'] ?? f['1 Year Return']);
     const threeYear = cleanNumber(f['3 Year']);
     const fiveYear = cleanNumber(f['5 Year']);
     const sharpe = cleanNumber(f['Sharpe Ratio']);
