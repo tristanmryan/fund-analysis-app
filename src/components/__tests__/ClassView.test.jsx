@@ -2,7 +2,7 @@ import { render, screen, within } from '@testing-library/react';
 import BenchmarkRow from '../BenchmarkRow.jsx';
 
 const funds = [
-  { Symbol: 'IWF', 'Fund Name': 'Russell 1000 Growth', scores: { final: 60 } },
+  { Symbol: 'IWF', 'Fund Name': 'Russell 1000 Growth', scores: { final: 60 }, YTD: 3 },
   { Symbol: 'AAA', 'Fund Name': 'Fund A', scores: { final: 70 }, '1 Year': 12 },
 ];
 

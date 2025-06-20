@@ -17,9 +17,9 @@ describe('parseFundFile', () => {
       ['APDJX', 'Artisan International Small-Mid', '0.12', 'MF', '18.05']
     ];
     const result = await parseFundFile(rows);
-    expect(result[0].Expense).toBeCloseTo(0.04);
+    expect(result[0]['Net Expense Ratio']).toBeCloseTo(0.04);
     expect(result[0].Type).toBe('MF');
-    expect(result[0]['Std Dev (5Y)']).toBeCloseTo(18.05);
+    expect(result[0]['Standard Deviation']).toBeCloseTo(18.05);
     expect(result[0]['Asset Class']).toBe('Large Cap Blend');
     expect(result[1]['Asset Class']).toBe('International Stock (Small/Mid Cap)');
   });

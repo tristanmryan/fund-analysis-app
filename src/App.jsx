@@ -156,9 +156,9 @@ const App = () => {
 
         const clean = s => s?.toUpperCase().trim().replace(/[^A-Z0-9]/g, '');
 
-        const withClassAndFlags = parsedFunds.map(f => {
-          const parsedSymbol = clean(f.Symbol);
-          const recommendedMatch = recommendedFunds.find(r => clean(r.symbol) === parsedSymbol);
+          let withClassAndFlags = parsedFunds.map(f => {
+            const parsedSymbol = clean(f.Symbol);
+            const recommendedMatch = recommendedFunds.find(r => clean(r.symbol) === parsedSymbol);
 
           let isBenchmark = false;
           let benchmarkForClass = null;
@@ -169,7 +169,7 @@ const App = () => {
             }
           });
 
-          const assetClass = recommendedMatch
+          const resolvedClass = recommendedMatch
             ? recommendedMatch.assetClass
             : benchmarkForClass
               ? benchmarkForClass
@@ -181,8 +181,26 @@ const App = () => {
             isRecommended: !!recommendedMatch,
             isBenchmark,
             benchmarkForClass,
+            'Asset Class': resolvedClass || f['Asset Class'],
+            assetClass: resolvedClass || f['Asset Class'],
           };
-        });
+          });
+
+          // ensure benchmark rows exist
+          Object.entries(assetClassBenchmarks).forEach(([ac, { ticker }]) => {
+            const tickerClean = clean(ticker);
+            if (!withClassAndFlags.some(f => f.cleanSymbol === tickerClean)) {
+              withClassAndFlags.push({
+                Symbol: ticker,
+                'Fund Name': assetClassBenchmarks[ac].name,
+                'Asset Class': ac,
+                assetClass: ac,
+                cleanSymbol: tickerClean,
+                isBenchmark: true,
+                benchmarkForClass: ac,
+              });
+            }
+          });
 
         const scoredFunds = calculateScores(withClassAndFlags);
 
@@ -636,6 +654,7 @@ const App = () => {
                     <th style={{ padding: '0.75rem', textAlign: 'left' }}>Symbol</th>
                     <th style={{ padding: '0.75rem', textAlign: 'left' }}>Name</th>
                     <th style={{ padding: '0.75rem', textAlign: 'center' }}>Score</th>
+                    <th style={{ padding: '0.75rem', textAlign: 'right' }}>YTD</th>
                     <th style={{ padding: '0.75rem', textAlign: 'right' }}>1Y</th>
                     <th style={{ padding: '0.75rem', textAlign: 'right' }}>3Y</th>
                     <th style={{ padding: '0.75rem', textAlign: 'right' }}>5Y</th>
@@ -676,29 +695,32 @@ const App = () => {
                           )}
                         </td>
                         <td style={{ padding: '0.75rem' }}>{fund['Fund Name']}</td>
-                        <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-                          {fund.scores ? (
-                            <ScoreBadge score={fund.scores.final} />
-                          ) : '-'}
-                        </td>
-                        <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                          {fund['1 Year']?.toFixed(2) ?? 'N/A'}%
-                        </td>
-                        <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                          {fund['3 Year']?.toFixed(2) ?? 'N/A'}%
-                        </td>
-                        <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                          {fund['5 Year']?.toFixed(2) ?? 'N/A'}%
-                        </td>
-                        <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                          {fund['Sharpe Ratio']?.toFixed(2) ?? 'N/A'}
-                        </td>
-                        <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                          {fund['Standard Deviation']?.toFixed(2) ?? 'N/A'}%
-                        </td>
-                        <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                          {fund['Net Expense Ratio']?.toFixed(2) ?? 'N/A'}%
-                        </td>
+                          <td style={{ padding: '0.75rem', textAlign: 'center' }}>
+                            {fund.scores ? (
+                              <ScoreBadge score={fund.scores.final} />
+                            ) : '-'}
+                          </td>
+                          <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+                            {fund.YTD != null ? `${fund.YTD.toFixed(2)}%` : 'N/A'}
+                          </td>
+                          <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+                            {fund['1 Year'] != null ? `${fund['1 Year'].toFixed(2)}%` : 'N/A'}
+                          </td>
+                          <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+                            {fund['3 Year'] != null ? `${fund['3 Year'].toFixed(2)}%` : 'N/A'}
+                          </td>
+                          <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+                            {fund['5 Year'] != null ? `${fund['5 Year'].toFixed(2)}%` : 'N/A'}
+                          </td>
+                          <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+                            {fund['Sharpe Ratio'] != null ? fund['Sharpe Ratio'].toFixed(2) : 'N/A'}
+                          </td>
+                          <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+                            {fund['Standard Deviation'] != null ? `${fund['Standard Deviation'].toFixed(2)}%` : 'N/A'}
+                          </td>
+                          <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+                            {fund['Net Expense Ratio'] != null ? `${fund['Net Expense Ratio'].toFixed(2)}%` : 'N/A'}
+                          </td>
                       </tr>
                     ))}
                 </tbody>

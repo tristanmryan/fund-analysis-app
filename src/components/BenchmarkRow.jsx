@@ -48,13 +48,16 @@ const BenchmarkRow = ({ data }) => {
         {data.scores ? <ScoreBadge score={data.scores.final} /> : '-'}
       </td>
       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-        {data['1 Year']?.toFixed(2) ?? 'N/A'}%
+        {data.YTD != null ? `${data.YTD.toFixed(2)}%` : 'N/A'}
       </td>
       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-        {data['3 Year']?.toFixed(2) ?? 'N/A'}%
+        {data['1 Year'] != null ? `${data['1 Year'].toFixed(2)}%` : 'N/A'}
       </td>
       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-        {data['5 Year']?.toFixed(2) ?? 'N/A'}%
+        {data['3 Year'] != null ? `${data['3 Year'].toFixed(2)}%` : 'N/A'}
+      </td>
+      <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+        {data['5 Year'] != null ? `${data['5 Year'].toFixed(2)}%` : 'N/A'}
       </td>
       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
         {data['Sharpe Ratio']?.toFixed(2) ?? 'N/A'}
