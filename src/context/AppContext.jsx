@@ -1,5 +1,6 @@
 import React, { createContext, useState, useMemo } from 'react';
 import { assetClassBenchmarks as defaultBenchmarks } from '../data/config';
+import { getAssetClassOptions } from '../services/dataLoader';
 
 const AppContext = createContext();
 
@@ -27,11 +28,7 @@ export const AppProvider = ({ children }) => {
   };
 
   /* ---------- derived options ---------- */
-  const availableClasses = useMemo(
-    () =>
-      [...new Set(fundData.map(f => f['Asset Class'] || f.assetClass).filter(Boolean))].sort(),
-    [fundData]
-  );
+  const availableClasses = useMemo(() => getAssetClassOptions(fundData), [fundData]);
 
   const availableTags = useMemo(
     () => [...new Set(fundData.flatMap(f => f.tags || []))].sort(),
