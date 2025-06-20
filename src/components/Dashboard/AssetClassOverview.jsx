@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 
-import { getScoreColor } from '../../services/scoring';
+import { getScoreColor as scoreColor } from '../../services/scoring';
 
 import { Layers } from 'lucide-react';
 
@@ -8,7 +8,6 @@ import { getScoreColor } from '../../services/scoring';
 import TagList from '../TagList.jsx';
 import { LineChart, Line } from 'recharts';
 import AppContext from '../../context/AppContext.jsx';
-
 
 
 /**
@@ -74,8 +73,10 @@ const AssetClassOverview = ({ funds, config }) => {
     const avgStd     = std.length     ? (std.reduce((s, v) => s + v, 0) / std.length).toFixed(2)        : null;
 
     const benchmarkTicker = config?.[assetClass]?.ticker || '-';
-    const color = getScoreColor(avgScore);
-    const tags  = Array.from(new Set(classFunds.flatMap(f => f.tags || [])));
+
+    const color           = scoreColor(avgScore);
+
+
     const trend = getTrendData(assetClass);
 
     const trend = getTrendData(assetClass);

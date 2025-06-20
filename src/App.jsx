@@ -612,6 +612,7 @@ const App = () => {
                         </tr>
                       </thead>
 
+
                       <tbody>
                         {scoredFundData
                           .sort((a, b) => (b.scores?.final || 0) - (a.scores?.final || 0))
@@ -1198,7 +1199,7 @@ const App = () => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            if (confirm('Delete this snapshot?')) {
+                            if (window.confirm('Delete this snapshot?')) {
                               dataStore.deleteSnapshot(snapshot.id).then(() => {
                                 loadSnapshots();
                               });

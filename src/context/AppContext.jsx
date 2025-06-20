@@ -12,7 +12,10 @@ export const AppProvider = ({ children }) => {
   /* ---------- filter state ---------- */
   const [selectedClass, setSelectedClass] = useState(null);
   const [selectedTags, setSelectedTags] = useState([]);
-  const [config, setConfig] = useState(defaultBenchmarks);
+
+  // store benchmark configuration separately to avoid naming clashes
+  const [benchmarks, setBenchmarks] = useState(defaultBenchmarks);
+
   const [historySnapshots, setHistorySnapshots] = useState([]);
 
   const toggleTag = tag =>
@@ -42,8 +45,10 @@ export const AppProvider = ({ children }) => {
     () => ({
       fundData,
       setFundData,
-      config,
-      setConfig,
+
+      config: benchmarks,
+      setConfig: setBenchmarks,
+
       historySnapshots,
       setHistorySnapshots,
       availableClasses,
@@ -55,7 +60,7 @@ export const AppProvider = ({ children }) => {
       resetFilters
     }),
 
-    [fundData, config, historySnapshots, availableClasses, availableTags, selectedClass, selectedTags]
+    [fundData, benchmarks, historySnapshots, availableClasses, availableTags, selectedClass, selectedTags]
 
   );
 
