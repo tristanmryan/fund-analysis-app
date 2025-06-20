@@ -258,10 +258,11 @@ const METRIC_WEIGHTS = {
    * @returns {Array<Object>} Funds with calculated scores
    */
   export function calculateScores(funds) {
-    // Group funds by asset class
+    // Group funds by asset class and ignore rows explicitly marked as Benchmark
     const fundsByClass = {};
     funds.forEach(fund => {
       const assetClass = fund['Asset Class'] || 'Unknown';
+      if (assetClass === 'Benchmark') return;
       if (!fundsByClass[assetClass]) {
         fundsByClass[assetClass] = [];
       }
@@ -344,21 +345,22 @@ const METRIC_WEIGHTS = {
    * @returns {Object} Summary statistics
    */
   export function generateClassSummary(funds) {
-    const scores = funds.map(f => f.scores?.final || 0);
     const benchmarkFund = funds.find(f => f.isBenchmark);
-    
+    const peers = funds.filter(f => !f.isBenchmark);
+    const scores = peers.map(f => f.scores?.final || 0);
+
     const sortedScores = [...scores].sort((a, b) => a - b);
     const medianIndex = Math.floor(sortedScores.length / 2);
     
     return {
-      fundCount: funds.length,
+      fundCount: peers.length,
       averageScore: Math.round(calculateMean(scores)),
       medianScore: sortedScores[medianIndex] || 0,
-      topPerformer: funds.reduce((best, fund) => 
-        (fund.scores?.final || 0) > (best.scores?.final || 0) ? fund : best, funds[0]
+      topPerformer: peers.reduce((best, fund) =>
+        (fund.scores?.final || 0) > (best.scores?.final || 0) ? fund : best, peers[0]
       ),
-      bottomPerformer: funds.reduce((worst, fund) => 
-        (fund.scores?.final || 0) < (worst.scores?.final || 0) ? fund : worst, funds[0]
+      bottomPerformer: peers.reduce((worst, fund) =>
+        (fund.scores?.final || 0) < (worst.scores?.final || 0) ? fund : worst, peers[0]
       ),
       benchmarkScore: benchmarkFund?.scores?.final,
       distribution: {
