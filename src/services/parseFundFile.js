@@ -73,7 +73,10 @@ export default async function parseFundFile(rows, options = {}) {
         }
       }
     }
-    if (!assetClass) assetClass = lookupAssetClass(symbolClean);
+    if (!assetClass) {
+      const lookedUp = lookupAssetClass(symbolClean);
+      assetClass = lookedUp || 'Unknown';
+    }
 
     const assetClassFinal = assetClass || 'Unknown';
 

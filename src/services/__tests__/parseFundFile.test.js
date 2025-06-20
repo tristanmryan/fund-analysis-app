@@ -23,4 +23,13 @@ describe('parseFundFile', () => {
     expect(result[0]['Asset Class']).toBe('Large Cap Blend');
     expect(result[1]['Asset Class']).toBe('International Stock (Small/Mid Cap)');
   });
+
+  test('does not throw and sets assetClass', async () => {
+    const rows = [
+      ['Symbol', 'Product Name', 'Net Exp Ratio (%)'],
+      ['VFIAX', 'Vanguard 500 Index Admiral', '0.04']
+    ];
+    const result = await parseFundFile(rows);
+    expect(result[0].assetClass).toBeTruthy();
+  });
 });
