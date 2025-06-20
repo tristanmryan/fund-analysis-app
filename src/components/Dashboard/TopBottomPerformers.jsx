@@ -40,7 +40,7 @@ const FundRow = ({ fund }) => (
   <tr style={{ borderBottom: '1px solid #f3f4f6' }}>
     <td style={{ padding: '0.5rem' }}>{fund['Fund Name']}</td>
     <td style={{ padding: '0.5rem' }}>{fund.Symbol}</td>
-    <td style={{ padding: '0.5rem' }}>{fund['Asset Class']}</td>
+    <td style={{ padding: '0.5rem' }}>{fund.assetClass}</td>
     <td style={{ padding: '0.5rem', textAlign: 'center' }}>
       <ScoreBadge score={fund.scores?.final || 0} />
     </td>

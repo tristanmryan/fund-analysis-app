@@ -106,11 +106,11 @@ export default async function parseFundFile(rows, options = {}) {
     const stdDev5y = cleanNumber(f['Standard Deviation']);
     const expense = cleanNumber(f['Net Expense Ratio']);
 
-    return {
+    const row = {
       Symbol: f.Symbol,
       'Fund Name': f['Fund Name'],
-      'Asset Class': assetClassFinal,
       assetClass: assetClassFinal,
+      'Asset Class': assetClassFinal,
       YTD: ytd,
       '1 Year': oneYear,
       '3 Year': threeYear,
@@ -128,5 +128,8 @@ export default async function parseFundFile(rows, options = {}) {
       stdDev5y,
       expense,
     };
+    // keep header-style copy for legacy filters/exports
+    row['Asset Class'] = row.assetClass;
+    return row;
   });
 }
