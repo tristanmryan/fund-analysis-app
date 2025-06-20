@@ -6,6 +6,8 @@ import { Layers } from 'lucide-react';
 
 import { getScoreColor } from '../../services/scoring';
 import TagList from '../TagList.jsx';
+import { LineChart, Line } from 'recharts';
+import AppContext from '../../context/AppContext.jsx';
 
 import { LineChart, Line } from 'recharts';
 
@@ -76,6 +78,8 @@ const AssetClassOverview = ({ funds, config }) => {
     const benchmarkTicker = config?.[assetClass]?.ticker || '-';
     const color = getScoreColor(avgScore);
     const tags  = Array.from(new Set(classFunds.flatMap(f => f.tags || [])));
+    const trend = getTrendData(assetClass);
+
     const trend = getTrendData(assetClass);
 
     const trend = getTrendData(assetClass);

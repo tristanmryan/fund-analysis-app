@@ -1,6 +1,8 @@
 // App.jsx
 import React, { useState, useEffect, useContext } from 'react';
-import { Upload, RefreshCw, Settings, Plus, Trash2, LayoutGrid, AlertCircle, TrendingUp, Award, Clock, Database, Calendar, ArrowUpDown } from 'lucide-react';
+
+import { Upload, RefreshCw, Settings, Plus, Trash2, LayoutGrid, AlertCircle, TrendingUp, Award, Clock, Database, Calendar } from 'lucide-react';
+
 import * as XLSX from 'xlsx';
 import { getStoredConfig, saveStoredConfig } from './data/storage';
 import {
@@ -299,16 +301,13 @@ const App = () => {
           fund.history = [...filteredPrev, { date: today, score: fund.scores.final }];
         });
 
-// (…you’re still inside the file-upload handler…)
 
-const newSnap = { date: today, funds: taggedFunds };
-
-setHistorySnapshots(prev => {
-  const filtered = prev.filter(s => s.date !== today);
-  return [...filtered, newSnap].slice(-24); // keep only 2 years of monthly snapshots
-});
-
-setCurrentSnapshotDate(today); // mark this as the latest processed file
+        const newSnap = { date: today, funds: taggedFunds };
+        setHistorySnapshots(prev => {
+          const filtered = prev.filter(s => s.date !== today);
+          return [...filtered, newSnap].slice(-24);
+        });
+        setCurrentSnapshotDate(today);
 
         setFundData(taggedFunds);
         setScoredFundData(taggedFunds);
@@ -595,6 +594,7 @@ setCurrentSnapshotDate(today); // mark this as the latest processed file
                       </p>
                     </div>
                   </div>
+
 
                   {/* Main table */}
                   <div style={{ overflowX: 'auto' }}>
