@@ -1,5 +1,6 @@
 import React from 'react';
 import { getScoreColor, getScoreLabel } from '../services/scoring';
+import { fmtPct, fmtNumber } from '../utils/formatters';
 
 const ScoreBadge = ({ score }) => {
   const color = getScoreColor(score);
@@ -23,12 +24,13 @@ const ScoreBadge = ({ score }) => {
   );
 };
 
-const BenchmarkRow = ({ data }) => {
-  if (!data) return null;
+const BenchmarkRow = ({ data, fund }) => {
+  const row = data || fund;
+  if (!row) return null;
   return (
     <tr style={{ backgroundColor: '#f3f4f6', fontWeight: 600 }}>
       <td style={{ padding: '0.75rem' }}>
-        {data.Symbol}
+        {row.Symbol}
         <span
           style={{
             marginLeft: '0.5rem',
@@ -43,30 +45,30 @@ const BenchmarkRow = ({ data }) => {
           Benchmark
         </span>
       </td>
-      <td style={{ padding: '0.75rem' }}>{data['Fund Name'] || data.name}</td>
+      <td style={{ padding: '0.75rem' }}>{row['Fund Name'] || row.name}</td>
       <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-        {data.scores ? <ScoreBadge score={data.scores.final} /> : '-'}
+        {row.scores ? <ScoreBadge score={row.scores.final} /> : '-'}
       </td>
       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-        {data.YTD != null ? `${data.YTD.toFixed(2)}%` : 'N/A'}
+        {fmtPct(row.ytd ?? row.YTD)}
       </td>
       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-        {data['1 Year'] != null ? `${data['1 Year'].toFixed(2)}%` : 'N/A'}
+        {fmtPct(row.oneYear ?? row['1 Year'])}
       </td>
       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-        {data['3 Year'] != null ? `${data['3 Year'].toFixed(2)}%` : 'N/A'}
+        {fmtPct(row.threeYear ?? row['3 Year'])}
       </td>
       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-        {data['5 Year'] != null ? `${data['5 Year'].toFixed(2)}%` : 'N/A'}
+        {fmtPct(row.fiveYear ?? row['5 Year'])}
       </td>
       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-        {data['Sharpe Ratio']?.toFixed(2) ?? 'N/A'}
+        {fmtNumber(row.sharpe ?? row['Sharpe Ratio'])}
       </td>
       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-        {data['Standard Deviation']?.toFixed(2) ?? 'N/A'}%
+        {fmtPct(row.stdDev5y ?? row['Standard Deviation'])}
       </td>
       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-        {data['Net Expense Ratio']?.toFixed(2) ?? 'N/A'}%
+        {fmtPct(row.expense ?? row['Net Expense Ratio'])}
       </td>
     </tr>
   );
