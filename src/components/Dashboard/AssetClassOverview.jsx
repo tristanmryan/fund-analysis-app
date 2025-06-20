@@ -62,9 +62,11 @@ const AssetClassOverview = ({ funds, config }) => {
     const benchmarkTicker = config?.[assetClass]?.ticker || '-';
     const scoreCol        = scoreColor(avgScore);
 
+
     const tags = Array.from(
       new Set(classFunds.flatMap(f => (Array.isArray(f.tags) ? f.tags : [])))
     );
+
 
     const trendPoints = getTrendData(assetClass);
 
