@@ -623,7 +623,6 @@ const App = () => {
                                 backgroundColor: fund.isRecommended ? '#eff6ff' : 'white',
                                 cursor: 'pointer'
                               }}
-                              onClick={() => setSelectedFundForDetails(fund)}
                             >
                               <td style={{ padding: '0.75rem', fontWeight: fund.isBenchmark ? 'bold' : 'normal' }}>
                                 {fund.Symbol}
