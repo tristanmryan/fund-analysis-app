@@ -1,14 +1,18 @@
 import React, { useContext } from 'react';
 import { getScoreColor as scoreColor } from '../../services/scoring';
 import { Layers } from 'lucide-react';
+
+import { getScoreColor } from '../../services/scoring';
 import TagList from '../TagList.jsx';
 import { LineChart, Line } from 'recharts';
 import AppContext from '../../context/AppContext.jsx';
 
 /**
  * Show summary cards for each asset class.
- *  - funds   : array of all loaded fund objects with scores and metrics
- *  - config  : object mapping asset classes to benchmark info { ticker, name }
+ *
+ *  props
+ *    ─ funds   : array of all loaded fund objects with scores & metrics
+ *    ─ config  : object mapping asset classes to benchmark info { ticker, name }
  */
 const AssetClassOverview = ({ funds, config }) => {
   const { historySnapshots } = useContext(AppContext);
@@ -37,7 +41,6 @@ const AssetClassOverview = ({ funds, config }) => {
   const recommended = funds.filter(f => f.isRecommended);
   if (recommended.length === 0) return null;
 
-  /* ---------- group funds by asset class ---------- */
   const byClass = {};
   recommended.forEach(f => {
     const assetClass = f['Asset Class'] || 'Uncategorized';
@@ -45,26 +48,36 @@ const AssetClassOverview = ({ funds, config }) => {
     byClass[assetClass].push(f);
   });
 
-  /* ---------- build summary info per class ---------- */
   const classInfo = Object.entries(byClass).map(([assetClass, classFunds]) => {
-    const count     = classFunds.length;
-    const scoreSum  = classFunds.reduce((s, f) => s + (f.scores?.final || 0), 0);
-    const avgScore  = count ? Math.round(scoreSum / count) : 0;
+    const count = classFunds.length;
+    const scoreSum = classFunds.reduce(
+      (s, f) => s + (f.scores?.final || 0),
+      0
+    );
+    const avgScore = count ? Math.round(scoreSum / count) : 0;
 
-    const sharpeVals  = classFunds.map(f => f.metrics?.sharpeRatio3Y).filter(v => v != null && !isNaN(v));
-    const expenseVals = classFunds.map(f => f.metrics?.expenseRatio).filter(v => v != null && !isNaN(v));
-    const stdVals     = classFunds.map(f => f.metrics?.stdDev3Y).filter(v => v != null && !isNaN(v));
+    const sharpe  = classFunds.map(f => f.metrics?.sharpeRatio3Y).filter(v => !isNaN(v));
+    const expense = classFunds.map(f => f.metrics?.expenseRatio).filter(v => !isNaN(v));
+    const std     = classFunds.map(f => f.metrics?.stdDev3Y).filter(v => !isNaN(v));
 
-    const avgSharpe  = sharpeVals.length  ? (sharpeVals.reduce((s, v)  => s + v, 0) / sharpeVals.length ).toFixed(2) : null;
-    const avgExpense = expenseVals.length ? (expenseVals.reduce((s, v) => s + v, 0) / expenseVals.length).toFixed(2) : null;
-    const avgStd     = stdVals.length     ? (stdVals.reduce((s, v)     => s + v, 0) / stdVals.length    ).toFixed(2) : null;
+    const avgSharpe  = sharpe.length  ? (sharpe.reduce((s, v) => s + v, 0) / sharpe.length).toFixed(2)  : null;
+    const avgExpense = expense.length ? (expense.reduce((s, v) => s + v, 0) / expense.length).toFixed(2) : null;
+    const avgStd     = std.length     ? (std.reduce((s, v) => s + v, 0) / std.length).toFixed(2)        : null;
 
     const benchmarkTicker = config?.[assetClass]?.ticker || '-';
     const scoreCol        = scoreColor(avgScore);
 
-    const tags = Array.from(
-      new Set(classFunds.flatMap(f => (Array.isArray(f.tags) ? f.tags : [])))
-    );
+    const trend = getTrendData(assetClass);
+
+    const trend = getTrendData(assetClass);
+
+    const trend = getTrendData(assetClass);
+
+    const trend = getTrendData(assetClass);
+
+    const trendData = getTrendData(assetClass);
+
+    const trendData = getTrendData(assetClass);
 
     const trendData = getTrendData(assetClass);
 
