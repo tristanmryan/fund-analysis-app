@@ -94,6 +94,7 @@ const FundView = () => {
 
   return (
     <div>
+      {/* filter bar */}
       <GlobalFilterBar
         availableClasses={availableClasses}
         availableTags={availableTags}
