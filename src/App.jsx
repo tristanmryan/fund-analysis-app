@@ -1,6 +1,6 @@
 // App.jsx
 import React, { useState, useEffect, useContext } from 'react';
-import { Upload, RefreshCw, Settings, Plus, Trash2, LayoutGrid, AlertCircle, TrendingUp, Award, Clock, Database, Calendar, Download, ArrowUpDown } from 'lucide-react';
+import { RefreshCw, Settings, Plus, Trash2, LayoutGrid, AlertCircle, TrendingUp, Award, Clock, Database, Calendar } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { getStoredConfig, saveStoredConfig } from './data/storage';
 import {
@@ -15,10 +15,10 @@ import {
   getScoreLabel,
   METRICS_CONFIG
 } from './services/scoring';
-import { exportToExcel } from './services/exportService';
 import { applyTagRules } from './services/tagEngine';
 import dataStore from './services/dataStore';
 import FundView from './components/Views/FundView.jsx';
+import DashboardView from './components/Views/DashboardView.jsx';
 import AppContext from './context/AppContext.jsx';
 
 // Score badge component for visual display
@@ -75,13 +75,17 @@ const App = () => {
   const {
     fundData,
     setFundData,
+    config,
+    setConfig,
     selectedClass,
     setSelectedClass,
     selectedTags,
     toggleTag,
     resetFilters,
     availableClasses,
-    availableTags
+    availableTags,
+    historySnapshots,
+    setHistorySnapshots,
   } = useContext(AppContext);
 
   const [scoredFundData, setScoredFundData] = useState([]);
@@ -102,6 +106,19 @@ const App = () => {
   const [recommendedFunds, setRecommendedFunds] = useState([]);
   const [assetClassBenchmarks, setAssetClassBenchmarks] = useState({});
 
+  // Load history snapshots from localStorage on startup
+  useEffect(() => {
+    const stored = JSON.parse(localStorage.getItem('ls_history') || '[]');
+    if (stored.length > 0) {
+      setHistorySnapshots(stored);
+    }
+  }, []);
+
+  // Persist history snapshots to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('ls_history', JSON.stringify(historySnapshots));
+  }, [historySnapshots]);
+
   // Initialize configuration
   useEffect(() => {
     const initializeConfig = async () => {
@@ -110,6 +127,7 @@ const App = () => {
       const initializedBenchmarks = savedBenchmarks || defaultBenchmarks;
       setRecommendedFunds(initializedFunds);
       setAssetClassBenchmarks(initializedBenchmarks);
+      setConfig(initializedBenchmarks);
       await saveStoredConfig(initializedFunds, initializedBenchmarks);
     };
     
@@ -120,6 +138,7 @@ const App = () => {
   useEffect(() => {
     if (recommendedFunds.length > 0 || Object.keys(assetClassBenchmarks).length > 0) {
       saveStoredConfig(recommendedFunds, assetClassBenchmarks);
+      setConfig(assetClassBenchmarks);
     }
   }, [recommendedFunds, assetClassBenchmarks]);
 
@@ -155,10 +174,9 @@ const App = () => {
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
         // Find header row (looking for Symbol/CUSIP)
-        let headerRowIndex = jsonData.findIndex(row => 
+        let headerRowIndex = jsonData.findIndex(row =>
           row.some(cell => typeof cell === 'string' && cell.includes('Symbol'))
         );
-        
         if (headerRowIndex === -1) {
           throw new Error('Could not find header row with Symbol column');
         }
@@ -166,23 +184,17 @@ const App = () => {
         const headers = jsonData[headerRowIndex];
         const dataRows = jsonData.slice(headerRowIndex + 1);
 
-        // Create comprehensive column mapping
         const columnMap = {};
         headers.forEach((header, index) => {
           if (typeof header === 'string') {
-            // Basic fields
             if (header.includes('Symbol')) columnMap['Symbol'] = index;
             if (header.includes('Product Name')) columnMap['Fund Name'] = index;
             if (header.includes('Asset Class')) columnMap['Asset Class'] = index;
-            
-            // Performance metrics
             if (header.includes('YTD')) columnMap['YTD'] = index;
             if (header.includes('1 Year') || header.includes('1 Yr')) columnMap['1 Year'] = index;
             if (header.includes('3 Year') || header.includes('3 Yr')) columnMap['3 Year'] = index;
             if (header.includes('5 Year') || header.includes('5 Yr')) columnMap['5 Year'] = index;
             if (header.includes('10 Year') || header.includes('10 Yr')) columnMap['10 Year'] = index;
-            
-            // Risk metrics
             if (header.includes('Alpha')) columnMap['Alpha'] = index;
             if (header.includes('Sharpe')) columnMap['Sharpe Ratio'] = index;
             if (header.includes('Standard Deviation') || header.includes('Std Dev')) {
@@ -190,14 +202,11 @@ const App = () => {
             }
             if (header.includes('Up Capture')) columnMap['Up Capture Ratio'] = index;
             if (header.includes('Down Capture')) columnMap['Down Capture Ratio'] = index;
-            
-            // Other metrics
             if (header.includes('Expense') && header.includes('Net')) columnMap['Net Expense Ratio'] = index;
             if (header.includes('Manager Tenure')) columnMap['Manager Tenure'] = index;
           }
         });
 
-        // Parse the data rows
         const parsed = dataRows.map(row => {
           const fund = {};
           Object.entries(columnMap).forEach(([key, idx]) => {
@@ -208,17 +217,14 @@ const App = () => {
             fund[key] = isNaN(val) ? val : parseFloat(val);
           });
           return fund;
-        }).filter(f => f.Symbol && f.Symbol !== ''); // Filter out empty rows
+        }).filter(f => f.Symbol && f.Symbol !== '');
 
-        // Clean function for symbol matching
         const clean = (s) => s?.toUpperCase().trim().replace(/[^A-Z0-9]/g, '');
 
-        // Assign asset classes and identify benchmarks/recommended funds
         const withClassAndFlags = parsed.map(f => {
           const parsedSymbol = clean(f.Symbol);
           const recommendedMatch = recommendedFunds.find(r => clean(r.symbol) === parsedSymbol);
-          
-          // Check if this fund is a benchmark for any asset class
+
           let isBenchmark = false;
           let benchmarkForClass = null;
           Object.entries(assetClassBenchmarks).forEach(([assetClass, benchmark]) => {
@@ -227,30 +233,28 @@ const App = () => {
               benchmarkForClass = assetClass;
             }
           });
-          
+
           return {
             ...f,
-            Symbol: f.Symbol, // Keep original symbol for display
-            cleanSymbol: parsedSymbol, // Add clean version for matching
-            'Asset Class': recommendedMatch ? recommendedMatch.assetClass : 
-                          benchmarkForClass ? benchmarkForClass : 
-                          'Unknown',
+            Symbol: f.Symbol,
+            cleanSymbol: parsedSymbol,
+            'Asset Class': recommendedMatch
+              ? recommendedMatch.assetClass
+              : benchmarkForClass
+                ? benchmarkForClass
+                : 'Unknown',
             isRecommended: !!recommendedMatch,
             isBenchmark: isBenchmark,
-            benchmarkForClass: benchmarkForClass
+            benchmarkForClass: benchmarkForClass,
           };
         });
 
-        // Calculate scores for all funds
-        console.log('Calculating scores for', withClassAndFlags.length, 'funds...');
         const scoredFunds = calculateScores(withClassAndFlags);
 
-        // Apply automated tagging after scoring
         const taggedFunds = applyTagRules(scoredFunds, {
-          benchmarks: assetClassBenchmarks
+          benchmarks: assetClassBenchmarks,
         });
-        
-        // Generate class summaries
+
         const summaries = {};
         const fundsByClass = {};
         taggedFunds.forEach(fund => {
@@ -260,12 +264,10 @@ const App = () => {
           }
           fundsByClass[assetClass].push(fund);
         });
-
         Object.entries(fundsByClass).forEach(([assetClass, funds]) => {
           summaries[assetClass] = generateClassSummary(funds);
         });
 
-        // Extract benchmark data
         const benchmarks = {};
         Object.entries(assetClassBenchmarks).forEach(([assetClass, { ticker, name }]) => {
           const match = taggedFunds.find(f => f.cleanSymbol === clean(ticker));
@@ -274,34 +276,39 @@ const App = () => {
           }
         });
 
-        // Identify review candidates
-        const reviewCandidates = identifyReviewCandidates(taggedFunds);
+        const today = new Date().toISOString().slice(0, 10);
 
-        // Ask user for snapshot date
-        const dateStr = prompt('Enter the date for this snapshot (YYYY-MM-DD):', 
-          new Date().toISOString().split('T')[0]);
-        
-        if (dateStr) {
-          // Save snapshot to IndexedDB
-          await dataStore.saveSnapshot({
-            date: new Date(dateStr).toISOString(),
-            funds: taggedFunds,
-            classSummaries: summaries,
-            reviewCandidates: reviewCandidates,
-            fileName: file.name,
-            uploadedBy: 'user'
+        taggedFunds.forEach(fund => {
+          const symbol = fund.cleanSymbol || fund.Symbol || fund.symbol;
+          const prev = [];
+          historySnapshots.forEach(snap => {
+            const match = snap.funds.find(f => (f.cleanSymbol || f.Symbol || f.symbol) === symbol);
+            if (match) {
+              if (Array.isArray(match.history)) {
+                match.history.forEach(pt => {
+                  if (!prev.some(p => p.date === pt.date)) prev.push(pt);
+                });
+              } else if (match.scores?.final != null) {
+                if (!prev.some(p => p.date === snap.date)) {
+                  prev.push({ date: snap.date, score: match.scores.final });
+                }
+              }
+            }
           });
-          
-          setCurrentSnapshotDate(dateStr);
-        }
+          const filteredPrev = prev.filter(p => p.date !== today);
+          fund.history = [...filteredPrev, { date: today, score: fund.scores.final }];
+        });
 
-        // after all fund-mapping transforms are finished …
+        const newSnap = { date: today, funds: taggedFunds };
+        setHistorySnapshots(prev => {
+          const filtered = prev.filter(s => s.date !== today);
+          return [...filtered, newSnap].slice(-24);
+        });
+        setCurrentSnapshotDate(today);
         setFundData(taggedFunds);
-
         setScoredFundData(taggedFunds);
         setBenchmarkData(benchmarks);
         setClassSummaries(summaries);
-
         console.log('Successfully loaded and scored', taggedFunds.length, 'funds');
       } catch (err) {
         console.error('Error parsing performance file:', err);
@@ -366,13 +373,9 @@ const App = () => {
     const updated = { ...assetClassBenchmarks };
     updated[className] = { ...updated[className], [field]: value };
     setAssetClassBenchmarks(updated);
+    setConfig(updated);
   };
 
-  const handleExport = () => {
-    if (scoredFundData.length === 0) return;
-    const dateStr = new Date().toISOString().split('T')[0];
-    exportToExcel(scoredFundData, `Fund_Export_${dateStr}.xlsx`);
-  };
 
   // Get review candidates
   const reviewCandidates = identifyReviewCandidates(scoredFundData);
@@ -389,8 +392,8 @@ const App = () => {
       </div>
 
       <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-        <button 
-          onClick={() => setActiveTab('funds')} 
+        <button
+          onClick={() => setActiveTab('funds')}
           style={{ 
             padding: '0.5rem 1rem',
             backgroundColor: activeTab === 'funds' ? '#3b82f6' : '#e5e7eb',
@@ -405,6 +408,24 @@ const App = () => {
         >
           <Award size={16} />
           Fund Scores
+        </button>
+
+        <button
+          onClick={() => setActiveTab('dashboard')}
+          style={{
+            padding: '0.5rem 1rem',
+            backgroundColor: activeTab === 'dashboard' ? '#3b82f6' : '#e5e7eb',
+            color: activeTab === 'dashboard' ? 'white' : '#374151',
+            border: 'none',
+            borderRadius: '0.375rem',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}
+        >
+          <Database size={16} />
+          Dashboard
         </button>
         
         <button 
@@ -535,155 +556,127 @@ const App = () => {
         </div>
       )}
 
+      {/* Dashboard Tab */}
+      {activeTab === 'dashboard' && (
+        <DashboardView />
+      )}
+
       {/* Fund Scores Tab */}
       {activeTab === 'funds' && (
-      <div>
-        {scoredFundData.length > 0 ? (
-          <div>
-            {/* Header with title, subtitle, export button */}
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '1rem'
-              }}
-            >
-              <div>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-                  All Funds with Scores
-                </h2>
-                <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                  Scores calculated using weighted&nbsp;Z-score methodology within each
-                  asset class
-                </p>
-              </div>
+        fundData.length > 0 ? (
+          <>
+            <div>
+              {scoredFundData.length > 0 ? (
+                <div>
+                  {/* Header with title and subtitle */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginBottom: '1rem'
+                    }}
+                  >
+                    <div>
+                      <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+                        All Funds with Scores
+                      </h2>
+                      <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+                        Scores calculated using weighted&nbsp;Z-score methodology within each asset class
+                      </p>
+                    </div>
+                  </div>
 
-              <button
-                onClick={handleExport}
-                style={{
-                  padding: '0.5rem 1rem',
-                  backgroundColor: '#10b981',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '0.375rem',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem'
-                }}
-              >
-                <Download size={16} />
-                Export to Excel
-              </button>
-            </div>
+                  {/* Main table */}
+                  <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                      <thead>
+                        <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
+                          <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: 600 }}>Symbol</th>
+                          <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: 600 }}>Fund Name</th>
+                          <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: 600 }}>Asset Class</th>
+                          <th style={{ textAlign: 'center', padding: '0.75rem', fontWeight: 600 }}>Score</th>
+                          <th style={{ textAlign: 'right', padding: '0.75rem', fontWeight: 600 }}>1Y Return</th>
+                          <th style={{ textAlign: 'right', padding: '0.75rem', fontWeight: 600 }}>Sharpe</th>
+                          <th style={{ textAlign: 'right', padding: '0.75rem', fontWeight: 600 }}>Expense</th>
+                          <th style={{ textAlign: 'center', padding: '0.75rem', fontWeight: 600 }}>Type</th>
+                        </tr>
+                      </thead>
 
-            {/* Main table */}
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
-                    <th style={{ textAlign: 'left',  padding: '0.75rem', fontWeight: 600 }}>Symbol</th>
-                    <th style={{ textAlign: 'left',  padding: '0.75rem', fontWeight: 600 }}>Fund Name</th>
-                    <th style={{ textAlign: 'left',  padding: '0.75rem', fontWeight: 600 }}>Asset Class</th>
-                    <th style={{ textAlign: 'center',padding: '0.75rem', fontWeight: 600 }}>Score</th>
-                    <th style={{ textAlign: 'right', padding: '0.75rem', fontWeight: 600 }}>1Y Return</th>
-                    <th style={{ textAlign: 'right', padding: '0.75rem', fontWeight: 600 }}>Sharpe</th>
-                    <th style={{ textAlign: 'right', padding: '0.75rem', fontWeight: 600 }}>Expense</th>
-                    <th style={{ textAlign: 'center',padding: '0.75rem', fontWeight: 600 }}>Type</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {scoredFundData
-                    .sort((a, b) => (b.scores?.final || 0) - (a.scores?.final || 0))
-                    .map((fund, i) => (
-                      <tr
-                        key={i}
-                        style={{
-                          borderBottom   : '1px solid #f3f4f6',
-                          backgroundColor: fund.isRecommended ? '#eff6ff' : 'white',
-                          cursor         : 'pointer'
-                        }}
-                        onClick={() => setSelectedFundForDetails(fund)}
-                      >
-                        <td style={{ padding: '0.75rem', fontWeight: fund.isBenchmark ? 'bold' : 'normal' }}>
-                          {fund.Symbol}
-                        </td>
-                        <td style={{ padding: '0.75rem' }}>{fund['Fund Name']}</td>
-                        <td style={{ padding: '0.75rem' }}>{fund['Asset Class']}</td>
-                        <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-                          {fund.scores ? (
-                            <ScoreBadge score={fund.scores.final} />
-                          ) : (
-                            <span style={{ color: '#9ca3af' }}>-</span>
-                          )}
-                        </td>
-                        <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                          {fund['1 Year'] != null ? `${fund['1 Year'].toFixed(2)}%` : 'N/A'}
-                        </td>
-                        <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                          {fund['Sharpe Ratio'] != null ? fund['Sharpe Ratio'].toFixed(2) : 'N/A'}
-                        </td>
-                        <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                          {fund['Net Expense Ratio'] != null ? `${fund['Net Expense Ratio'].toFixed(2)}%` : 'N/A'}
-                        </td>
-                        <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-                          {fund.isBenchmark && (
-                            <span style={{
-                              backgroundColor: '#fbbf24',
-                              color          : '#78350f',
-                              padding        : '0.125rem 0.5rem',
-                              borderRadius   : '0.25rem',
-                              fontSize       : '0.75rem',
-                              fontWeight     : 500
-                            }}>
-                              Benchmark
-                            </span>
-                          )}
-                          {fund.isRecommended && !fund.isBenchmark && (
-                            <span style={{
-                              backgroundColor: '#34d399',
-                              color          : '#064e3b',
-                              padding        : '0.125rem 0.5rem',
-                              borderRadius   : '0.25rem',
-                              fontSize       : '0.75rem',
-                              fontWeight     : 500
-                            }}>
-                              Recommended
-                            </span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Details modal */}
-            {selectedFundForDetails && (
-              <FundDetailsModal
-                fund={selectedFundForDetails}
-                onClose={() => setSelectedFundForDetails(null)}
-              />
-            )}
-          </div>
-        ) : (
-          <p style={{ color: '#6b7280' }}>No scored funds to display.</p>
-        )}
-      </div>
-
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem'
-                }}
-              >
-                <Download size={16} />
-                Export to Excel
-              </button>
+                      <tbody>
+                        {scoredFundData
+                          .sort((a, b) => (b.scores?.final || 0) - (a.scores?.final || 0))
+                          .map((fund, i) => (
+                            <tr
+                              key={i}
+                              style={{
+                                borderBottom: '1px solid #f3f4f6',
+                                backgroundColor: fund.isRecommended ? '#eff6ff' : 'white'
+                              }}
+                            >
+                              <td style={{ padding: '0.75rem', fontWeight: fund.isBenchmark ? 'bold' : 'normal' }}>
+                                {fund.Symbol}
+                              </td>
+                              <td style={{ padding: '0.75rem' }}>{fund['Fund Name']}</td>
+                              <td style={{ padding: '0.75rem' }}>{fund['Asset Class']}</td>
+                              <td style={{ padding: '0.75rem', textAlign: 'center' }}>
+                                {fund.scores ? (
+                                  <ScoreBadge score={fund.scores.final} />
+                                ) : (
+                                  <span style={{ color: '#9ca3af' }}>-</span>
+                                )}
+                              </td>
+                              <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+                                {fund['1 Year'] != null ? `${fund['1 Year'].toFixed(2)}%` : 'N/A'}
+                              </td>
+                              <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+                                {fund['Sharpe Ratio'] != null ? fund['Sharpe Ratio'].toFixed(2) : 'N/A'}
+                              </td>
+                              <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+                                {fund['Net Expense Ratio'] != null ? `${fund['Net Expense Ratio'].toFixed(2)}%` : 'N/A'}
+                              </td>
+                              <td style={{ padding: '0.75rem', textAlign: 'center' }}>
+                                {fund.isBenchmark && (
+                                  <span
+                                    style={{
+                                      backgroundColor: '#fbbf24',
+                                      color: '#78350f',
+                                      padding: '0.125rem 0.5rem',
+                                      borderRadius: '0.25rem',
+                                      fontSize: '0.75rem',
+                                      fontWeight: 500
+                                    }}
+                                  >
+                                    Benchmark
+                                  </span>
+                                )}
+                                {fund.isRecommended && !fund.isBenchmark && (
+                                  <span
+                                    style={{
+                                      backgroundColor: '#34d399',
+                                      color: '#064e3b',
+                                      padding: '0.125rem 0.5rem',
+                                      borderRadius: '0.25rem',
+                                      fontSize: '0.75rem',
+                                      fontWeight: 500
+                                    }}
+                                  >
+                                    Recommended
+                                  </span>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ) : (
+                <p style={{ color: '#6b7280' }}>No scored funds to display.</p>
+              )}
             </div>
             <FundView />
-          </div>
+          </>
         ) : (
           <div
             style={{
@@ -1196,7 +1189,7 @@ const App = () => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            if (confirm('Delete this snapshot?')) {
+                            if (window.confirm('Delete this snapshot?')) {
                               dataStore.deleteSnapshot(snapshot.id).then(() => {
                                 loadSnapshots();
                               });
@@ -1344,7 +1337,11 @@ const App = () => {
                   ...assetClassBenchmarks,
                   [newClass]: { ticker: '', name: '' }
                 });
-              }} 
+                setConfig({
+                  ...assetClassBenchmarks,
+                  [newClass]: { ticker: '', name: '' }
+                });
+              }}
               style={{ 
                 marginBottom: '0.5rem',
                 padding: '0.5rem 1rem',
@@ -1403,6 +1400,7 @@ const App = () => {
                           const copy = { ...assetClassBenchmarks };
                           delete copy[className];
                           setAssetClassBenchmarks(copy);
+                          setConfig(copy);
                         }}
                         style={{
                           padding: '0.25rem',

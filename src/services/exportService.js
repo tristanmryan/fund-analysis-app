@@ -6,16 +6,16 @@ import 'jspdf-autotable';
 
 /**
  * Export an array of fund objects to an Excel (.xlsx) file.
- * @param {Array<Object>} funds - Scored and tagged fund objects
+ * @param {Array<Object>} filteredFunds - Scored and tagged fund objects
  * @param {string} [filename] - Optional filename for download
  */
-export function exportToExcel(funds, filename) {
-  if (!Array.isArray(funds) || funds.length === 0) return;
+export function exportToExcel(filteredFunds, filename) {
+  if (!Array.isArray(filteredFunds) || filteredFunds.length === 0) return;
 
   const dateStr = new Date().toISOString().split('T')[0];
   const safeName = filename || `Fund_Export_${dateStr}.xlsx`;
 
-  const rows = funds.map(fund => ({
+  const rows = filteredFunds.map(fund => ({
     Symbol: fund.cleanSymbol || fund.Symbol || fund.symbol || '',
     'Fund Name': fund['Fund Name'] || fund.name || '',
     'Asset Class': fund['Asset Class'] || fund.assetClass || '',
