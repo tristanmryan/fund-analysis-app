@@ -13,7 +13,7 @@ export function applyTagRules(funds, config = {}) {
   const stdAvgByClass = {};
 
   funds.forEach(fund => {
-    const assetClass = fund['Asset Class'] || fund.assetClass || 'Unknown';
+    const assetClass = fund.assetClass || fund['Asset Class'] || 'Unknown';
     if (!expenseAvgByClass[assetClass]) expenseAvgByClass[assetClass] = [];
     if (!stdAvgByClass[assetClass]) stdAvgByClass[assetClass] = [];
 
@@ -39,7 +39,7 @@ export function applyTagRules(funds, config = {}) {
   const benchmarkSharpe = {};
   funds.forEach(fund => {
     if (fund.isBenchmark) {
-      const assetClass = fund['Asset Class'] || fund.assetClass || 'Unknown';
+      const assetClass = fund.assetClass || fund['Asset Class'] || 'Unknown';
       const sharpe = fund.metrics?.sharpeRatio3Y;
       if (sharpe != null && !isNaN(sharpe)) {
         benchmarkSharpe[assetClass] = sharpe;
@@ -48,7 +48,7 @@ export function applyTagRules(funds, config = {}) {
   });
 
   return funds.map(fund => {
-    const assetClass = fund['Asset Class'] || fund.assetClass || 'Unknown';
+    const assetClass = fund.assetClass || fund['Asset Class'] || 'Unknown';
     const tags = new Set(Array.isArray(fund.tags) ? fund.tags : []);
 
     const score = fund.scores?.final;

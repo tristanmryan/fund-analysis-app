@@ -21,7 +21,7 @@ const FundScores = () => {
   const [selectedFund, setSelectedFund] = useState(null);
 
   const filteredFunds = fundData.filter(f => {
-    const classMatch = selectedClass ? f['Asset Class'] === selectedClass : true;
+    const classMatch = selectedClass ? f.assetClass === selectedClass : true;
     const tagMatch = selectedTags.length > 0 ? selectedTags.every(t => f.tags?.includes(t)) : true;
     return classMatch && tagMatch;
   });

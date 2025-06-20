@@ -6,7 +6,7 @@ describe('per-class scoring with benchmark integration', () => {
       {
         Symbol: 'AAA',
         'Fund Name': 'Fund A',
-        'Asset Class': 'Large Cap Growth',
+        assetClass: 'Large Cap Growth',
         '1 Year': 12,
         '3 Year': 14,
         '5 Year': 16,
@@ -18,7 +18,7 @@ describe('per-class scoring with benchmark integration', () => {
       {
         Symbol: 'BBB',
         'Fund Name': 'Fund B',
-        'Asset Class': 'Large Cap Growth',
+        assetClass: 'Large Cap Growth',
         '1 Year': 8,
         '3 Year': 9,
         '5 Year': 10,
@@ -30,7 +30,7 @@ describe('per-class scoring with benchmark integration', () => {
       {
         Symbol: 'IWF',
         'Fund Name': 'Russell 1000 Growth',
-        'Asset Class': 'Large Cap Growth',
+        assetClass: 'Large Cap Growth',
         '1 Year': 10,
         '3 Year': 11,
         '5 Year': 12,

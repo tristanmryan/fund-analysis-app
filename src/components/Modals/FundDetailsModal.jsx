@@ -22,7 +22,7 @@ const FundDetailsModal = ({ fund, onClose }) => {
           {fund.Symbol} – {fund['Fund Name']}
         </h3>
         <p style={{ marginBottom: '0.75rem', color: '#6b7280' }}>
-          Asset Class: {fund['Asset Class']} · Score:&nbsp;
+          Asset Class: {fund.assetClass} · Score:&nbsp;
           <span style={{ color: getScoreColor(fund.scores.final) }}>
             {fund.scores.final} ({getScoreLabel(fund.scores.final)})
           </span>
