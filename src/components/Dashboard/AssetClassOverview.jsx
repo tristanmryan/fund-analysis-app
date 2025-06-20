@@ -65,12 +65,7 @@ const AssetClassOverview = ({ funds, config }) => {
     const avgStd     = std.length     ? (std.reduce((s, v) => s + v, 0) / std.length).toFixed(2)        : null;
 
     const benchmarkTicker = config?.[assetClass]?.ticker || '-';
-    const classColor      = scoreColor(avgScore);
-
-    const color           = scoreColor(avgScore);
-
-    const color           = scoreColor(avgScore);
-
+    const scoreCol        = scoreColor(avgScore);
 
     const trend = getTrendData(assetClass);
 
@@ -79,6 +74,8 @@ const AssetClassOverview = ({ funds, config }) => {
     const trend = getTrendData(assetClass);
 
     const trend = getTrendData(assetClass);
+
+    const trendData = getTrendData(assetClass);
 
     const trendData = getTrendData(assetClass);
 
@@ -92,7 +89,7 @@ const AssetClassOverview = ({ funds, config }) => {
       avgExpense,
       avgStd,
       benchmarkTicker,
-      color: classColor,
+      color: scoreCol,
       tags,
       trend: trendData
     };
