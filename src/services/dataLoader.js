@@ -19,24 +19,31 @@ function parseMap(csvText) {
 export async function loadAssetClassMap() {
   if (assetClassMap) return assetClassMap;
 
-  if (typeof fetch === 'function' && !process.env.JEST_WORKER_ID) {
-    try {
-      const res = await fetch('/data/FundListAssetClasses.csv');
-      if (res.ok) {
-        const csv = await res.text();
-        assetClassMap = parseMap(csv);
-        return assetClassMap;
-      }
-    } catch (e) {
-      // fall back to filesystem
-    }
+  if (process.env.NODE_ENV === 'test') {
+    // Jest environment doesn't serve static files so read directly from disk
+    // The conditional ensures these Node-specific requires are stripped from the
+    // production bundle.
+    const fs = require('fs');
+    const path = require('path');
+    const filePath = path.resolve(__dirname, '../../data/FundListAssetClasses.csv');
+    const csv = fs.readFileSync(filePath, 'utf-8');
+    assetClassMap = parseMap(csv);
+    return assetClassMap;
   }
 
-  const fs = require('fs');
-  const path = require('path');
-  const filePath = path.resolve(__dirname, '../../data/FundListAssetClasses.csv');
-  const csv = fs.readFileSync(filePath, 'utf-8');
-  assetClassMap = parseMap(csv);
+  try {
+    const res = await fetch('/data/FundListAssetClasses.csv');
+    if (res.ok) {
+      const csv = await res.text();
+      assetClassMap = parseMap(csv);
+    } else {
+      assetClassMap = new Map();
+    }
+  } catch (e) {
+    console.error('Failed to load asset class map:', e);
+    assetClassMap = new Map();
+  }
+
   return assetClassMap;
 }
 
