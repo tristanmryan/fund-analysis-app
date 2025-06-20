@@ -69,15 +69,6 @@ const AssetClassOverview = ({ funds, config }) => {
 
     const trend = getTrendData(assetClass);
 
-    const trend = getTrendData(assetClass);
-
-    const trend = getTrendData(assetClass);
-
-    const trend = getTrendData(assetClass);
-
-    const trendData = getTrendData(assetClass);
-
-    const trendData = getTrendData(assetClass);
 
     const trendData = getTrendData(assetClass);
 
