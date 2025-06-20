@@ -1,5 +1,6 @@
 import { loadAssetClassMap, lookupAssetClass, clearAssetClassMap, getAssetClassOptions } from '../dataLoader';
 
+
 describe('asset class mapping', () => {
   beforeAll(async () => {
     await loadAssetClassMap();
