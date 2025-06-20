@@ -35,11 +35,11 @@ const AssetClassOverview = ({ funds, config }) => {
   };
 
   const recommended = funds.filter(f => f.isRecommended);
-  if (recommended.length === 0) return null;
+  const inputFunds = recommended.length > 0 ? recommended : funds;
 
   /* ---------- group funds by asset class ---------- */
   const byClass = {};
-  recommended.forEach(f => {
+  inputFunds.forEach(f => {
     const assetClass = f['Asset Class'] || 'Uncategorized';
     if (!byClass[assetClass]) byClass[assetClass] = [];
     byClass[assetClass].push(f);

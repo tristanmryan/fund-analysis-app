@@ -308,11 +308,23 @@ const App = () => {
           fund.history = [...filteredPrev, { date: today, score: fund.scores.final }];
         });
 
-        const newSnap = { date: today, funds: taggedFunds };
+        const newSnap = {
+          date: today,
+          funds: taggedFunds,
+          metadata: { fileName: file.name }
+        };
+
         setHistorySnapshots(prev => {
           const filtered = prev.filter(s => s.date !== today);
           return [...filtered, newSnap].slice(-24);
         });
+
+        try {
+          await dataStore.saveSnapshot(newSnap);
+          loadSnapshots();
+        } catch (err) {
+          console.error('Failed to save snapshot', err);
+        }
         setCurrentSnapshotDate(today);
         setFundData(taggedFunds);
         setScoredFundData(taggedFunds);
@@ -721,7 +733,7 @@ const App = () => {
             }}
           >
             <option value="">-- Choose an asset class --</option>
-            {Object.keys(assetClassBenchmarks).sort().map(ac => (
+            {availableClasses.map(ac => (
               <option key={ac} value={ac}>{ac}</option>
             ))}
           </select>

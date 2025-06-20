@@ -56,3 +56,12 @@ export function clearAssetClassMap() {
   assetClassMap = null;
 }
 
+export function getAssetClassOptions(funds = []) {
+  const set = new Set();
+  funds.forEach(f => {
+    const cls = f['Asset Class'] || f.assetClass;
+    if (cls && cls !== 'Benchmark') set.add(cls);
+  });
+  return Array.from(set).sort();
+}
+
