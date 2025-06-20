@@ -561,149 +561,97 @@ const App = () => {
         </div>
       )}
 
-      {/* Dashboard Tab */}
-      {activeTab === 'dashboard' && (
-        <DashboardView />
-      )}
-
-      {/* Fund Scores Tab */}
-      {activeTab === 'funds' && (
-
-        fundData.length > 0 ? (
-          <>
-            <div>
-              {scoredFundData.length > 0 ? (
-                <div>
-                  {/* Header with title, subtitle, export button */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '1rem'
-                    }}
-                  >
-                    <div>
-                      <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-                        All Funds with Scores
-                      </h2>
-                      <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                        Scores calculated using weighted&nbsp;Z-score methodology within each
-                        asset class
-                      </p>
-                    </div>
-
-
-                  </div>
-
-
-                  {/* Main table */}
-                  <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                      <thead>
-                        <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
-                          <th style={{ textAlign: 'left',  padding: '0.75rem', fontWeight: 600 }}>Symbol</th>
-                          <th style={{ textAlign: 'left',  padding: '0.75rem', fontWeight: 600 }}>Fund Name</th>
-                          <th style={{ textAlign: 'left',  padding: '0.75rem', fontWeight: 600 }}>Asset Class</th>
-                          <th style={{ textAlign: 'center',padding: '0.75rem', fontWeight: 600 }}>Score</th>
-                          <th style={{ textAlign: 'right', padding: '0.75rem', fontWeight: 600 }}>1Y Return</th>
-                          <th style={{ textAlign: 'right', padding: '0.75rem', fontWeight: 600 }}>Sharpe</th>
-                          <th style={{ textAlign: 'right', padding: '0.75rem', fontWeight: 600 }}>Expense</th>
-                          <th style={{ textAlign: 'center',padding: '0.75rem', fontWeight: 600 }}>Type</th>
-                        </tr>
-                      </thead>
-
-            <tbody>
-              {scoredFundData
-                .sort((a, b) => (b.scores?.final || 0) - (a.scores?.final || 0))
-                .map((fund, i) => (
-                  <tr
-                    key={i}
-                    style={{
-                      borderBottom   : '1px solid #f3f4f6',
-                      backgroundColor: fund.isRecommended ? '#eff6ff' : 'white',
-                      cursor         : 'pointer'
-                    }}
-                    onClick={() => setSelectedFundForDetails(fund)}
-                  >
-                    <td style={{ padding: '0.75rem', fontWeight: fund.isBenchmark ? 'bold' : 'normal' }}>
-                      {fund.Symbol}
-                    </td>
-                    <td style={{ padding: '0.75rem' }}>{fund['Fund Name']}</td>
-                    <td style={{ padding: '0.75rem' }}>{fund['Asset Class']}</td>
-                    <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-                      {fund.scores ? (
-                        <ScoreBadge score={fund.scores.final} />
-                      ) : (
-                        <span style={{ color: '#9ca3af' }}>-</span>
-                      )}
-                    </td>
-                    <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                      {fund['1 Year'] != null ? `${fund['1 Year'].toFixed(2)}%` : 'N/A'}
-                    </td>
-                    <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                      {fund['Sharpe Ratio'] != null ? fund['Sharpe Ratio'].toFixed(2) : 'N/A'}
-                    </td>
-                    <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                      {fund['Net Expense Ratio'] != null ? `${fund['Net Expense Ratio'].toFixed(2)}%` : 'N/A'}
-                    </td>
-                    <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-                      {fund.isBenchmark && (
-                        <span
-                          style={{
-                            backgroundColor: '#fbbf24',
-                            color          : '#78350f',
-                            padding        : '0.125rem 0.5rem',
-                            borderRadius   : '0.25rem',
-                            fontSize       : '0.75rem',
-                            fontWeight     : 500
-                          }}
-                        >
-                          Benchmark
-                        </span>
-                      )}
-                      {fund.isRecommended && !fund.isBenchmark && (
-                        <span
-                          style={{
-                            backgroundColor: '#34d399',
-                            color          : '#064e3b',
-                            padding        : '0.125rem 0.5rem',
-                            borderRadius   : '0.25rem',
-                            fontSize       : '0.75rem',
-                            fontWeight     : 500
-                          }}
-                        >
-                          Recommended
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-
-                </div>
-              ) : (
-                <p style={{ color: '#6b7280' }}>No scored funds to display.</p>
-              )}
+{/* Fund Scores Tab */}
+{activeTab === 'funds' && (
+  fundData.length > 0 ? (
+    <>
+      <div>
+        {scoredFundData.length > 0 ? (
+          <div>
+            {/* Header */}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '1rem'
+              }}
+            >
+              <div>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+                  All Funds with Scores
+                </h2>
+                <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+                  Scores calculated using weighted&nbsp;Z-score methodology within each
+                  asset class
+                </p>
+              </div>
             </div>
 
-            <FundView />
-          </>
-        ) : (
-          <div
+            {/* Main table */}
+<div style={{ overflowX: 'auto' }}>
+  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+    <thead>
+      <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
+        <th style={{ textAlign: 'left',  padding: '0.75rem', fontWeight: 600 }}>Symbol</th>
+        <th style={{ textAlign: 'left',  padding: '0.75rem', fontWeight: 600 }}>Fund Name</th>
+        <th style={{ textAlign: 'left',  padding: '0.75rem', fontWeight: 600 }}>Asset Class</th>
+        <th style={{ textAlign: 'center',padding: '0.75rem', fontWeight: 600 }}>Score</th>
+        <th style={{ textAlign: 'right', padding: '0.75rem', fontWeight: 600 }}>1Y Return</th>
+        <th style={{ textAlign: 'right', padding: '0.75rem', fontWeight: 600 }}>Sharpe</th>
+        <th style={{ textAlign: 'right', padding: '0.75rem', fontWeight: 600 }}>Expense</th>
+        <th style={{ textAlign: 'center',padding: '0.75rem', fontWeight: 600 }}>Type</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {scoredFundData
+        .sort((a, b) => (b.scores?.final || 0) - (a.scores?.final || 0))
+        .map((fund, i) => (
+          <tr
+            key={i}
             style={{
-              textAlign: 'center',
-              padding: '3rem',
-              backgroundColor: '#f9fafb',
-              borderRadius: '0.5rem',
-              color: '#6b7280'
+              borderBottom   : '1px solid #f3f4f6',
+              backgroundColor: fund.isRecommended ? '#eff6ff' : 'white',
+              cursor         : 'pointer'
             }}
+            onClick={() => setSelectedFundForDetails(fund)}
           >
-            <TrendingUp size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-            <p>Upload a fund performance file to see scores</p>
-          </div>
-        )
-      )}
+            {/*  render fund cells here  */}
+          </tr>
+      ))}
+    </tbody>
+  </table>
+</div>  {/* closes overflow wrapper */}
+
+</div> {/* closes inner wrapper that contains header + table */}
+) : (
+  <p style={{ color: '#6b7280' }}>No scored funds to display.</p>
+)}
+
+</div> {/* closes outer wrapper around scoredFundData check */}
+
+<FundView />
+</>
+) : (
+  <div
+    style={{
+      textAlign: 'center',
+      padding: '3rem',
+      backgroundColor: '#f9fafb',
+      borderRadius: '0.5rem',
+      color: '#6b7280'
+    }}
+  >
+    <TrendingUp size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
+    <p>Upload a fund performance file to see scores</p>
+  </div>
+)
+))}  {/* 1st ) closes fundData ternary, 2nd ) closes && (, } closes the JSX expr */}
+
+
+
+
 
       {/* Asset Class View Tab */}
       {activeTab === 'class' && (
