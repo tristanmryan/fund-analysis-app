@@ -1,5 +1,6 @@
 import React from 'react';
 import { getScoreColor, getScoreLabel } from '../services/scoring';
+import { fmtPct, fmtNumber } from '../utils/formatters';
 
 const ScoreBadge = ({ score }) => {
   const color = getScoreColor(score);
@@ -48,25 +49,25 @@ const BenchmarkRow = ({ data }) => {
         {data.scores ? <ScoreBadge score={data.scores.final} /> : '-'}
       </td>
       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-        {data.YTD != null ? `${data.YTD.toFixed(2)}%` : 'N/A'}
+        {fmtPct(data.ytd ?? data.YTD)}
       </td>
       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-        {data['1 Year'] != null ? `${data['1 Year'].toFixed(2)}%` : 'N/A'}
+        {fmtPct(data.oneYear ?? data['1 Year'])}
       </td>
       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-        {data['3 Year'] != null ? `${data['3 Year'].toFixed(2)}%` : 'N/A'}
+        {fmtPct(data.threeYear ?? data['3 Year'])}
       </td>
       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-        {data['5 Year'] != null ? `${data['5 Year'].toFixed(2)}%` : 'N/A'}
+        {fmtPct(data.fiveYear ?? data['5 Year'])}
       </td>
       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-        {data['Sharpe Ratio']?.toFixed(2) ?? 'N/A'}
+        {fmtNumber(data.sharpe ?? data['Sharpe Ratio'])}
       </td>
       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-        {data['Standard Deviation']?.toFixed(2) ?? 'N/A'}%
+        {fmtPct(data.stdDev5y ?? data['Standard Deviation'])}
       </td>
       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-        {data['Net Expense Ratio']?.toFixed(2) ?? 'N/A'}%
+        {fmtPct(data.expense ?? data['Net Expense Ratio'])}
       </td>
     </tr>
   );
