@@ -21,7 +21,7 @@ const AssetClassOverview = ({ funds, config }) => {
       .slice(-6)
       .map((snap) => {
         const rec = snap.funds.filter(
-          (f) => f.isRecommended && f['Asset Class'] === assetClass
+          (f) => f.isRecommended && f.assetClass === assetClass
         );
         const avg = rec.length
           ? Math.round(
@@ -40,7 +40,7 @@ const AssetClassOverview = ({ funds, config }) => {
   /* ---------- group funds by asset class ---------- */
   const byClass = {};
   inputFunds.forEach(f => {
-    const assetClass = f['Asset Class'] || 'Uncategorized';
+    const assetClass = f.assetClass || 'Uncategorized';
     if (!byClass[assetClass]) byClass[assetClass] = [];
     byClass[assetClass].push(f);
   });

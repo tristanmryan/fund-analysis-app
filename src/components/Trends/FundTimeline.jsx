@@ -28,11 +28,11 @@ const FundTimeline = ({ fundSymbol, dataSnapshots }) => {
 
   const chartData = sorted.map(snapshot => {
     const fund = snapshot.funds.find(f => (f.cleanSymbol || clean(f.Symbol)) === target);
-    const assetClass = fund?.['Asset Class'];
+    const assetClass = fund?.assetClass;
     let benchmarkScore = null;
     if (assetClass) {
       const benchmark = snapshot.funds.find(
-        f => f.isBenchmark && f['Asset Class'] === assetClass
+        f => f.isBenchmark && f.assetClass === assetClass
       );
       if (benchmark) benchmarkScore = benchmark.scores?.final ?? null;
     }

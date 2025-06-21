@@ -15,10 +15,10 @@ describe('asset class mapping', () => {
 
   test('getAssetClassOptions returns classes', () => {
     const data = [
-      { 'Asset Class': 'Large Cap Growth' },
-      { 'Asset Class': 'Large Cap Value' },
-      { 'Asset Class': 'Large Cap Growth' },
-      { 'Asset Class': 'Benchmark' }
+      { assetClass: 'Large Cap Growth' },
+      { assetClass: 'Large Cap Value' },
+      { assetClass: 'Large Cap Growth' },
+      { assetClass: 'Benchmark' }
     ];
     const opts = getAssetClassOptions(data);
     expect(Array.isArray(opts)).toBe(true);

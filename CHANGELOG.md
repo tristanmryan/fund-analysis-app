@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+- Unified asset class field across pipeline and filters; benchmarks now visible in Class View.
+- Benchmark row now rendered above the fund table in Class View.
 - Normalize numeric fields when parsing fund files.
 - Added `fmtPct` and `fmtNumber` helpers and updated components to use them.
 - Added tests for parser normalization and Class View rendering.

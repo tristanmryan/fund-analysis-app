@@ -54,8 +54,9 @@ test('benchmark row and summary rendered', async () => {
   });
   const withBench = ensureBenchmarkRows(withFlags);
   const scored = calculateScores(withBench);
-  const funds = scored.filter(f => f['Asset Class'] === 'Large Cap Growth');
+  const funds = scored.filter(f => f.assetClass === 'Large Cap Growth');
   render(<ClassView funds={funds} />);
   expect(screen.getByText('IWF')).toBeInTheDocument();
+  expect(screen.getByText(/Benchmark/)).toBeInTheDocument();
   expect(screen.getByTestId('summary').textContent).not.toBe('N/A');
 });

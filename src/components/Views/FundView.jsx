@@ -29,7 +29,7 @@ const FundTable = ({ funds = [], onRowClick = () => {} }) => (
           >
             <td style={{ padding: '0.5rem' }}>{fund.Symbol}</td>
             <td style={{ padding: '0.5rem' }}>{fund['Fund Name']}</td>
-            <td style={{ padding: '0.5rem' }}>{fund['Asset Class']}</td>
+            <td style={{ padding: '0.5rem' }}>{fund.assetClass}</td>
             <td style={{ padding: '0.5rem', textAlign: 'center' }}>
               {fund.scores ? (
                 <span
@@ -79,7 +79,7 @@ const FundView = () => {
 
   /* apply filters */
   const filteredFunds = fundData.filter(f => {
-    const classMatch = selectedClass ? f['Asset Class'] === selectedClass : true;
+    const classMatch = selectedClass ? f.assetClass === selectedClass : true;
     const tagMatch   =
       selectedTags.length > 0
         ? selectedTags.every(tag => Array.isArray(f.tags) && f.tags.includes(tag))

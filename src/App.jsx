@@ -197,7 +197,7 @@ const App = () => {
         const summaries = {};
         const fundsByClass = {};
         taggedFunds.forEach(fund => {
-          const assetClass = fund['Asset Class'];
+          const assetClass = fund.assetClass;
           if (!fundsByClass[assetClass]) {
             fundsByClass[assetClass] = [];
           }
@@ -635,7 +635,7 @@ const App = () => {
               )}
               
               <ClassView
-                funds={scoredFundData.filter(f => f['Asset Class'] === selectedClassView)}
+                funds={scoredFundData.filter(f => f.assetClass === selectedClassView)}
               />
             </>
           )}
@@ -681,7 +681,7 @@ const App = () => {
                           {fund['Fund Name']}
                         </h3>
                         <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                          {fund.Symbol} | {fund['Asset Class']}
+                          {fund.Symbol} | {fund.assetClass}
                           {fund.isRecommended && (
                             <span style={{ 
                               marginLeft: '0.5rem',

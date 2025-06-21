@@ -83,7 +83,7 @@ const PerformanceHeatmap = ({ funds }) => {
 
   const byClass = {};
   filtered.forEach(f => {
-    const assetClass = f['Asset Class'] || 'Uncategorized';
+    const assetClass = f.assetClass || 'Uncategorized';
     if (!byClass[assetClass]) byClass[assetClass] = [];
     byClass[assetClass].push(f);
   });

@@ -85,8 +85,8 @@ export function ensureBenchmarkRows(list = []) {
         symbol: ticker,
         'Fund Name': name,
         name,
-        'Asset Class': assetClass,
         assetClass,
+        'Asset Class': assetClass,
         isBenchmark: true,
         benchmarkForClass: assetClass,
         ytd: null,
@@ -101,6 +101,8 @@ export function ensureBenchmarkRows(list = []) {
       const row = map.get(key);
       row.isBenchmark = true;
       if (!row.benchmarkForClass) row.benchmarkForClass = assetClass;
+      if (!row.assetClass) row.assetClass = row['Asset Class'] || assetClass;
+      row['Asset Class'] = row.assetClass;
     }
   });
   return list;
