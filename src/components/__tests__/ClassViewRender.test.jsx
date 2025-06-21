@@ -7,22 +7,24 @@ const fund = { Symbol: 'AAA', 'Fund Name': 'Fund A', ytd: null, oneYear: 5, thre
 
 test('class view table renders', () => {
   render(
-    <table>
-      <tbody>
-        <BenchmarkRow data={benchmark} />
-        <tr>
-          <td>{fund.Symbol}</td>
-          <td>{fund['Fund Name']}</td>
-          <td>-</td>
-          <td>{fmtPct(fund.ytd)}</td>
-          <td>{fmtPct(fund.oneYear)}</td>
-          <td>{fmtPct(fund.threeYear)}</td>
-          <td>{fmtPct(fund.fiveYear)}</td>
-          <td>{fmtNumber(fund.sharpe)}</td>
-          <td>{fmtPct(fund.stdDev5y)}</td>
-          <td>{fmtPct(fund.expense)}</td>
-        </tr>
-      </tbody>
-    </table>
+    <div>
+      <BenchmarkRow data={benchmark} />
+      <table>
+        <tbody>
+          <tr>
+            <td>{fund.Symbol}</td>
+            <td>{fund['Fund Name']}</td>
+            <td>-</td>
+            <td>{fmtPct(fund.ytd)}</td>
+            <td>{fmtPct(fund.oneYear)}</td>
+            <td>{fmtPct(fund.threeYear)}</td>
+            <td>{fmtPct(fund.fiveYear)}</td>
+            <td>{fmtNumber(fund.sharpe)}</td>
+            <td>{fmtPct(fund.stdDev5y)}</td>
+            <td>{fmtPct(fund.expense)}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   );
 });

@@ -18,9 +18,9 @@ function ClassView({ funds }) {
   return (
     <div>
       <div data-testid="summary">{summaryScore}</div>
+      {benchmark && <BenchmarkRow fund={benchmark} />}
       <table>
         <tbody>
-          {benchmark && <BenchmarkRow fund={benchmark} />}
           {peers.map(f => (
             <tr key={f.Symbol}>
               <td>{f.Symbol}</td>
@@ -56,7 +56,6 @@ test('benchmark row and summary rendered', async () => {
   const scored = calculateScores(withBench);
   const funds = scored.filter(f => f.assetClass === 'Large Cap Growth');
   render(<ClassView funds={funds} />);
-  expect(screen.getByText('IWF')).toBeInTheDocument();
-  expect(screen.getByText(/Benchmark/)).toBeInTheDocument();
+  expect(screen.getByText(/Benchmark — IWF/i)).toBeInTheDocument();
   expect(screen.getByTestId('summary').textContent).not.toBe('N/A');
 });
