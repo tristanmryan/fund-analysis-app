@@ -8,19 +8,21 @@ const funds = [
 
 test('benchmark row renders first', () => {
   render(
-    <table>
-      <tbody>
-        <BenchmarkRow data={funds[0]} />
-        {funds.slice(1).map(f => (
-          <tr key={f.Symbol}>
-            <td>{f.Symbol}</td>
-            <td>{f['Fund Name']}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div>
+      <BenchmarkRow data={funds[0]} />
+      <table>
+        <tbody>
+          {funds.slice(1).map(f => (
+            <tr key={f.Symbol}>
+              <td>{f.Symbol}</td>
+              <td>{f['Fund Name']}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 
-  const rows = within(screen.getByRole('rowgroup')).getAllByRole('row');
+  const rows = screen.getAllByRole('row');
   expect(rows[0].textContent).toContain('Benchmark');
 });

@@ -9,3 +9,4 @@
 - Fixed YTD parsing to use dedicated column and not 1Y value.
 - Inject benchmark rows for each asset class when missing.
 - Added ensureBenchmarkRows helper with console logs and ClassView component.
+- BenchmarkRow banner table ensures benchmark row visible in ClassView; added ClassView.css and tests.

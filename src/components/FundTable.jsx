@@ -25,9 +25,11 @@ const ScoreBadge = ({ score }) => {
   );
 };
 
-const FundTable = ({ funds = [], onRowClick = () => {} }) => (
-  <div style={{ overflowX: 'auto' }}>
-    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+const FundTable = ({ funds = [], rows, onRowClick = () => {} }) => {
+  const data = rows || funds;
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
       <thead>
         <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
           <th style={{ padding: '0.75rem', textAlign: 'left' }}>Symbol</th>
@@ -44,7 +46,7 @@ const FundTable = ({ funds = [], onRowClick = () => {} }) => (
         </tr>
       </thead>
       <tbody>
-        {funds.map(fund => (
+        {data.map(fund => (
           <tr
             key={fund.Symbol}
             style={{ borderBottom: '1px solid #f3f4f6', cursor: 'pointer' }}
@@ -91,6 +93,7 @@ const FundTable = ({ funds = [], onRowClick = () => {} }) => (
       </tbody>
     </table>
   </div>
-);
+  );
+};
 
 export default FundTable;
