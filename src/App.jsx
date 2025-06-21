@@ -259,6 +259,13 @@ const App = () => {
         setFundData(taggedFunds);
         setScoredFundData(taggedFunds);
         setClassSummaries(summaries);
+        console.debug(
+          '[DEBUG] scoredFundData',
+          'total:',
+          taggedFunds.length,
+          'benchmarks:',
+          taggedFunds.filter(f => f.isBenchmark).length
+        );
         console.log('Successfully loaded and scored', taggedFunds.length, 'funds');
       } catch (err) {
         console.error('Error parsing performance file:', err);

@@ -45,6 +45,7 @@ describe('per-class scoring with benchmark integration', () => {
     const summary = generateClassSummary(scored);
     const benchmark = scored.find(f => f.isBenchmark);
 
+    expect(scored.filter(r => r.isBenchmark).length).toBeGreaterThan(0);
     expect(typeof benchmark.scores.final).toBe('number');
     expect(summary.benchmarkScore).toBeCloseTo(benchmark.scores.final);
     expect(summary.fundCount).toBe(2); // peers only

@@ -262,7 +262,6 @@ const METRIC_WEIGHTS = {
     const fundsByClass = {};
     funds.forEach(fund => {
       const assetClass = fund.assetClass || fund['Asset Class'] || 'Unknown';
-      if (assetClass === 'Benchmark') return;
       if (!fundsByClass[assetClass]) {
         fundsByClass[assetClass] = [];
       }
