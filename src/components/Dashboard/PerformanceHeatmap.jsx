@@ -74,15 +74,13 @@ const PerformanceHeatmap = ({ funds }) => {
     return null;
   }
 
-  const filtered = funds.filter(
-    f => f.isRecommended && !f.isBenchmark
-  );
-  if (filtered.length === 0) {
+  const peers = funds.filter(f => f.isRecommended && !f.isBenchmark);
+  if (peers.length === 0) {
     return null;
   }
 
   const byClass = {};
-  filtered.forEach(f => {
+  peers.forEach(f => {
     const assetClass = f.assetClass || 'Uncategorized';
     if (!byClass[assetClass]) byClass[assetClass] = [];
     byClass[assetClass].push(f);
@@ -91,6 +89,8 @@ const PerformanceHeatmap = ({ funds }) => {
   Object.values(byClass).forEach(list => {
     list.sort((a, b) => (b.scores?.final || 0) - (a.scores?.final || 0));
   });
+
+  const benchmarks = funds.filter(f => f.isBenchmark);
 
   return (
     <div style={{ marginBottom: '1.5rem' }}>
@@ -107,22 +107,26 @@ const PerformanceHeatmap = ({ funds }) => {
         <LayoutGrid size={18} /> Performance Heatmap
       </h3>
 
-      {Object.entries(byClass).map(([assetClass, classFunds]) => (
-        <div key={assetClass} style={{ marginBottom: '1rem' }}>
-          <h4 style={{ fontWeight: 'bold', marginBottom: '0.25rem' }}>{assetClass}</h4>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap: '0.5rem'
-            }}
-          >
-            {classFunds.map(fund => (
-              <FundTile key={fund.Symbol} fund={fund} />
-            ))}
+      {Object.entries(byClass).map(([assetClass, classFunds]) => {
+        const benchmark = benchmarks.find(b => b.assetClass === assetClass);
+        return (
+          <div key={assetClass} style={{ marginBottom: '1rem' }}>
+            <h4 style={{ fontWeight: 'bold', marginBottom: '0.25rem' }}>{assetClass}</h4>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                gap: '0.5rem'
+              }}
+            >
+              {benchmark && <FundTile key={benchmark.Symbol} fund={benchmark} />}
+              {classFunds.map(fund => (
+                <FundTile key={fund.Symbol} fund={fund} />
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };

@@ -60,6 +60,8 @@ const AssetClassOverview = ({ funds, config }) => {
     const avgStd     = stdVals.length     ? (stdVals.reduce((s, v)     => s + v, 0) / stdVals.length    ).toFixed(2) : null;
 
     const benchmarkTicker = config?.[assetClass]?.ticker || '-';
+    const benchmarkFund   = classFunds.find(f => f.isBenchmark);
+    const benchmarkScore  = benchmarkFund?.scores?.final ?? null;
     const scoreCol        = scoreColor(avgScore);
 
     const tags = Array.from(
@@ -76,6 +78,7 @@ const AssetClassOverview = ({ funds, config }) => {
       avgExpense,
       avgStd,
       benchmarkTicker,
+      benchmarkScore,
       color: scoreCol,
       tags,
       trend: trendPoints
@@ -156,6 +159,11 @@ const AssetClassOverview = ({ funds, config }) => {
 
             <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem' }}>
               Benchmark: {info.benchmarkTicker}
+              {info.benchmarkScore != null && (
+                <span style={{ marginLeft: '0.25rem', color: info.color }}>
+                  ({info.benchmarkScore})
+                </span>
+              )}
             </div>
 
             {info.tags.length > 0 && (

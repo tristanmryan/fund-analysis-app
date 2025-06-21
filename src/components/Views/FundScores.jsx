@@ -4,7 +4,7 @@ import { Download } from 'lucide-react';
 import { exportToExcel } from '../../services/exportService';
 import AppContext from '../../context/AppContext.jsx';
 import FundDetailsModal from '../Modals/FundDetailsModal.jsx';
-import FundTable from '../FundTable.jsx';
+import ClassView from '../ClassView.jsx';
 
 const FundScores = () => {
   const {
@@ -30,6 +30,13 @@ const FundScores = () => {
     if (filteredFunds.length === 0) return;
     exportToExcel(filteredFunds);
   };
+
+  const byClass = {};
+  filteredFunds.forEach(f => {
+    const cls = f.assetClass || 'Uncategorized';
+    if (!byClass[cls]) byClass[cls] = [];
+    byClass[cls].push(f);
+  });
 
   return (
     <div>
@@ -64,7 +71,12 @@ const FundScores = () => {
       {filteredFunds.length === 0 ? (
         <p style={{ color: '#6b7280' }}>No funds match your current filter selection.</p>
       ) : (
-        <FundTable funds={filteredFunds} onRowClick={setSelectedFund} />
+        Object.entries(byClass).map(([cls, funds]) => (
+          <div key={cls} style={{ marginBottom: '2rem' }}>
+            <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>{cls}</h3>
+            <ClassView funds={funds} />
+          </div>
+        ))
       )}
 
       {selectedFund && (
