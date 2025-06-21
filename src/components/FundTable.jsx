@@ -34,6 +34,7 @@ const FundTable = ({ funds = [], rows, onRowClick = () => {} }) => {
         <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
           <th style={{ padding: '0.75rem', textAlign: 'left' }}>Symbol</th>
           <th style={{ padding: '0.75rem', textAlign: 'left' }}>Fund Name</th>
+          <th style={{ padding: '0.75rem', textAlign: 'left' }}>Type</th>
           <th style={{ padding: '0.75rem', textAlign: 'center' }}>Score</th>
           <th style={{ padding: '0.75rem', textAlign: 'right' }}>YTD</th>
           <th style={{ padding: '0.75rem', textAlign: 'right' }}>1Y</th>
@@ -49,7 +50,11 @@ const FundTable = ({ funds = [], rows, onRowClick = () => {} }) => {
         {data.map(fund => (
           <tr
             key={fund.Symbol}
-            style={{ borderBottom: '1px solid #f3f4f6', cursor: 'pointer' }}
+            style={{
+              borderBottom: '1px solid #f3f4f6',
+              cursor: 'pointer',
+              backgroundColor: fund.isBenchmark ? '#fffbeb' : 'transparent'
+            }}
             role="button"
             tabIndex={0}
             onKeyDown={e => e.key === 'Enter' && onRowClick(fund)}
@@ -57,6 +62,9 @@ const FundTable = ({ funds = [], rows, onRowClick = () => {} }) => {
           >
             <td style={{ padding: '0.5rem' }}>{fund.Symbol}</td>
             <td style={{ padding: '0.5rem' }}>{fund['Fund Name']}</td>
+            <td style={{ padding: '0.5rem' }}>
+              {fund.isBenchmark ? 'Benchmark' : fund.isRecommended ? 'Recommended' : ''}
+            </td>
             <td style={{ padding: '0.5rem', textAlign: 'center' }}>
               {fund.scores ? <ScoreBadge score={fund.scores.final} /> : '-'}
             </td>
