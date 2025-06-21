@@ -34,7 +34,8 @@ const AssetClassOverview = ({ funds, config }) => {
       .filter((d) => d.value !== null);
   };
 
-  const recommended = funds.filter(f => f.isRecommended);
+  // Use recommended funds for summary if present, but always keep benchmarks
+  const recommended = funds.filter(f => f.isRecommended || f.isBenchmark);
   const inputFunds = recommended.length > 0 ? recommended : funds;
 
   /* ---------- group funds by asset class ---------- */
