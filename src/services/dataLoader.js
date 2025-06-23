@@ -101,8 +101,14 @@ export function ensureBenchmarkRows(list = []) {
       const row = map.get(key);
       row.isBenchmark = true;
       if (!row.benchmarkForClass) row.benchmarkForClass = assetClass;
-      if (!row.assetClass) row.assetClass = row['Asset Class'] || assetClass;
-      row['Asset Class'] = row.assetClass;
+      const existingClass = row.assetClass || row['Asset Class'];
+      if (!existingClass || existingClass === 'Benchmark') {
+        row.assetClass = assetClass;
+        row['Asset Class'] = assetClass;
+      } else {
+        row.assetClass = existingClass;
+        row['Asset Class'] = existingClass;
+      }
     }
   });
   return list;
