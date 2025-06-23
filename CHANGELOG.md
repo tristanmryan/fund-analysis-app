@@ -11,3 +11,4 @@
 - Added ensureBenchmarkRows helper with console logs and ClassView component.
 - BenchmarkRow banner table ensures benchmark row visible in ClassView; added ClassView.css and tests.
 - Benchmarks preserved during scoring; debug log shows benchmark count.
+- Added benchmark audit script and flow documentation; dashboard views show benchmarks by default.

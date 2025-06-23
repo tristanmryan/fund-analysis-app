@@ -4,7 +4,7 @@ import { LayoutGrid } from 'lucide-react';
 import TagList from '../TagList.jsx';
 
 /**
- * Render a heatmap of recommended fund scores grouped by asset class.
+ * Render a heatmap of fund scores grouped by asset class.
  * Expects an array of scored fund objects with fields:
  *   - Fund Name
  *   - Symbol
@@ -74,7 +74,7 @@ const PerformanceHeatmap = ({ funds }) => {
     return null;
   }
 
-  const peers = funds.filter(f => f.isRecommended && !f.isBenchmark);
+  const peers = funds.filter(f => !f.isBenchmark); // keep benchmarks
   if (peers.length === 0) {
     return null;
   }
