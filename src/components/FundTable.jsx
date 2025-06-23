@@ -14,6 +14,7 @@ const ScoreBadge = ({ score }) => {
         border: `1px solid ${color}50`,
         borderRadius: '9999px',
         fontSize: '0.75rem',
+        fontWeight: 'bold',
         padding: '0.25rem 0.5rem',
         display: 'inline-block',
         minWidth: '3rem',
@@ -32,18 +33,18 @@ const FundTable = ({ funds = [], rows, onRowClick = () => {} }) => {
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
       <thead>
         <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
-          <th style={{ padding: '0.75rem', textAlign: 'left' }}>Symbol</th>
-          <th style={{ padding: '0.75rem', textAlign: 'left' }}>Fund Name</th>
-          <th style={{ padding: '0.75rem', textAlign: 'left' }}>Type</th>
-          <th style={{ padding: '0.75rem', textAlign: 'center' }}>Score</th>
-          <th style={{ padding: '0.75rem', textAlign: 'right' }}>YTD</th>
-          <th style={{ padding: '0.75rem', textAlign: 'right' }}>1Y</th>
-          <th style={{ padding: '0.75rem', textAlign: 'right' }}>3Y</th>
-          <th style={{ padding: '0.75rem', textAlign: 'right' }}>5Y</th>
-          <th style={{ padding: '0.75rem', textAlign: 'right' }}>Sharpe</th>
-          <th style={{ padding: '0.75rem', textAlign: 'right' }}>Std Dev (5Y)</th>
-          <th style={{ padding: '0.75rem', textAlign: 'right' }}>Expense</th>
-          <th style={{ padding: '0.75rem', textAlign: 'left' }}>Tags</th>
+          <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 500 }}>Symbol</th>
+          <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 500 }}>Fund Name</th>
+          <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 500 }}>Type</th>
+          <th style={{ padding: '0.75rem', textAlign: 'center', fontWeight: 500 }}>Score</th>
+          <th style={{ padding: '0.75rem', textAlign: 'right', fontWeight: 500 }}>YTD</th>
+          <th style={{ padding: '0.75rem', textAlign: 'right', fontWeight: 500 }}>1Y</th>
+          <th style={{ padding: '0.75rem', textAlign: 'right', fontWeight: 500 }}>3Y</th>
+          <th style={{ padding: '0.75rem', textAlign: 'right', fontWeight: 500 }}>5Y</th>
+          <th style={{ padding: '0.75rem', textAlign: 'right', fontWeight: 500 }}>Sharpe</th>
+          <th style={{ padding: '0.75rem', textAlign: 'right', fontWeight: 500 }}>Std Dev (5Y)</th>
+          <th style={{ padding: '0.75rem', textAlign: 'right', fontWeight: 500 }}>Expense</th>
+          <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 500 }}>Tags</th>
         </tr>
       </thead>
       <tbody>

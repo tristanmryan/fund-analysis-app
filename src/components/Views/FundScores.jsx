@@ -4,7 +4,8 @@ import { Download } from 'lucide-react';
 import { exportToExcel } from '../../services/exportService';
 import AppContext from '../../context/AppContext.jsx';
 import FundDetailsModal from '../Modals/FundDetailsModal.jsx';
-import ClassView from '../ClassView.jsx';
+import FundTable from '../FundTable.jsx';
+import GroupedFundTable from '../GroupedFundTable.jsx';
 
 const FundScores = () => {
   const {
@@ -31,12 +32,15 @@ const FundScores = () => {
     exportToExcel(filteredFunds);
   };
 
-  const byClass = {};
-  filteredFunds.forEach(f => {
-    const cls = f.assetClass || 'Uncategorized';
-    if (!byClass[cls]) byClass[cls] = [];
-    byClass[cls].push(f);
-  });
+  const [grouped, setGrouped] = useState(
+    () => localStorage.getItem('ls_grouped_view') === 'true'
+  );
+
+  const toggleView = () => {
+    const next = !grouped;
+    setGrouped(next);
+    localStorage.setItem('ls_grouped_view', String(next));
+  };
 
   return (
     <div>
@@ -49,7 +53,7 @@ const FundScores = () => {
         onTagToggle={toggleTag}
         onReset={resetFilters}
       />
-      <div style={{ marginBottom: '1rem' }}>
+      <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.5rem' }}>
         <button
           onClick={handleExport}
           style={{
@@ -67,16 +71,25 @@ const FundScores = () => {
           <Download size={16} />
           Export to Excel
         </button>
+        <button
+          onClick={toggleView}
+          style={{
+            padding: '0.5rem 1rem',
+            backgroundColor: '#e5e7eb',
+            border: '1px solid #d1d5db',
+            borderRadius: '0.375rem',
+            cursor: 'pointer'
+          }}
+        >
+          {grouped ? 'Flat' : 'Grouped'} View
+        </button>
       </div>
       {filteredFunds.length === 0 ? (
         <p style={{ color: '#6b7280' }}>No funds match your current filter selection.</p>
+      ) : grouped ? (
+        <GroupedFundTable funds={filteredFunds} onRowClick={setSelectedFund} />
       ) : (
-        Object.entries(byClass).map(([cls, funds]) => (
-          <div key={cls} style={{ marginBottom: '2rem' }}>
-            <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>{cls}</h3>
-            <ClassView funds={funds} />
-          </div>
-        ))
+        <FundTable funds={filteredFunds} onRowClick={setSelectedFund} />
       )}
 
       {selectedFund && (

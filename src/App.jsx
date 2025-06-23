@@ -601,22 +601,31 @@ const App = () => {
             Asset Class Comparison
           </h2>
           
-          <select
-            value={selectedClassView}
-            onChange={e => setSelectedClassView(e.target.value)}
-            style={{ 
-              padding: '0.5rem', 
-              marginBottom: '1rem',
-              border: '1px solid #d1d5db',
-              borderRadius: '0.375rem',
-              fontSize: '1rem'
+          <div
+            style={{
+              position: 'sticky',
+              top: 0,
+              zIndex: 10,
+              background: 'white'
             }}
           >
-            <option value="">-- Choose an asset class --</option>
-            {availableClasses.map(ac => (
-              <option key={ac} value={ac}>{ac}</option>
-            ))}
-          </select>
+            <select
+              value={selectedClassView}
+              onChange={e => setSelectedClassView(e.target.value)}
+              style={{
+                padding: '0.5rem',
+                marginBottom: '1rem',
+                border: '1px solid #d1d5db',
+                borderRadius: '0.375rem',
+                fontSize: '1rem'
+              }}
+            >
+              <option value="">-- Choose an asset class --</option>
+              {availableClasses.map(ac => (
+                <option key={ac} value={ac}>{ac}</option>
+              ))}
+            </select>
+          </div>
           
           {selectedClassView && (
             <>

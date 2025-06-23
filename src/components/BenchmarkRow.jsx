@@ -13,6 +13,7 @@ const ScoreBadge = ({ score }) => {
         border: `1px solid ${color}50`,
         borderRadius: '9999px',
         fontSize: '0.75rem',
+        fontWeight: 'bold',
         padding: '0.25rem 0.5rem',
         display: 'inline-block',
         minWidth: '3rem',
