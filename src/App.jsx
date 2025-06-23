@@ -153,6 +153,7 @@ const App = () => {
           recommendedFunds,
           assetClassBenchmarks,
         });
+        console.info('[audit] after parse', parsedFunds.length, 'rows');
 
         const clean = s => s?.toUpperCase().trim().replace(/[^A-Z0-9]/g, '');
 
@@ -185,10 +186,34 @@ const App = () => {
             assetClass: resolvedClass || f['Asset Class'],
           };
           });
+          console.info(
+            '[audit] after flagging',
+            withClassAndFlags.length,
+            'rows',
+            'benchmarks',
+            withClassAndFlags.filter(r => r.isBenchmark).length
+          );
 
+          const beforeEnsure = withClassAndFlags.length;
           withClassAndFlags = ensureBenchmarkRows(withClassAndFlags);
+          console.info(
+            '[audit] after ensureBenchmarkRows',
+            'before',
+            beforeEnsure,
+            'after',
+            withClassAndFlags.length,
+            'benchmarks',
+            withClassAndFlags.filter(r => r.isBenchmark).length
+          );
 
         const scoredFunds = calculateScores(withClassAndFlags);
+        console.info(
+          '[audit] after scoring',
+          scoredFunds.length,
+          'rows',
+          'benchmarks',
+          scoredFunds.filter(r => r.isBenchmark).length
+        );
 
         const taggedFunds = applyTagRules(scoredFunds, {
           benchmarks: assetClassBenchmarks,
@@ -258,6 +283,9 @@ const App = () => {
         setCurrentSnapshotDate(today);
         setFundData(taggedFunds);
         setScoredFundData(taggedFunds);
+        if (process.env.NODE_ENV !== 'production') {
+          window.benchmarks = taggedFunds.filter(r => r.isBenchmark);
+        }
         setClassSummaries(summaries);
         console.debug(
           '[DEBUG] scoredFundData',
