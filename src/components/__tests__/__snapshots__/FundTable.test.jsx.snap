@@ -13,62 +13,62 @@ exports[`renders table snapshot 1`] = `
           style="border-bottom: 2px solid #e5e7eb;"
         >
           <th
-            style="padding: 0.75rem; text-align: left;"
+            style="padding: 0.75rem; text-align: left; font-weight: 500;"
           >
             Symbol
           </th>
           <th
-            style="padding: 0.75rem; text-align: left;"
+            style="padding: 0.75rem; text-align: left; font-weight: 500;"
           >
             Fund Name
           </th>
           <th
-            style="padding: 0.75rem; text-align: left;"
+            style="padding: 0.75rem; text-align: left; font-weight: 500;"
           >
             Type
           </th>
           <th
-            style="padding: 0.75rem; text-align: center;"
+            style="padding: 0.75rem; text-align: center; font-weight: 500;"
           >
             Score
           </th>
           <th
-            style="padding: 0.75rem; text-align: right;"
+            style="padding: 0.75rem; text-align: right; font-weight: 500;"
           >
             YTD
           </th>
           <th
-            style="padding: 0.75rem; text-align: right;"
+            style="padding: 0.75rem; text-align: right; font-weight: 500;"
           >
             1Y
           </th>
           <th
-            style="padding: 0.75rem; text-align: right;"
+            style="padding: 0.75rem; text-align: right; font-weight: 500;"
           >
             3Y
           </th>
           <th
-            style="padding: 0.75rem; text-align: right;"
+            style="padding: 0.75rem; text-align: right; font-weight: 500;"
           >
             5Y
           </th>
           <th
-            style="padding: 0.75rem; text-align: right;"
+            style="padding: 0.75rem; text-align: right; font-weight: 500;"
           >
             Sharpe
           </th>
           <th
-            style="padding: 0.75rem; text-align: right;"
+            style="padding: 0.75rem; text-align: right; font-weight: 500;"
           >
             Std Dev (5Y)
           </th>
           <th
-            style="padding: 0.75rem; text-align: right;"
+            style="padding: 0.75rem; text-align: right; font-weight: 500;"
           >
             Expense
           </th>
           <th
-            style="padding: 0.75rem; text-align: left;"
+            style="padding: 0.75rem; text-align: left; font-weight: 500;"
           >
             Tags
           </th>
@@ -97,7 +97,7 @@ exports[`renders table snapshot 1`] = `
             style="padding: 0.5rem; text-align: center;"
           >
             <span
-              style="background-color: rgba(22, 163, 74, 0.125); color: rgb(22, 163, 74); border: 1px solid #16a34a50; border-radius: 9999px; font-size: 0.75rem; padding: 0.25rem 0.5rem; display: inline-block; min-width: 3rem; text-align: center;"
+              style="background-color: rgba(22, 163, 74, 0.125); color: rgb(22, 163, 74); border: 1px solid #16a34a50; border-radius: 9999px; font-size: 0.75rem; font-weight: bold; padding: 0.25rem 0.5rem; display: inline-block; min-width: 3rem; text-align: center;"
             >
               75 - Strong
             </span>

@@ -4,6 +4,7 @@ import { Layers } from 'lucide-react';
 import TagList from '../TagList.jsx';
 import { LineChart, Line } from 'recharts';
 import AppContext from '../../context/AppContext.jsx';
+import './AssetClassOverview.css';
 
 /**
  * Show summary cards for each asset class.
@@ -101,13 +102,7 @@ const AssetClassOverview = ({ funds, config }) => {
         <Layers size={18} /> Asset Class Overview
       </h3>
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-          gap: '1rem'
-        }}
-      >
+      <div className="dashboard-grid">
         {classInfo.map(info => (
           <div
             key={info.assetClass}
