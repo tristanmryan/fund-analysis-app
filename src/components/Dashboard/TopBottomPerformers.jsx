@@ -1,6 +1,6 @@
 import React from 'react';
+import { getScoreColor, getScoreLabel } from '../../services/scoring';
 import TagList from '../TagList.jsx';
-import ScoreBadge from '../common/ScoreBadge.jsx';
 import { BarChart2 } from 'lucide-react';
 
 /**
@@ -14,25 +14,55 @@ import { BarChart2 } from 'lucide-react';
  *   - isBenchmark
  *   - isRecommended
  */
+const ScoreBadge = ({ score }) => {
+  const color = getScoreColor(score);
+  const label = getScoreLabel(score);
+  return (
+    <span
+      style={{
+        backgroundColor: `${color}20`,
+        color,
+        border: `1px solid ${color}50`,
+        borderRadius: '9999px',
+        fontSize: '0.75rem',
+        padding: '0.25rem 0.5rem',
+        display: 'inline-block',
+        minWidth: '3rem',
+        textAlign: 'center'
+      }}
+    >
+      {score} - {label}
+    </span>
+  );
+};
 
 const FundRow = ({ fund }) => (
-  <tr className="border-b">
-    <td className="px-3 py-1">{fund['Fund Name']}</td>
-    <td className="px-3 py-1">{fund.Symbol}</td>
-    <td className="px-3 py-1">{fund.assetClass}</td>
-    <td className="px-3 py-1 text-center">
+  <tr style={{ borderBottom: '1px solid #f3f4f6' }}>
+    <td style={{ padding: '0.5rem' }}>{fund['Fund Name']}</td>
+    <td style={{ padding: '0.5rem' }}>{fund.Symbol}</td>
+    <td style={{ padding: '0.5rem' }}>{fund.assetClass}</td>
+    <td style={{ padding: '0.5rem', textAlign: 'center' }}>
       <ScoreBadge score={fund.scores?.final || 0} />
     </td>
-    <td className="px-3 py-1">
+    <td style={{ padding: '0.5rem' }}>
       {Array.isArray(fund.tags) && fund.tags.length > 0 ? (
         <TagList tags={fund.tags} />
       ) : (
-        <span className="text-gray-400">-</span>
+        <span style={{ color: '#9ca3af' }}>-</span>
       )}
     </td>
-    <td className="px-3 py-1">
+    <td style={{ padding: '0.5rem' }}>
       {fund.isBenchmark && (
-        <span className="bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded text-xs font-medium">
+        <span
+          style={{
+            backgroundColor: '#fbbf24',
+            color: '#78350f',
+            padding: '0.125rem 0.5rem',
+            borderRadius: '0.25rem',
+            fontSize: '0.75rem',
+            fontWeight: '500'
+          }}
+        >
           Benchmark
         </span>
       )}
@@ -62,18 +92,18 @@ const TopBottomPerformers = ({ funds }) => {
         <BarChart2 size={18} /> Top &amp; Bottom Performers
       </h3>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
         <div>
           <h4 style={{ fontWeight: 'bold', marginBottom: '0.25rem' }}>Top 5</h4>
-          <table className="w-full border-collapse">
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-              <tr className="border-b-2 border-gray-200">
-                <th className="px-3 py-1 text-left">Fund</th>
-                <th className="px-3 py-1 text-left">Ticker</th>
-                <th className="px-3 py-1 text-left">Class</th>
-                <th className="px-3 py-1 text-center">Score</th>
-                <th className="px-3 py-1 text-left">Tags</th>
-                <th className="px-3 py-1"></th>
+              <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
+                <th style={{ textAlign: 'left', padding: '0.5rem' }}>Fund</th>
+                <th style={{ textAlign: 'left', padding: '0.5rem' }}>Ticker</th>
+                <th style={{ textAlign: 'left', padding: '0.5rem' }}>Class</th>
+                <th style={{ textAlign: 'center', padding: '0.5rem' }}>Score</th>
+                <th style={{ textAlign: 'left', padding: '0.5rem' }}>Tags</th>
+                <th style={{ padding: '0.5rem' }}></th>
               </tr>
             </thead>
             <tbody>
@@ -86,15 +116,15 @@ const TopBottomPerformers = ({ funds }) => {
 
         <div>
           <h4 style={{ fontWeight: 'bold', marginBottom: '0.25rem' }}>Bottom 5</h4>
-          <table className="w-full border-collapse">
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-              <tr className="border-b-2 border-gray-200">
-                <th className="px-3 py-1 text-left">Fund</th>
-                <th className="px-3 py-1 text-left">Ticker</th>
-                <th className="px-3 py-1 text-left">Class</th>
-                <th className="px-3 py-1 text-center">Score</th>
-                <th className="px-3 py-1 text-left">Tags</th>
-                <th className="px-3 py-1"></th>
+              <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
+                <th style={{ textAlign: 'left', padding: '0.5rem' }}>Fund</th>
+                <th style={{ textAlign: 'left', padding: '0.5rem' }}>Ticker</th>
+                <th style={{ textAlign: 'left', padding: '0.5rem' }}>Class</th>
+                <th style={{ textAlign: 'center', padding: '0.5rem' }}>Score</th>
+                <th style={{ textAlign: 'left', padding: '0.5rem' }}>Tags</th>
+                <th style={{ padding: '0.5rem' }}></th>
               </tr>
             </thead>
             <tbody>

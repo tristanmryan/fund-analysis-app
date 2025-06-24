@@ -2,7 +2,6 @@ import React from 'react';
 import { getScoreColor } from '../../services/scoring';
 import { LayoutGrid } from 'lucide-react';
 import TagList from '../TagList.jsx';
-import ScoreBadge from '../common/ScoreBadge.jsx';
 
 /**
  * Render a heatmap of fund scores grouped by asset class.
@@ -16,6 +15,26 @@ import ScoreBadge from '../common/ScoreBadge.jsx';
  *   - isRecommended
  *   - isBenchmark
  */
+const ScoreBadge = ({ score }) => {
+  const color = getScoreColor(score);
+  return (
+    <span
+      style={{
+        backgroundColor: `${color}20`,
+        color,
+        border: `1px solid ${color}50`,
+        borderRadius: '9999px',
+        fontSize: '0.75rem',
+        padding: '0.125rem 0.5rem',
+        display: 'inline-block',
+        minWidth: '2.5rem',
+        textAlign: 'center'
+      }}
+    >
+      {score}
+    </span>
+  );
+};
 
 const FundTile = ({ fund }) => {
   const color = getScoreColor(fund.scores?.final || 0);
@@ -30,12 +49,19 @@ const FundTile = ({ fund }) => {
   return (
     <div
       title={tooltipParts.join(' | ')}
-      className="rounded-lg p-2 border"
-      style={{ backgroundColor: `${color}20`, borderColor: `${color}50` }}
+      style={{
+        backgroundColor: `${color}20`,
+        border: `1px solid ${color}50`,
+        borderRadius: '0.5rem',
+        padding: '0.5rem',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '0.25rem'
+      }}
     >
       <div style={{ fontWeight: 600 }}>{fund['Fund Name']}</div>
       <div style={{ fontSize: '0.875rem', color: '#374151' }}>{fund.Symbol}</div>
-      <ScoreBadge score={fund.scores?.final || 0} size="small" />
+      <ScoreBadge score={fund.scores?.final || 0} />
       {Array.isArray(fund.tags) && fund.tags.length > 0 && (
         <TagList tags={fund.tags} />
       )}
@@ -86,7 +112,13 @@ const PerformanceHeatmap = ({ funds }) => {
         return (
           <div key={assetClass} style={{ marginBottom: '1rem' }}>
             <h4 style={{ fontWeight: 'bold', marginBottom: '0.25rem' }}>{assetClass}</h4>
-            <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                gap: '0.5rem'
+              }}
+            >
               {benchmark && <FundTile key={benchmark.Symbol} fund={benchmark} />}
               {classFunds.map(fund => (
                 <FundTile key={fund.Symbol} fund={fund} />
