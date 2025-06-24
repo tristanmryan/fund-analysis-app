@@ -1,23 +1,18 @@
 // App.jsx
 import React, { useState, useEffect, useContext } from 'react';
 import { RefreshCw, Settings, Plus, Trash2, LayoutGrid, AlertCircle, TrendingUp, Award, Clock, Database, Calendar } from 'lucide-react';
-import * as XLSX from 'xlsx';
 import { getStoredConfig, saveStoredConfig } from './data/storage';
 import {
   recommendedFunds as defaultRecommendedFunds,
   assetClassBenchmarks as defaultBenchmarks
 } from './data/config';
 import {
-  calculateScores,
-  generateClassSummary,
   identifyReviewCandidates,
   getScoreColor,
   getScoreLabel
 } from './services/scoring';
-import { applyTagRules } from './services/tagEngine';
 import dataStore from './services/dataStore';
-import { loadAssetClassMap, lookupAssetClass, ensureBenchmarkRows } from './services/dataLoader';
-import parseFundFile from './services/parseFundFile';
+import { loadAssetClassMap } from './services/dataLoader';
 import { fmtPct, fmtNumber } from './utils/formatters';
 import FundScores from './components/Views/FundScores.jsx';
 import DashboardView from './components/Views/DashboardView.jsx';
@@ -137,173 +132,34 @@ const App = () => {
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
+
+    const worker = new Worker(
+      new URL('./workers/fundProcessor.worker.js', import.meta.url)
+    );
+
+    worker.postMessage({ file, config: { recommendedFunds, assetClassBenchmarks } });
     setLoading(true);
-    setUploadedFileName(file.name);
-    const reader = new FileReader();
 
-    reader.onload = async (e) => {
-      try {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
-        const parsedFunds = await parseFundFile(jsonData, {
-          recommendedFunds,
-          assetClassBenchmarks,
-        });
-        console.info('[audit] after parse', parsedFunds.length, 'rows');
-
-        const clean = s => s?.toUpperCase().trim().replace(/[^A-Z0-9]/g, '');
-
-          let withClassAndFlags = parsedFunds.map(f => {
-            const parsedSymbol = clean(f.Symbol);
-            const recommendedMatch = recommendedFunds.find(r => clean(r.symbol) === parsedSymbol);
-
-          let isBenchmark = false;
-          let benchmarkForClass = null;
-          Object.entries(assetClassBenchmarks).forEach(([assetClass, benchmark]) => {
-            if (clean(benchmark.ticker) === parsedSymbol) {
-              isBenchmark = true;
-              benchmarkForClass = assetClass;
-            }
-          });
-
-          const resolvedClass = recommendedMatch
-            ? recommendedMatch.assetClass
-            : benchmarkForClass
-              ? benchmarkForClass
-              : lookupAssetClass(parsedSymbol);
-
-          return {
-            ...f,
-            cleanSymbol: parsedSymbol,
-            isRecommended: !!recommendedMatch,
-            isBenchmark,
-            benchmarkForClass,
-            'Asset Class': resolvedClass || f['Asset Class'],
-            assetClass: resolvedClass || f['Asset Class'],
-          };
-          });
-          console.info(
-            '[audit] after flagging',
-            withClassAndFlags.length,
-            'rows',
-            'benchmarks',
-            withClassAndFlags.filter(r => r.isBenchmark).length
-          );
-
-          const beforeEnsure = withClassAndFlags.length;
-          withClassAndFlags = ensureBenchmarkRows(withClassAndFlags);
-          console.info(
-            '[audit] after ensureBenchmarkRows',
-            'before',
-            beforeEnsure,
-            'after',
-            withClassAndFlags.length,
-            'benchmarks',
-            withClassAndFlags.filter(r => r.isBenchmark).length
-          );
-
-        const scoredFunds = calculateScores(withClassAndFlags);
-        console.info(
-          '[audit] after scoring',
-          scoredFunds.length,
-          'rows',
-          'benchmarks',
-          scoredFunds.filter(r => r.isBenchmark).length
-        );
-
-        const taggedFunds = applyTagRules(scoredFunds, {
-          benchmarks: assetClassBenchmarks,
-        });
-
-        const summaries = {};
-        const fundsByClass = {};
-        taggedFunds.forEach(fund => {
-          const assetClass = fund.assetClass;
-          if (!fundsByClass[assetClass]) {
-            fundsByClass[assetClass] = [];
-          }
-          fundsByClass[assetClass].push(fund);
-        });
-        Object.entries(fundsByClass).forEach(([assetClass, funds]) => {
-          summaries[assetClass] = generateClassSummary(funds);
-        });
-
-        const benchmarks = {};
-        Object.entries(assetClassBenchmarks).forEach(([assetClass, { ticker, name }]) => {
-          const match = taggedFunds.find(f => f.cleanSymbol === clean(ticker));
-          if (match) {
-            benchmarks[assetClass] = { ...match, name };
-          }
-        });
-
-        const today = new Date().toISOString().slice(0, 10);
-
-        taggedFunds.forEach(fund => {
-          const symbol = fund.cleanSymbol || fund.Symbol || fund.symbol;
-          const prev = [];
-          historySnapshots.forEach(snap => {
-            const match = snap.funds.find(f => (f.cleanSymbol || f.Symbol || f.symbol) === symbol);
-            if (match) {
-              if (Array.isArray(match.history)) {
-                match.history.forEach(pt => {
-                  if (!prev.some(p => p.date === pt.date)) prev.push(pt);
-                });
-              } else if (match.scores?.final != null) {
-                if (!prev.some(p => p.date === snap.date)) {
-                  prev.push({ date: snap.date, score: match.scores.final });
-                }
-              }
-            }
-          });
-          const filteredPrev = prev.filter(p => p.date !== today);
-          fund.history = [...filteredPrev, { date: today, score: fund.scores.final }];
-        });
-
-        const newSnap = {
-          date: today,
-          funds: taggedFunds,
-          metadata: { fileName: file.name }
-        };
-
-        setHistorySnapshots(prev => {
-          const filtered = prev.filter(s => s.date !== today);
-          return [...filtered, newSnap].slice(-24);
-        });
-
+    worker.onmessage = async ({ data }) => {
+      if (data.status === 'done') {
         try {
-          await dataStore.saveSnapshot(newSnap);
-          loadSnapshots();
+          const snapshot = await dataStore.getSnapshot(data.snapshotId);
+          if (snapshot) {
+            setFundData(snapshot.funds);
+            setScoredFundData(snapshot.funds);
+            setCurrentSnapshotDate(snapshot.date);
+          }
         } catch (err) {
-          console.error('Failed to save snapshot', err);
+          console.error('Failed to load snapshot', err);
         }
-        setCurrentSnapshotDate(today);
-        setFundData(taggedFunds);
-        setScoredFundData(taggedFunds);
-        if (process.env.NODE_ENV !== 'production') {
-          window.benchmarks = taggedFunds.filter(r => r.isBenchmark);
-        }
-        setClassSummaries(summaries);
-        console.debug(
-          '[DEBUG] scoredFundData',
-          'total:',
-          taggedFunds.length,
-          'benchmarks:',
-          taggedFunds.filter(f => f.isBenchmark).length
-        );
-        console.log('Successfully loaded and scored', taggedFunds.length, 'funds');
-      } catch (err) {
-        console.error('Error parsing performance file:', err);
-        alert('Error parsing file: ' + err.message);
-      } finally {
-        setLoading(false);
+      } else if (data.status === 'error') {
+        console.error('Worker error:', data.message);
+        alert('Error processing file: ' + data.message);
       }
+      setLoading(false);
+      worker.terminate();
     };
-
-    reader.readAsArrayBuffer(file);
+    setUploadedFileName(file.name);
   };
 
   const loadSnapshot = async (snapshot) => {
