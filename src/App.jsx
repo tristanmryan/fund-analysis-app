@@ -21,7 +21,7 @@ import ClassView from './components/ClassView.jsx';
 import AdminPanel from './components/AdminPanel.jsx';
 import AppContext from './context/AppContext.jsx';
 import TagFilterBar from './components/Filters/TagFilterBar.jsx';
-
+import AnalysisView from './components/Views/AnalysisView.jsx';
 // Score badge component for visual display
 const ScoreBadge = ({ score, size = 'normal' }) => {
   const color = getScoreColor(score);
@@ -539,121 +539,16 @@ const App = () => {
 
       {/* Analysis Tab */}
       {activeTab === 'analysis' && (
-        <div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-            Fund Analysis & Review Candidates
-          </h2>
-          
-          {reviewCandidates.length > 0 ? (
-            <>
-              <div style={{ 
-                marginBottom: '1rem', 
-                padding: '1rem', 
-                backgroundColor: '#fef3c7', 
-                borderRadius: '0.5rem',
-                border: '1px solid #fbbf24'
-              }}>
-                <p style={{ fontWeight: '500' }}>
-                  <AlertCircle size={20} style={{ display: 'inline', verticalAlign: 'text-bottom', marginRight: '0.5rem' }} />
-                  {reviewCandidates.length} funds flagged for review
-                </p>
-              </div>
-              
-              <div style={{ display: 'grid', gap: '1rem' }}>
-                {reviewCandidates.map((fund, i) => (
-                  <div 
-                    key={i} 
-                    style={{ 
-                      padding: '1rem', 
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '0.5rem',
-                      backgroundColor: fund.isRecommended ? '#fef2f2' : 'white'
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '0.5rem' }}>
-                      <div>
-                        <h3 style={{ fontWeight: 'bold', fontSize: '1.125rem' }}>
-                          {fund['Fund Name']}
-                        </h3>
-                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                          {fund.Symbol} | {fund.assetClass}
-                          {fund.isRecommended && (
-                            <span style={{ 
-                              marginLeft: '0.5rem',
-                              color: '#dc2626',
-                              fontWeight: 'bold'
-                            }}>
-                              (Recommended Fund)
-                            </span>
-                          )}
-                        </p>
-                      </div>
-                      <ScoreBadge score={fund.scores?.final || 0} size="large" />
-                    </div>
-                    
-                    <div style={{ marginTop: '0.75rem' }}>
-                      <strong style={{ fontSize: '0.875rem' }}>Review Reasons:</strong>
-                      <ul style={{ marginTop: '0.25rem', marginLeft: '1.5rem', fontSize: '0.875rem', color: '#dc2626' }}>
-                        {fund.reviewReasons.map((reason, j) => (
-                          <li key={j}>{reason}</li>
-                        ))}
-                      </ul>
-                    </div>
-                    
-                    <div style={{ 
-                      marginTop: '0.75rem', 
-                      display: 'grid', 
-                      gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-                      gap: '0.5rem',
-                      fontSize: '0.875rem'
-                    }}>
-                      <div>
-                        <span style={{ color: '#6b7280' }}>1Y Return:</span>{' '}
-                        <strong>{fmtPct(fund.oneYear ?? fund['1 Year'])}</strong>
-                      </div>
-                      <div>
-                        <span style={{ color: '#6b7280' }}>Sharpe:</span>{' '}
-                        <strong>{fmtNumber(fund.sharpe ?? fund['Sharpe Ratio'])}</strong>
-                      </div>
-                      <div>
-                        <span style={{ color: '#6b7280' }}>Expense:</span>{' '}
-                        <strong>{fmtPct(fund.expense ?? fund['Net Expense Ratio'])}</strong>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </>
-          ) : scoredFundData.length > 0 ? (
-            <div style={{ 
-              textAlign: 'center', 
-              padding: '3rem', 
-              backgroundColor: '#f0fdf4', 
-              borderRadius: '0.5rem',
-              color: '#16a34a' 
-            }}>
-              <Award size={48} style={{ margin: '0 auto 1rem' }} />
-              <p style={{ fontSize: '1.125rem', fontWeight: '500' }}>
-                All funds are performing within acceptable parameters!
-              </p>
-              <p style={{ color: '#6b7280', marginTop: '0.5rem' }}>
-                No funds currently flagged for review.
-              </p>
-            </div>
-          ) : (
-            <div style={{ 
-              textAlign: 'center', 
-              padding: '3rem', 
-              backgroundColor: '#f9fafb', 
-              borderRadius: '0.5rem',
-              color: '#6b7280' 
-            }}>
-              <AlertCircle size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-              <p>Upload fund performance data to see analysis</p>
-            </div>
-          )}
-        </div>
+        <AnalysisView
+          funds={scoredFundData}
+          reviewCandidates={reviewCandidates}
+          onSelectClass={ac => {
+            setSelectedClassView(ac);
+            setActiveTab('class');
+          }}
+        />
       )}
+
 
       {/* History Tab */}
       {activeTab === 'history' && (
