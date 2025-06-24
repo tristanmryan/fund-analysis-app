@@ -10,11 +10,11 @@ const METRIC_WEIGHTS = {
     ytd: 0.025,           // 2.5%
     oneYear: 0.05,        // 5%
     threeYear: 0.10,      // 10%
-    fiveYear: 0.20,       // 20%
+    fiveYear: 0.15,       // 15%
     tenYear: 0.10,        // 10%
-    sharpeRatio3Y: 0.15,  // 15%
-    stdDev3Y: -0.10,      // -10% (negative weight penalizes volatility)
-    stdDev5Y: -0.15,      // -15%
+    sharpeRatio3Y: 0.10,  // 10%
+    stdDev3Y: -0.075,     // -7.5% (negative weight penalizes volatility)
+    stdDev5Y: -0.125,     // -12.5%
     upCapture3Y: 0.075,   // 7.5%
     downCapture3Y: -0.10, // -10% (negative weight penalizes downside capture)
     alpha5Y: 0.05,        // 5%
@@ -83,16 +83,11 @@ const METRIC_WEIGHTS = {
    * @param {Array<number>} allRawScores - All raw scores in the asset class
    * @returns {number} Score scaled to 0-100
    */
-  function scaleScore(rawScore, allRawScores) {
-    // Calculate percentile-based scaling
-    // This ensures 50 represents the median of the peer group
-    const sortedScores = [...allRawScores].sort((a, b) => a - b);
-    const position = sortedScores.findIndex(s => s >= rawScore);
-    const percentile = position === -1 ? 100 : (position / sortedScores.length) * 100;
-    
-    // Map percentile to 0-100 scale with some smoothing
-    // This gives us better distribution than linear scaling
-    return Math.round(percentile);
+  function scaleScore(rawScore) {
+    const scaled = 50 + 10 * rawScore;
+    if (scaled < 0) return 0;
+    if (scaled > 100) return 100;
+    return Math.round(scaled);
   }
   
   /**
@@ -133,11 +128,27 @@ const METRIC_WEIGHTS = {
       fiveYear: parseMetricValue(fundData['5 Year']),
       tenYear: parseMetricValue(fundData['10 Year']),
       sharpeRatio3Y: parseMetricValue(fundData['Sharpe Ratio']),
-      stdDev3Y: parseMetricValue(fundData['Standard Deviation']),
-      stdDev5Y: parseMetricValue(fundData['Standard Deviation']), // Using same as 3Y if 5Y not available
-      upCapture3Y: parseMetricValue(fundData['Up Capture Ratio']),
-      downCapture3Y: parseMetricValue(fundData['Down Capture Ratio']),
-      alpha5Y: parseMetricValue(fundData['Alpha']),
+      stdDev3Y: parseMetricValue(
+        fundData['3Y Std Dev'] ?? fundData['Standard Deviation - 3 Year']
+      ),
+      stdDev5Y: parseMetricValue(
+        fundData['5Y Std Dev'] ??
+        fundData['Standard Deviation - 5 Year'] ??
+        fundData['Standard Deviation']
+      ),
+      upCapture3Y: parseMetricValue(
+        fundData['Up Capture Ratio - 3Y'] ??
+        fundData['Up Capture Ratio (Morningstar Standard) - 3 Year'] ??
+        fundData['Up Capture Ratio']
+      ),
+      downCapture3Y: parseMetricValue(
+        fundData['Down Capture Ratio - 3Y'] ??
+        fundData['Down Capture Ratio (Morningstar Standard) - 3 Year'] ??
+        fundData['Down Capture Ratio']
+      ),
+      alpha5Y: parseMetricValue(
+        fundData['Alpha - 5Y'] ?? fundData['Alpha (Asset Class) - 5 Year'] ?? fundData['Alpha']
+      ),
       expenseRatio: parseMetricValue(fundData['Net Expense Ratio']),
       managerTenure: parseMetricValue(fundData['Manager Tenure'])
     };
@@ -182,7 +193,7 @@ const METRIC_WEIGHTS = {
       const value = fund.metrics?.[metric];
       const stats = statistics[metric];
       
-      if (value != null && stats && stats.stdDev > 0 && stats.count > 2) {
+      if (value != null && stats && stats.stdDev > 0) {
         const zScore = calculateZScore(value, stats.mean, stats.stdDev);
         const weightedZScore = zScore * weight;
         
@@ -314,10 +325,10 @@ const METRIC_WEIGHTS = {
       
       // Get all raw scores for scaling
       const rawScores = fundsWithRawScores.map(f => f.scoreData.raw);
-      
+
       // Scale scores to 0-100 and calculate final percentiles
-      fundsWithRawScores.forEach((fund, index) => {
-        const finalScore = scaleScore(fund.scoreData.raw, rawScores);
+      fundsWithRawScores.forEach(fund => {
+        const finalScore = scaleScore(fund.scoreData.raw);
         
         // Calculate percentile within asset class
         const betterThanCount = rawScores.filter(s => s < fund.scoreData.raw).length;
