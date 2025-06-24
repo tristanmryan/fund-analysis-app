@@ -102,19 +102,12 @@ const AssetClassOverview = ({ funds, config }) => {
         <Layers size={18} /> Asset Class Overview
       </h3>
 
-      <div className="dashboard-grid">
+      <div className="dashboard-grid grid grid-cols-2 md:grid-cols-4 gap-4">
         {classInfo.map(info => (
           <div
             key={info.assetClass}
-            style={{
-              border: '1px solid #e5e7eb',
-              borderRadius: '0.5rem',
-              padding: '0.75rem',
-              backgroundColor: `${info.color}10`,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.25rem'
-            }}
+            className="shadow-sm rounded-xl p-4 bg-white flex flex-col gap-1"
+            style={{ backgroundColor: `${info.color}10` }}
           >
             <div style={{ fontWeight: 600 }}>{info.assetClass}</div>
 

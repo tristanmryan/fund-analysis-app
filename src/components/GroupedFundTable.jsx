@@ -31,17 +31,12 @@ const GroupedFundTable = ({ funds = [], onRowClick = () => {} }) => {
           : 0;
         const benchScore = benchmark?.scores?.final;
         return (
-          <div key={cls} style={{ marginBottom: '1rem' }}>
+          <div key={cls} className="mb-4">
             <div
               onClick={() => toggle(cls)}
-              style={{
-                cursor: 'pointer',
-                fontWeight: '500',
-                display: 'flex',
-                justifyContent: 'space-between',
-                padding: '0.5rem 0',
-                borderBottom: '1px solid #e5e7eb'
-              }}
+              className={`cursor-pointer font-medium flex justify-between py-2 border-b ${
+                open[cls] ? 'sticky top-0 z-10 bg-white' : ''
+              }`}
             >
               <span>{cls}</span>
               <span>

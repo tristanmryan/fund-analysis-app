@@ -14,3 +14,7 @@
 - Benchmarks preserved during scoring; debug log shows benchmark count.
 - Added benchmark audit script and flow documentation; dashboard views show benchmarks by default.
 - Grouped fund scores view with accordion sections and toggle; UI polish on tables and dashboard grid.
+- Score badges now share Tailwind styling and color mapping.
+- Dashboard tiles use shadowed cards; responsive table columns hide on mobile.
+- Scoring engine uses weighted z-scores with percentile scaling; benchmarks excluded from peer stats.
+- Added unit test ensuring VFIAX percentile between 40-60.
