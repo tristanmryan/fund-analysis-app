@@ -186,14 +186,22 @@ export async function saveSnapshot(snapshotData) {
  * @returns {Promise<Array>} Array of snapshots
  */
 export async function getAllSnapshots() {
-  const database = await openDB();
-
-  if (fallback || !database) {
+  // Step-1: if we’re already in fallback mode, just use localStorage
+  if (fallback) {
     const stored = JSON.parse(localStorage.getItem('lightship-snapshots') || '[]');
     stored.sort((a, b) => new Date(b.date) - new Date(a.date));
     return stored;
   }
 
+  // Step-2: try to open IndexedDB; surface real failures
+  let database;
+  try {
+    database = await openDB();
+  } catch (error) {
+    throw error;           // lets callers / tests handle the rejection
+  }
+
+  // Step-3: normal IndexedDB path
   return new Promise((resolve, reject) => {
     const transaction = database.transaction([STORES.SNAPSHOTS], 'readonly');
     const store = transaction.objectStore(STORES.SNAPSHOTS);
@@ -201,17 +209,17 @@ export async function getAllSnapshots() {
 
     request.onsuccess = () => {
       const snapshots = request.result || [];
-      // Sort by date descending (newest first)
-      snapshots.sort((a, b) => new Date(b.date) - new Date(a.date));
+      snapshots.sort((a, b) => new Date(b.date) - new Date(a.date)); // newest first
       resolve(snapshots);
     };
 
     request.onerror = () => {
       console.error('Failed to get snapshots:', request.error);
-      reject(request.error);
+      reject(request.error);         // <-- key: promise now rejects on failure
     };
   });
 }
+
 
 /**
  * Get a specific snapshot by ID
