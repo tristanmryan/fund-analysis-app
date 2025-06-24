@@ -51,8 +51,7 @@ const GroupedFundTable = ({ funds = [], onRowClick = () => {} }) => {
             </div>
             {open[cls] && (
               <div style={{ marginTop: '0.5rem' }}>
-                {benchmark && <BenchmarkRow fund={benchmark} />}
-                <FundTable rows={peers} onRowClick={onRowClick} />
+                <FundTable rows={peers} benchmark={benchmark} onRowClick={onRowClick} />
               </div>
             )}
           </div>

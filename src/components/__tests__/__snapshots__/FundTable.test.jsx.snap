@@ -8,67 +8,81 @@ exports[`renders table snapshot 1`] = `
     <table
       style="width: 100%; border-collapse: collapse;"
     >
+      <colgroup>
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+      </colgroup>
       <thead>
         <tr
           style="border-bottom: 2px solid #e5e7eb;"
         >
           <th
-            style="padding: 0.75rem; text-align: left; font-weight: 500;"
+            style="padding: 0.75rem; text-align: left; font-weight: 500; cursor: pointer;"
           >
             Symbol
           </th>
           <th
-            style="padding: 0.75rem; text-align: left; font-weight: 500;"
+            style="padding: 0.75rem; text-align: left; font-weight: 500; cursor: pointer;"
           >
             Fund Name
           </th>
           <th
-            style="padding: 0.75rem; text-align: left; font-weight: 500;"
+            style="padding: 0.75rem; text-align: left; font-weight: 500; cursor: pointer;"
           >
             Type
           </th>
           <th
-            style="padding: 0.75rem; text-align: center; font-weight: 500;"
+            style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
           >
             Score
           </th>
           <th
-            style="padding: 0.75rem; text-align: right; font-weight: 500;"
+            style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
           >
             YTD
           </th>
           <th
-            style="padding: 0.75rem; text-align: right; font-weight: 500;"
+            style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
           >
             1Y
           </th>
           <th
-            style="padding: 0.75rem; text-align: right; font-weight: 500;"
+            style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
           >
             3Y
           </th>
           <th
-            style="padding: 0.75rem; text-align: right; font-weight: 500;"
+            style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
           >
             5Y
           </th>
           <th
-            style="padding: 0.75rem; text-align: right; font-weight: 500;"
+            style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
           >
             Sharpe
           </th>
           <th
-            style="padding: 0.75rem; text-align: right; font-weight: 500;"
+            style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
           >
             Std Dev (5Y)
           </th>
           <th
-            style="padding: 0.75rem; text-align: right; font-weight: 500;"
+            style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
           >
             Expense
           </th>
           <th
-            style="padding: 0.75rem; text-align: left; font-weight: 500;"
+            style="padding: 0.75rem; text-align: left; font-weight: 500; cursor: pointer;"
           >
             Tags
           </th>
