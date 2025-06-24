@@ -22,7 +22,7 @@ const ScoreBadge = ({ score }) => {
         textAlign: 'center'
       }}
     >
-      {score} - {label}
+      {Number(score).toFixed(1)} - {label}
     </span>
   );
 };

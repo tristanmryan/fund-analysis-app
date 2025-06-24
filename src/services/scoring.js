@@ -89,7 +89,7 @@ const METRIC_WEIGHTS = {
     const scaled = 50 + 10 * rawScore;
     if (scaled < 0) return 0;
     if (scaled > 100) return 100;
-    return Math.round(scaled);
+    return Math.round(scaled * 10) / 10;
   }
   
   /**
@@ -368,8 +368,10 @@ const METRIC_WEIGHTS = {
     
     return {
       fundCount: peers.length,
-      averageScore: Math.round(calculateMean(scores)),
-      medianScore: sortedScores[medianIndex] || 0,
+      averageScore: Math.round(calculateMean(scores) * 10) / 10,
+      medianScore: sortedScores[medianIndex]
+        ? Math.round(sortedScores[medianIndex] * 10) / 10
+        : 0,
       topPerformer: peers.reduce((best, fund) =>
         (fund.scores?.final || 0) > (best.scores?.final || 0) ? fund : best, peers[0]
       ),

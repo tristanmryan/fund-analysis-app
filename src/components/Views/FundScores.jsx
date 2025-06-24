@@ -6,6 +6,7 @@ import AppContext from '../../context/AppContext.jsx';
 import FundDetailsModal from '../Modals/FundDetailsModal.jsx';
 import FundTable from '../FundTable.jsx';
 import GroupedFundTable from '../GroupedFundTable.jsx';
+import TagFilterBar from '../Filters/TagFilterBar.jsx';
 
 const FundScores = () => {
   const {
@@ -53,6 +54,7 @@ const FundScores = () => {
         onTagToggle={toggleTag}
         onReset={resetFilters}
       />
+      <TagFilterBar />
       <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.5rem' }}>
         <button
           onClick={handleExport}

@@ -1,9 +1,14 @@
 import React from 'react';
 
 const TAG_COLORS = {
-  underperformer: '#dc2626',
-  outperformer: '#16a34a',
-  'review-needed': '#eab308'
+  Review: '#dc2626',
+  Expensive: '#eab308',
+  Underperf: '#9ca3af',
+  'High Risk': '#f97316',
+  'Tenure Low': '#6b7280',
+  Consistent: '#16a34a',
+  Momentum: '#2563eb',
+  'Turnaround?': '#3b82f6'
 };
 
 /**

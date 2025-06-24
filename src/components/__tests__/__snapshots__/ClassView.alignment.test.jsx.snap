@@ -116,7 +116,7 @@ exports[`benchmark row aligns with table 1`] = `
               <span
                 style="background-color: rgba(22, 163, 74, 0.125); color: rgb(22, 163, 74); border: 1px solid #16a34a50; border-radius: 9999px; font-size: 0.75rem; font-weight: bold; padding: 0.25rem 0.5rem; display: inline-block; min-width: 3rem; text-align: center;"
               >
-                60 - Strong
+                60.0 - Strong
               </span>
             </td>
             <td
@@ -182,7 +182,7 @@ exports[`benchmark row aligns with table 1`] = `
               <span
                 style="background-color: rgba(22, 163, 74, 0.125); color: rgb(22, 163, 74); border: 1px solid #16a34a50; border-radius: 9999px; font-size: 0.75rem; font-weight: bold; padding: 0.25rem 0.5rem; display: inline-block; min-width: 3rem; text-align: center;"
               >
-                70 - Strong
+                70.0 - Strong
               </span>
             </td>
             <td

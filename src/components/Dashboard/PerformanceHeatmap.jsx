@@ -31,7 +31,7 @@ const ScoreBadge = ({ score }) => {
         textAlign: 'center'
       }}
     >
-      {score}
+      {Number(score).toFixed(1)}
     </span>
   );
 };
