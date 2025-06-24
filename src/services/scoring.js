@@ -5,6 +5,8 @@
  * Implements weighted Z-score ranking system within asset classes
  */
 
+import { getScoreColor, getScoreLabel } from '../utils/scoreTags';
+
 // Metric weights configuration - these match your Word document
 const METRIC_WEIGHTS = {
     ytd: 0.025,           // 2.5%
@@ -440,22 +442,7 @@ const METRIC_WEIGHTS = {
    * @param {number} score - Score value (0-100)
    * @returns {string} Color hex code
    */
-export function getScoreColor(score) {
-  if (score >= 70) return '#16a34a'; // Green
-  if (score >= 50) return '#eab308'; // Yellow
-  return '#dc2626'; // Red
-}
-  
-  /**
-   * Get score label based on value
-   * @param {number} score - Score value (0-100)
-   * @returns {string} Performance label
-   */
-export function getScoreLabel(score) {
-  if (score >= 70) return 'Strong';
-  if (score >= 50) return 'Average';
-  return 'Weak';
-}
+export { getScoreColor, getScoreLabel } from '../utils/scoreTags';
   
   // Export all metric information for UI use
   export const METRICS_CONFIG = {

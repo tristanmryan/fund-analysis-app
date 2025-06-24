@@ -18,9 +18,9 @@ function ClassView({ funds }) {
   return (
     <div>
       <div data-testid="summary">{summaryScore}</div>
-      {benchmark && <BenchmarkRow fund={benchmark} />}
       <table>
         <tbody>
+          {benchmark && <BenchmarkRow fund={benchmark} />}
           {peers.map(f => (
             <tr key={f.Symbol}>
               <td>{f.Symbol}</td>

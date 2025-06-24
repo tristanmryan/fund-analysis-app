@@ -8,19 +8,17 @@ const funds = [
 
 test('benchmark row renders first', () => {
   render(
-    <div>
-      <BenchmarkRow data={funds[0]} />
-      <table>
-        <tbody>
-          {funds.slice(1).map(f => (
-            <tr key={f.Symbol}>
-              <td>{f.Symbol}</td>
-              <td>{f['Fund Name']}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <table>
+      <tbody>
+        <BenchmarkRow fund={funds[0]} />
+        {funds.slice(1).map(f => (
+          <tr key={f.Symbol}>
+            <td>{f.Symbol}</td>
+            <td>{f['Fund Name']}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 
   const rows = screen.getAllByRole('row');
