@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 self.onmessage = async ({ data }) => {
   const { file, config } = data;
   try {
