@@ -144,41 +144,31 @@ const App = () => {
     const file = event.target.files[0];
     if (!file) return;
 
-    const worker = new Worker(
-      new URL('./workers/fundProcessor.worker.js', window.location.href)
-    );
-
-    worker.postMessage({ file, config: { recommendedFunds, assetClassBenchmarks } });
     setLoading(true);
+    try {
+      const module = await import('./services/fundProcessingService.js');
+      const funds = await module.process(file, {
+        recommendedFunds,
+        assetClassBenchmarks,
+      });
 
-    worker.onmessage = async ({ data }) => {
-      const { status } = data;
-      if (status === 'done') {
-        try {
-          const snapshotId = await dataStore.saveSnapshot({
-            date: new Date().toISOString().slice(0, 10),
-            funds: data.funds,
-            fileName: file.name
-          });
-          const snapshot = await dataStore.getSnapshot(snapshotId);
-          if (snapshot) {
-            setFundData(snapshot.funds);
-            setScoredFundData(snapshot.funds);
-            setCurrentSnapshotDate(snapshot.date);
-          }
-          await loadSnapshots();
-        } catch (err) {
-          toast.error('Snapshot save failed');
-          console.error('Failed to save snapshot', err);
-        }
-        setLoading(false);
-      } else if (status === 'error') {
-        console.error('Worker error:', data.message);
-        toast.error('Upload failed – check file format');
-        setLoading(false);
+      const snapshotId = await dataStore.saveSnapshot({
+        date: new Date().toISOString().slice(0, 10),
+        funds,
+        fileName: file.name,
+      });
+      const snapshot = await dataStore.getSnapshot(snapshotId);
+      if (snapshot) {
+        setFundData(snapshot.funds);
+        setScoredFundData(snapshot.funds);
+        setCurrentSnapshotDate(snapshot.date);
       }
-      worker.terminate();
-    };
+      await loadSnapshots();
+    } catch (err) {
+      toast.error('Upload failed – check file format');
+      console.error('File processing error', err);
+    }
+    setLoading(false);
     setUploadedFileName(file.name);
   };
 
