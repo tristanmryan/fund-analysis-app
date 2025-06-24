@@ -143,22 +143,30 @@ const App = () => {
     setLoading(true);
 
     worker.onmessage = async ({ data }) => {
-      if (data.status === 'done') {
+      const { status } = data;
+      if (status === 'done') {
         try {
-          const snapshot = await dataStore.getSnapshot(data.snapshotId);
+          const snapshotId = await dataStore.saveSnapshot({
+            date: new Date().toISOString().slice(0, 10),
+            funds: data.funds,
+            fileName: file.name
+          });
+          const snapshot = await dataStore.getSnapshot(snapshotId);
           if (snapshot) {
             setFundData(snapshot.funds);
             setScoredFundData(snapshot.funds);
             setCurrentSnapshotDate(snapshot.date);
           }
+          await loadSnapshots();
         } catch (err) {
-          console.error('Failed to load snapshot', err);
+          console.error('Failed to save snapshot', err);
         }
-      } else if (data.status === 'error') {
+        setLoading(false);
+      } else if (status === 'error') {
         console.error('Worker error:', data.message);
-        alert('Error processing file: ' + data.message);
+        toast.error('Upload failed – check file format');
+        setLoading(false);
       }
-      setLoading(false);
       worker.terminate();
     };
     setUploadedFileName(file.name);
