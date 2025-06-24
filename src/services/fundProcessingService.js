@@ -3,14 +3,13 @@ import parseFundFile from './parseFundFile';
 import { ensureBenchmarkRows } from './dataLoader';
 import { calculateScores } from './scoring';
 import { applyTagRules } from './tagEngine';
-import dataStore from './dataStore';
 
 /**
  * Process an uploaded fund file through parsing, scoring and tagging.
  * Heavy computations are isolated here for use inside a Web Worker.
  * @param {File} file - Uploaded spreadsheet file
  * @param {Object} config - Recommended funds and benchmarks
- * @returns {Promise<string>} ID of the saved snapshot
+ * @returns {Promise<Array>} Tagged fund objects
  */
 export async function process(file, config = {}) {
   // Read file into rows using XLSX
@@ -25,11 +24,5 @@ export async function process(file, config = {}) {
   const scored = calculateScores(withBench, config);
   const tagged = applyTagRules(scored, config);
 
-  const snapshotId = await dataStore.saveSnapshot({
-    date: new Date().toISOString().slice(0, 10),
-    funds: tagged,
-    fileName: file.name
-  });
-
-  return snapshotId;
+  return tagged;
 }
