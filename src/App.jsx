@@ -1,5 +1,6 @@
 // App.jsx
 import React, { useState, useEffect, useContext } from 'react';
+import { toast } from 'react-hot-toast';
 import { RefreshCw, Settings, Plus, Trash2, LayoutGrid, AlertCircle, TrendingUp, Award, Clock, Database, Calendar } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { getStoredConfig, saveStoredConfig } from './data/storage';
@@ -149,10 +150,18 @@ const App = () => {
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-        const parsedFunds = await parseFundFile(jsonData, {
-          recommendedFunds,
-          assetClassBenchmarks,
-        });
+        let parsedFunds;
+        try {
+          parsedFunds = await parseFundFile(jsonData, {
+            recommendedFunds,
+            assetClassBenchmarks,
+          });
+        } catch (err) {
+          toast.error('Upload failed – check file format');
+          console.error('Failed to parse performance file', err);
+          setLoading(false);
+          return;
+        }
         console.info('[audit] after parse', parsedFunds.length, 'rows');
 
         const clean = s => s?.toUpperCase().trim().replace(/[^A-Z0-9]/g, '');
