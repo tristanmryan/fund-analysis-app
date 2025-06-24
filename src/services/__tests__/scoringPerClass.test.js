@@ -11,7 +11,7 @@ describe('per-class scoring with benchmark integration', () => {
         '3 Year': 14,
         '5 Year': 16,
         'Sharpe Ratio': 1.2,
-        'Standard Deviation': 15,
+        '5Y Std Dev': 15,
         'Net Expense Ratio': 0.5,
         isBenchmark: false
       },
@@ -23,7 +23,7 @@ describe('per-class scoring with benchmark integration', () => {
         '3 Year': 9,
         '5 Year': 10,
         'Sharpe Ratio': 0.8,
-        'Standard Deviation': 18,
+        '5Y Std Dev': 18,
         'Net Expense Ratio': 0.6,
         isBenchmark: false
       },
@@ -35,7 +35,7 @@ describe('per-class scoring with benchmark integration', () => {
         '3 Year': 11,
         '5 Year': 12,
         'Sharpe Ratio': 1.0,
-        'Standard Deviation': 16,
+        '5Y Std Dev': 16,
         'Net Expense Ratio': 0.2,
         isBenchmark: true
       }

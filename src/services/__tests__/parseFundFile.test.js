@@ -23,7 +23,7 @@ describe('parseFundFile', () => {
     const result = await parseFundFile(rows, { recommendedFunds, assetClassBenchmarks });
     expect(result[0]['Net Expense Ratio']).toBeCloseTo(0.04);
     expect(result[0].Type).toBe('MF');
-    expect(result[0]['Standard Deviation']).toBeCloseTo(18.05);
+    expect(result[0]['5Y Std Dev']).toBeCloseTo(18.05);
     expect(result[0].assetClass).toBe('Large Cap Blend');
     expect(result[0]['Asset Class']).toBe('Large Cap Blend');
     expect(result[1].assetClass).toBe('International Stock (Small/Mid Cap)');

@@ -34,9 +34,13 @@ export default async function parseFundFile(rows, options = {}) {
       !headerLower.includes('category')
     )
       columnMap['1 Year'] = idx;
-    if (headerLower.includes('3 year')) columnMap['3 Year'] = idx;
-    if (headerLower.includes('5 year')) columnMap['5 Year'] = idx;
+    if (headerLower.includes('3 year') && !headerLower.includes('standard deviation'))
+      columnMap['3 Year'] = idx;
+    if (headerLower.includes('5 year') && !headerLower.includes('standard deviation'))
+      columnMap['5 Year'] = idx;
+    if (headerLower.includes('10 year')) columnMap['10 Year'] = idx;
     if (headerLower.includes('sharpe')) columnMap['Sharpe Ratio'] = idx;
+    if (headerLower.includes('standard deviation - 3')) columnMap['StdDev3Y'] = idx;
     if (headerLower.includes('standard deviation - 5')) columnMap['Standard Deviation'] = idx;
     if (headerLower.includes('net exp')) columnMap['Net Expense Ratio'] = idx;
     if (headerLower.includes('manager tenure')) columnMap['Manager Tenure'] = idx;
@@ -102,8 +106,10 @@ export default async function parseFundFile(rows, options = {}) {
     const oneYear = cleanNumber(f['1 Year'] ?? f['1 Year Return']);
     const threeYear = cleanNumber(f['3 Year']);
     const fiveYear = cleanNumber(f['5 Year']);
+    const tenYear = cleanNumber(f['10 Year']);
     const sharpe = cleanNumber(f['Sharpe Ratio']);
-    const stdDev5y = cleanNumber(f['Standard Deviation']);
+    const stdDev3y = cleanNumber(f.StdDev3Y);
+    const stdDev5y = cleanNumber(f['Standard Deviation'] ?? f.StdDev5Y);
     const expense = cleanNumber(f['Net Expense Ratio']);
 
     const row = {
@@ -115,8 +121,10 @@ export default async function parseFundFile(rows, options = {}) {
       '1 Year': oneYear,
       '3 Year': threeYear,
       '5 Year': fiveYear,
+      '10 Year': tenYear,
       'Sharpe Ratio': sharpe,
-      'Standard Deviation': stdDev5y,
+      '3Y Std Dev': stdDev3y,
+      '5Y Std Dev': stdDev5y,
       'Net Expense Ratio': expense,
       'Manager Tenure': f['Manager Tenure'],
       Type: f.type || '',
@@ -124,7 +132,9 @@ export default async function parseFundFile(rows, options = {}) {
       oneYear,
       threeYear,
       fiveYear,
+      tenYear,
       sharpe,
+      stdDev3y,
       stdDev5y,
       expense,
     };
