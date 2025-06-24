@@ -89,7 +89,10 @@ const App = () => {
 
   // Initialize configuration
   useEffect(() => {
-    loadAssetClassMap().catch(err => console.error('Error loading asset class map', err));
+    loadAssetClassMap().catch(err => {
+      console.error('Error loading asset class map', err);
+      toast.error('Failed to load asset class data');
+    });
   }, [setConfig]);
 
   // Initialize configuration
@@ -128,6 +131,7 @@ const App = () => {
       setSnapshots(allSnapshots);
     } catch (error) {
       console.error('Error loading snapshots:', error);
+      toast.error('Failed to load history');
     }
   };
 
@@ -136,7 +140,7 @@ const App = () => {
     if (!file) return;
 
     const worker = new Worker(
-      new URL('./workers/fundProcessor.worker.js', import.meta.url)
+      new URL('./workers/fundProcessor.worker.js', window.location.href)
     );
 
     worker.postMessage({ file, config: { recommendedFunds, assetClassBenchmarks } });
