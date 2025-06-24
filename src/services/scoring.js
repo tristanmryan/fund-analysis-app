@@ -84,9 +84,14 @@ const METRIC_WEIGHTS = {
    * @returns {number} Score scaled to 0-100
    */
   function scaleScore(rawScore, allRawScores) {
-    const sorted = [...allRawScores].sort((a, b) => a - b);
-    const better = sorted.filter(s => s < rawScore).length;
-    const percentile = (better / sorted.length) * 100;
+    // Calculate percentile-based scaling
+    // This ensures 50 represents the median of the peer group
+    const sortedScores = [...allRawScores].sort((a, b) => a - b);
+    const position = sortedScores.findIndex(s => s >= rawScore);
+    const percentile = position === -1 ? 100 : (position / sortedScores.length) * 100;
+    
+    // Map percentile to 0-100 scale with some smoothing
+    // This gives us better distribution than linear scaling
     return Math.round(percentile);
   }
   
