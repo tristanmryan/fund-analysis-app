@@ -89,10 +89,15 @@ const App = () => {
 
   // Initialize configuration
   useEffect(() => {
-    loadAssetClassMap().catch(err => {
-      console.error('Error loading asset class map', err);
-      toast.error('Failed to load asset class data');
-    });
+    const loadMap = async () => {
+      try {
+        await loadAssetClassMap();
+      } catch (err) {
+        toast.error('Failed to load asset-class map');
+        console.error(err);
+      }
+    };
+    loadMap();
   }, [setConfig]);
 
   // Initialize configuration
@@ -129,9 +134,9 @@ const App = () => {
     try {
       const allSnapshots = await dataStore.getAllSnapshots();
       setSnapshots(allSnapshots);
-    } catch (error) {
-      console.error('Error loading snapshots:', error);
-      toast.error('Failed to load history');
+    } catch (err) {
+      toast.error('History failed to load');
+      console.error('Error loading snapshots', err);
     }
   };
 
@@ -163,6 +168,7 @@ const App = () => {
           }
           await loadSnapshots();
         } catch (err) {
+          toast.error('Snapshot save failed');
           console.error('Failed to save snapshot', err);
         }
         setLoading(false);
@@ -196,14 +202,17 @@ const App = () => {
   };
 
   const compareSnapshots = async () => {
-    if (!selectedSnapshot || !compareSnapshot) return;
-    
+    if (!selectedSnapshot?.id || !compareSnapshot?.id) {
+      toast.error('Snapshot comparison error');
+      return;
+    }
+
     try {
       const comparison = await dataStore.compareSnapshots(selectedSnapshot.id, compareSnapshot.id);
       setSnapshotComparison(comparison);
     } catch (error) {
-      console.error('Error comparing snapshots:', error);
-      alert('Error comparing snapshots');
+      toast.error('Snapshot comparison error');
+      console.error(error);
     }
   };
 
