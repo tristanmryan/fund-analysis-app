@@ -1,5 +1,6 @@
 // App.jsx
 import React, { useState, useEffect, useContext } from 'react';
+import { toast } from 'react-hot-toast';
 import { RefreshCw, Settings, Plus, Trash2, LayoutGrid, AlertCircle, TrendingUp, Award, Clock, Database, Calendar } from 'lucide-react';
 import { getStoredConfig, saveStoredConfig } from './data/storage';
 import {
