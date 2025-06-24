@@ -92,6 +92,22 @@ async function openDB() {
   });
 }
 
+export async function initializeObjectStore(database) {
+  if (database.objectStoreNames.contains(STORES.SNAPSHOTS)) return;
+  database.close();
+  return new Promise((resolve, reject) => {
+    const req = window.indexedDB.open(DB_NAME, database.version + 1);
+    req.onupgradeneeded = e => {
+      e.target.result.createObjectStore(
+        STORES.SNAPSHOTS,
+        { autoIncrement: true }
+      );
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
 /**
  * Generate snapshot ID from date
  * @param {Date} date - Snapshot date
@@ -158,6 +174,10 @@ export async function saveSnapshot(snapshotData) {
     reviewCandidates: snapshotData.reviewCandidates || []
   };
 
+  if (!database.objectStoreNames.contains(STORES.SNAPSHOTS)) {
+    await initializeObjectStore(database);
+  }
+
   return new Promise((resolve, reject) => {
     const transaction = database.transaction([STORES.SNAPSHOTS], 'readwrite');
     const store = transaction.objectStore(STORES.SNAPSHOTS);
@@ -186,38 +206,41 @@ export async function saveSnapshot(snapshotData) {
  * @returns {Promise<Array>} Array of snapshots
  */
 export async function getAllSnapshots() {
-  // Step-1: if we’re already in fallback mode, just use localStorage
-  if (fallback) {
-    const stored = JSON.parse(localStorage.getItem('lightship-snapshots') || '[]');
-    stored.sort((a, b) => new Date(b.date) - new Date(a.date));
-    return stored;
-  }
-
-  // Step-2: try to open IndexedDB; surface real failures
-  let database;
   try {
-    database = await openDB();
-  } catch (error) {
-    throw error;           // lets callers / tests handle the rejection
+    if (fallback) {
+      const stored = JSON.parse(
+        localStorage.getItem('lightship-snapshots') || '[]'
+      );
+      stored.sort((a, b) => new Date(b.date) - new Date(a.date));
+      return stored;
+    }
+
+    let database;
+    try {
+      database = await openDB();
+    } catch (err) {
+      throw err; // surface DB-init failures
+    }
+
+    return await new Promise((resolve, reject) => {
+      const tx = database.transaction([STORES.SNAPSHOTS], 'readonly');
+      const store = tx.objectStore(STORES.SNAPSHOTS);
+      const request = store.getAll();
+
+      request.onsuccess = () => {
+        const shots = request.result || [];
+        shots.sort((a, b) => new Date(b.date) - new Date(a.date));
+        resolve(shots);
+      };
+      request.onerror = () => {
+        console.error('Failed to get snapshots:', request.error);
+        reject(request.error);
+      };
+    });
+  } catch (err) {
+    console.error('Failed to get snapshots:', err);
+    throw err;
   }
-
-  // Step-3: normal IndexedDB path
-  return new Promise((resolve, reject) => {
-    const transaction = database.transaction([STORES.SNAPSHOTS], 'readonly');
-    const store = transaction.objectStore(STORES.SNAPSHOTS);
-    const request = store.getAll();
-
-    request.onsuccess = () => {
-      const snapshots = request.result || [];
-      snapshots.sort((a, b) => new Date(b.date) - new Date(a.date)); // newest first
-      resolve(snapshots);
-    };
-
-    request.onerror = () => {
-      console.error('Failed to get snapshots:', request.error);
-      reject(request.error);         // <-- key: promise now rejects on failure
-    };
-  });
 }
 
 
@@ -227,27 +250,31 @@ export async function getAllSnapshots() {
  * @returns {Promise<Object>} Snapshot data
  */
 export async function getSnapshot(snapshotId) {
-  const database = await openDB();
+  try {
+    const database = await openDB();
 
-  if (fallback || !database) {
-    const stored = JSON.parse(localStorage.getItem('lightship-snapshots') || '[]');
-    return stored.find(s => s.id === snapshotId);
+    if (fallback || !database) {
+      const stored = JSON.parse(localStorage.getItem('lightship-snapshots') || '[]');
+      return stored.find(s => s.id === snapshotId);
+    }
+
+    return await new Promise((resolve, reject) => {
+      const transaction = database.transaction([STORES.SNAPSHOTS], 'readonly');
+      const store = transaction.objectStore(STORES.SNAPSHOTS);
+      const request = store.get(snapshotId);
+
+      request.onsuccess = () => {
+        resolve(request.result);
+      };
+
+      request.onerror = () => {
+        reject(request.error);
+      };
+    });
+  } catch (err) {
+    console.error('Failed to get snapshot:', err);
+    throw err;
   }
-
-  return new Promise((resolve, reject) => {
-    const transaction = database.transaction([STORES.SNAPSHOTS], 'readonly');
-    const store = transaction.objectStore(STORES.SNAPSHOTS);
-    const request = store.get(snapshotId);
-
-    request.onsuccess = () => {
-      resolve(request.result);
-    };
-
-    request.onerror = () => {
-      console.error('Failed to get snapshot:', request.error);
-      reject(request.error);
-    };
-  });
 }
 
 /**
@@ -256,31 +283,39 @@ export async function getSnapshot(snapshotId) {
  * @returns {Promise<void>}
  */
 export async function deleteSnapshot(snapshotId) {
-  const database = await openDB();
+  try {
+    const database = await openDB();
 
-  if (fallback || !database) {
-    const stored = JSON.parse(localStorage.getItem('lightship-snapshots') || '[]');
-    const filtered = stored.filter(s => s.id !== snapshotId);
-    localStorage.setItem('lightship-snapshots', JSON.stringify(filtered));
-    return;
+    if (fallback || !database) {
+      const stored = JSON.parse(localStorage.getItem('lightship-snapshots') || '[]');
+      const filtered = stored.filter(s => s.id !== snapshotId);
+      localStorage.setItem('lightship-snapshots', JSON.stringify(filtered));
+      return;
+    }
+
+    if (!database.objectStoreNames.contains(STORES.SNAPSHOTS)) {
+      await initializeObjectStore(database);
+    }
+
+    return await new Promise((resolve, reject) => {
+      const transaction = database.transaction([STORES.SNAPSHOTS], 'readwrite');
+      const store = transaction.objectStore(STORES.SNAPSHOTS);
+      const request = store.delete(snapshotId);
+
+      request.onsuccess = () => {
+        console.log('Snapshot deleted:', snapshotId);
+        logAction('snapshot_deleted', { snapshotId });
+        resolve();
+      };
+
+      request.onerror = () => {
+        reject(request.error);
+      };
+    });
+  } catch (err) {
+    console.error('Failed to delete snapshot:', err);
+    throw err;
   }
-
-  return new Promise((resolve, reject) => {
-    const transaction = database.transaction([STORES.SNAPSHOTS], 'readwrite');
-    const store = transaction.objectStore(STORES.SNAPSHOTS);
-    const request = store.delete(snapshotId);
-
-    request.onsuccess = () => {
-      console.log('Snapshot deleted:', snapshotId);
-      logAction('snapshot_deleted', { snapshotId });
-      resolve();
-    };
-
-    request.onerror = () => {
-      console.error('Failed to delete snapshot:', request.error);
-      reject(request.error);
-    };
-  });
 }
 
 /**
