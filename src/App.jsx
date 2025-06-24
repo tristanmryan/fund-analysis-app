@@ -20,6 +20,7 @@ import DashboardView from './components/Views/DashboardView.jsx';
 import ClassView from './components/ClassView.jsx';
 import AdminPanel from './components/AdminPanel.jsx';
 import AppContext from './context/AppContext.jsx';
+import TagFilterBar from './components/Filters/TagFilterBar.jsx';
 
 // Score badge component for visual display
 const ScoreBadge = ({ score, size = 'normal' }) => {
@@ -33,15 +34,15 @@ const ScoreBadge = ({ score, size = 'normal' }) => {
   };
   
   return (
-    <span 
+    <span
       className={`inline-flex items-center rounded-full font-medium ${sizeClasses[size]}`}
-      style={{ 
+      style={{
         backgroundColor: `${color}20`,
         color: color,
         border: `1px solid ${color}50`
       }}
     >
-      {score} - {label}
+      {Number(score).toFixed(1)} - {label}
     </span>
   );
 };
@@ -479,10 +480,10 @@ const App = () => {
             <>
               {classSummaries[selectedClassView] && (
                 <div style={{
-                  marginBottom: '1.5rem', 
-                  padding: '1rem', 
-                  backgroundColor: '#f3f4f6', 
-                  borderRadius: '0.5rem' 
+                  marginBottom: '1.5rem',
+                  padding: '1rem',
+                  backgroundColor: '#f3f4f6',
+                  borderRadius: '0.5rem'
                 }}>
                   <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
                     {selectedClassView} Summary
@@ -525,7 +526,9 @@ const App = () => {
                   </div>
                 </div>
               )}
-              
+
+              <TagFilterBar />
+
               <ClassView
                 funds={scoredFundData.filter(f => f.assetClass === selectedClassView)}
               />

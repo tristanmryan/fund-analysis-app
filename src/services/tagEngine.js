@@ -1,92 +1,126 @@
 // src/services/tagEngine.js
 
 /**
- * Apply automatic tagging rules to scored funds.
- * @param {Array<Object>} funds - Array of fund objects with metrics and scores.
- * @param {Object} config - App configuration (may contain benchmark info).
- * @returns {Array<Object>} New array of funds with updated `tags` arrays.
+ * Evaluate tag rules for scored funds.
+ * @param {Array<Object>} funds
+ * @returns {Array<Object>} funds with updated tags array
  */
-export function applyTagRules(funds, config = {}) {
+export function applyTagRules(funds = []) {
   if (!Array.isArray(funds)) return [];
 
-  const expenseAvgByClass = {};
-  const stdAvgByClass = {};
+  const statsByClass = {};
 
-  funds.forEach(fund => {
-    const assetClass = fund.assetClass || fund['Asset Class'] || 'Unknown';
-    if (!expenseAvgByClass[assetClass]) expenseAvgByClass[assetClass] = [];
-    if (!stdAvgByClass[assetClass]) stdAvgByClass[assetClass] = [];
-
-    const er = fund.metrics?.expenseRatio;
-    if (er != null && !isNaN(er)) expenseAvgByClass[assetClass].push(er);
-
-    const sd = fund.metrics?.stdDev5Y;
-    if (sd != null && !isNaN(sd)) stdAvgByClass[assetClass].push(sd);
-  });
-
-  Object.keys(expenseAvgByClass).forEach(ac => {
-    const vals = expenseAvgByClass[ac];
-    expenseAvgByClass[ac] =
-      vals.length > 0 ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
-  });
-
-  Object.keys(stdAvgByClass).forEach(ac => {
-    const vals = stdAvgByClass[ac];
-    stdAvgByClass[ac] =
-      vals.length > 0 ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
-  });
-
-  const benchmarkSharpe = {};
-  funds.forEach(fund => {
-    if (fund.isBenchmark) {
-      const assetClass = fund.assetClass || fund['Asset Class'] || 'Unknown';
-      const sharpe = fund.metrics?.sharpeRatio3Y;
-      if (sharpe != null && !isNaN(sharpe)) {
-        benchmarkSharpe[assetClass] = sharpe;
-      }
+  // collect metrics per asset class excluding benchmarks
+  funds.forEach(f => {
+    const cls = f.assetClass || f['Asset Class'] || 'Unknown';
+    if (!statsByClass[cls]) {
+      statsByClass[cls] = {
+        expenseRatio: [],
+        threeYear: [],
+        fiveYear: [],
+        stdDev5Y: [],
+        sharpeRatio3Y: [],
+        managerTenure: [],
+        ytd: [],
+        oneYear: []
+      };
     }
+    if (f.isBenchmark) return;
+    const m = f.metrics || {};
+    Object.keys(statsByClass[cls]).forEach(key => {
+      const v = m[key];
+      if (v != null && !isNaN(v)) statsByClass[cls][key].push(v);
+    });
+  });
+
+  // calculate means and standard deviations
+  const calcMean = arr => {
+    if (!arr.length) return 0;
+    return arr.reduce((s, v) => s + v, 0) / arr.length;
+  };
+  const calcSd = (arr, mean) => {
+    if (arr.length <= 1) return 0;
+    return Math.sqrt(arr.reduce((s, v) => s + (v - mean) ** 2, 0) / arr.length);
+  };
+
+  const summaries = {};
+  Object.entries(statsByClass).forEach(([cls, metrics]) => {
+    summaries[cls] = {};
+    Object.entries(metrics).forEach(([k, values]) => {
+      const mean = calcMean(values);
+      const sd = calcSd(values, mean);
+      summaries[cls][k] = { mean, sd };
+    });
   });
 
   return funds.map(fund => {
-    const assetClass = fund.assetClass || fund['Asset Class'] || 'Unknown';
-    const tags = new Set(Array.isArray(fund.tags) ? fund.tags : []);
+    const cls = fund.assetClass || fund['Asset Class'] || 'Unknown';
+    const stats = summaries[cls] || {};
+    const m = fund.metrics || {};
+    const tags = [];
 
     const score = fund.scores?.final;
-    if (typeof score === 'number') {
-      if (score < 40) tags.add('underperformer');
-      if (score >= 70) tags.add('outperformer');
-    }
+    if (typeof score === 'number' && score < 45) tags.push('Review');
 
-    const expense = fund.metrics?.expenseRatio;
-    const classAvgExpense = expenseAvgByClass[assetClass];
+    if (m.expenseRatio != null && stats.expenseRatio)
+      if (m.expenseRatio > stats.expenseRatio.mean + stats.expenseRatio.sd)
+        tags.push('Expensive');
+
     if (
-      expense != null &&
-      classAvgExpense != null &&
-      expense > classAvgExpense * 1.5
+      m.threeYear != null &&
+      m.fiveYear != null &&
+      stats.threeYear &&
+      stats.fiveYear &&
+      m.threeYear < stats.threeYear.mean &&
+      m.fiveYear < stats.fiveYear.mean
     ) {
-      tags.add('expensive');
+      tags.push('Underperf');
     }
 
-    const stdDev = fund.metrics?.stdDev5Y;
-    const classAvgStd = stdAvgByClass[assetClass];
     if (
-      stdDev != null &&
-      classAvgStd != null &&
-      stdDev > classAvgStd * 1.2
+      stats.stdDev5Y &&
+      ((m.stdDev5Y != null && m.stdDev5Y > stats.stdDev5Y.mean + stats.stdDev5Y.sd) ||
+        (m.sharpeRatio3Y != null &&
+          stats.sharpeRatio3Y &&
+          m.sharpeRatio3Y < stats.sharpeRatio3Y.mean - stats.sharpeRatio3Y.sd))
     ) {
-      tags.add('high-risk');
+      tags.push('High Risk');
     }
 
-    const sharpe = fund.metrics?.sharpeRatio3Y;
-    const benchSharpe = benchmarkSharpe[assetClass];
+    if (m.managerTenure != null && m.managerTenure < 3) tags.push('Tenure Low');
+
     if (
-      sharpe != null &&
-      benchSharpe != null &&
-      sharpe < benchSharpe * 0.8
+      stats.stdDev5Y &&
+      stats.sharpeRatio3Y &&
+      m.stdDev5Y != null &&
+      m.sharpeRatio3Y != null &&
+      m.stdDev5Y < stats.stdDev5Y.mean - stats.stdDev5Y.sd &&
+      m.sharpeRatio3Y > stats.sharpeRatio3Y.mean + 0.5 * stats.sharpeRatio3Y.sd
     ) {
-      tags.add('review-needed');
+      tags.push('Consistent');
     }
 
-    return { ...fund, tags: Array.from(tags) };
+    if (
+      stats.ytd &&
+      stats.oneYear &&
+      m.ytd != null &&
+      m.oneYear != null &&
+      m.ytd > stats.ytd.mean + stats.ytd.sd &&
+      m.oneYear > stats.oneYear.mean + stats.oneYear.sd
+    ) {
+      tags.push('Momentum');
+    }
+
+    if (
+      stats.ytd &&
+      m.ytd != null &&
+      m.ytd > stats.ytd.mean + stats.ytd.sd &&
+      ((stats.threeYear && m.threeYear != null && m.threeYear < stats.threeYear.mean) ||
+        (stats.fiveYear && m.fiveYear != null && m.fiveYear < stats.fiveYear.mean))
+    ) {
+      tags.push('Turnaround?');
+    }
+
+    return { ...fund, tags };
   });
 }
