@@ -17,6 +17,8 @@ export default async function parseFundFile(rows, options = {}) {
   const dataRows = rows.slice(headerRowIndex + 1);
 
   const columnMap = {};
+  const yearReg = n => new RegExp(`\\b${n}\\s*year\\b`);
+
   headers.forEach((h, idx) => {
     if (typeof h !== 'string') return;
     const header = h.toString().trim();
@@ -32,35 +34,38 @@ export default async function parseFundFile(rows, options = {}) {
       !headerLower.includes('category')
     )
       columnMap.YTD = idx;
+    if (headerLower.includes('ytd return') && !headerLower.includes('category'))
+      columnMap['YTD Return'] = idx;
 
     if (
       headerLower.includes('total return') &&
-      headerLower.includes('1') &&
-      headerLower.includes('year') &&
+      yearReg(1).test(headerLower) &&
+      !headerLower.includes('category')
+    )
+      columnMap['1 Year'] = idx;
+    if (
+      headerLower.includes('1 year return') &&
       !headerLower.includes('category')
     )
       columnMap['1 Year'] = idx;
 
     if (
       headerLower.includes('total return') &&
-      headerLower.includes('3') &&
-      headerLower.includes('year') &&
+      yearReg(3).test(headerLower) &&
       !headerLower.includes('category')
     )
       columnMap['3 Year'] = idx;
 
     if (
       headerLower.includes('total return') &&
-      headerLower.includes('5') &&
-      headerLower.includes('year') &&
+      yearReg(5).test(headerLower) &&
       !headerLower.includes('category')
     )
       columnMap['5 Year'] = idx;
 
     if (
       headerLower.includes('total return') &&
-      headerLower.includes('10') &&
-      headerLower.includes('year') &&
+      yearReg(10).test(headerLower) &&
       !headerLower.includes('category')
     )
       columnMap['10 Year'] = idx;
@@ -100,6 +105,7 @@ export default async function parseFundFile(rows, options = {}) {
           key === 'Manager Tenure' ||
           key === 'Sharpe Ratio' ||
           key === 'YTD' ||
+          key === 'YTD Return' ||
           key.includes('Year') ||
           key.includes('Deviation')
         ) {
