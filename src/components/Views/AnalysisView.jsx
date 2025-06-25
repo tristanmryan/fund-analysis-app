@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { getScoreColor, getScoreLabel } from '../../utils/scoreTags';
 import { fmtPct, fmtNumber } from '../../utils/formatters';
 import { getClassesWhereBenchmarkLeads } from '../../selectors/benchmarkLead';
+import HeatMapGrid from '../HeatMapGrid.jsx';
 
 const ScoreBadge = ({ score }) => {
   const color = getScoreColor(score);
@@ -19,6 +20,7 @@ const ScoreBadge = ({ score }) => {
 const AnalysisView = ({ funds = [], reviewCandidates = [], onSelectClass }) => {
   const [gap, setGap] = useState(5);
   const [sort, setSort] = useState({ key: 'gap', dir: 'desc', numeric: true });
+  const [view, setView] = useState('heatmap');
 
   const leadData = useMemo(
     () => getClassesWhereBenchmarkLeads(funds, Number(gap)),
@@ -55,47 +57,67 @@ const AnalysisView = ({ funds = [], reviewCandidates = [], onSelectClass }) => {
   return (
     <div>
       <h2 className="text-xl font-bold mb-4">Benchmark Leaders</h2>
-      <div className="flex items-center gap-2 mb-4">
-        <label className="font-medium" htmlFor="gapInput">Gap ≥</label>
-        <input
-          id="gapInput"
-          type="number"
-          className="border rounded px-2 py-1 w-20"
-          value={gap}
-          onChange={e => setGap(Number(e.target.value))}
-        />
+      <div className="flex items-center gap-2 mb-4 text-sm">
+        <label htmlFor="gapInput" className="inline-flex items-center gap-1">
+          Show classes where Bench &gt; Median by ≥
+          <input
+            id="gapInput"
+            type="number"
+            className="border rounded px-1 py-0.5 w-16 text-right"
+            value={gap}
+            onChange={e => setGap(Number(e.target.value))}
+          />
+          pts
+        </label>
+        <button
+          type="button"
+          aria-label="toggle view"
+          onClick={() => setView(v => (v === 'heatmap' ? 'table' : 'heatmap'))}
+          className="ml-auto border rounded px-2 py-1"
+        >
+          ▢ Table / ▦ Heat Map
+        </button>
       </div>
-      <div className="overflow-x-auto mb-6">
-        <table className="min-w-full border-collapse" role="table">
-          <thead>
-            <tr className="border-b">
-              <th className="p-2 text-left cursor-pointer" onClick={() => handleSort('assetClass', false)}>Asset Class</th>
-              <th className="p-2 text-left cursor-pointer" onClick={() => handleSort('benchmarkSymbol', false)}>Benchmark</th>
-              <th className="p-2 text-right cursor-pointer" onClick={() => handleSort('benchmarkScore', true)}>Bench. Score</th>
-              <th className="p-2 text-right cursor-pointer" onClick={() => handleSort('medianPeerScore', true)}>Median Peer</th>
-              <th className="p-2 text-right cursor-pointer" onClick={() => handleSort('gap', true)}>Gap</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sorted.map(row => (
-              <tr
-                key={row.assetClass}
-                className="border-b cursor-pointer hover:bg-gray-50"
-                onClick={() => onSelectClass && onSelectClass(row.assetClass)}
-              >
-                <td className="p-2">{row.assetClass}</td>
-                <td className="p-2">{row.benchmarkSymbol}</td>
-                <td className="p-2 text-right">{row.benchmarkScore.toFixed(1)}</td>
-                <td className="p-2 text-right">{row.medianPeerScore.toFixed(1)}</td>
-                <td className="p-2 text-right">+{row.gap.toFixed(1)}</td>
+      {view === 'heatmap' ? (
+        <HeatMapGrid rows={sorted} onSelect={onSelectClass} />
+      ) : (
+        <div className="overflow-x-auto mb-6">
+          <table className="min-w-full border-collapse" role="table">
+            <thead>
+              <tr className="border-b">
+                <th className="p-2 text-left cursor-pointer" onClick={() => handleSort('assetClass', false)}>Asset Class</th>
+                <th className="p-2 text-left cursor-pointer" onClick={() => handleSort('benchmarkSymbol', false)}>Benchmark</th>
+                <th className="p-2 text-right cursor-pointer" onClick={() => handleSort('benchmarkScore', true)}>Bench. Score</th>
+                <th className="p-2 text-right cursor-pointer" onClick={() => handleSort('medianPeerScore', true)}>Median Peer</th>
+                <th className="p-2 text-right cursor-pointer" onClick={() => handleSort('gap', true)}>Gap</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      {reviewCandidates.length > 0 && (
-        <details>
-          <summary className="cursor-pointer font-medium mb-2">Flagged Funds ({reviewCandidates.length})</summary>
+            </thead>
+            <tbody>
+              {sorted.map(row => (
+                <tr
+                  key={row.assetClass}
+                  className="border-b cursor-pointer hover:bg-gray-50"
+                  onClick={() => onSelectClass && onSelectClass(row.assetClass)}
+                >
+                  <td className="p-2">{row.assetClass}</td>
+                  <td className="p-2">{row.benchmarkSymbol}</td>
+                  <td className="p-2 text-right">{row.benchmarkScore.toFixed(1)}</td>
+                  <td className="p-2 text-right">{row.medianPeerScore.toFixed(1)}</td>
+                  <td className="p-2 text-right">+{row.gap.toFixed(1)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      <details open={reviewCandidates.length > 0} className="mt-4">
+        <summary className="cursor-pointer font-medium mb-2">
+          Flagged Funds
+          <span className="ml-1 inline-block rounded-full bg-red-600 text-white px-2 text-xs">
+            {reviewCandidates.length}
+          </span>
+        </summary>
+        {reviewCandidates.length > 0 && (
           <div className="grid gap-4 mt-2">
             {reviewCandidates.map((fund, i) => (
               <div key={i} className={`border rounded p-4 ${fund.isRecommended ? 'bg-red-50' : 'bg-white'}`}>
@@ -124,8 +146,8 @@ const AnalysisView = ({ funds = [], reviewCandidates = [], onSelectClass }) => {
               </div>
             ))}
           </div>
-        </details>
-      )}
+        )}
+      </details>
     </div>
   );
 };
