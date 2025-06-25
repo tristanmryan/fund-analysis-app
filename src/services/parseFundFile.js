@@ -21,30 +21,63 @@ export default async function parseFundFile(rows, options = {}) {
     if (typeof h !== 'string') return;
     const header = h.toString().trim();
     const headerLower = header.toLowerCase();
+
     if (headerLower.includes('symbol')) columnMap.Symbol = idx;
     if (headerLower.includes('product name')) columnMap['Fund Name'] = idx;
     if (headerLower === 'asset class') columnMap['Asset Class'] = idx;
+
     if (
-      (headerLower === 'ytd return' || headerLower.includes('total return - ytd')) &&
+      headerLower.includes('total return') &&
+      headerLower.includes('ytd') &&
       !headerLower.includes('category')
     )
       columnMap.YTD = idx;
+
     if (
-      (headerLower === '1 year return' || headerLower.includes('total return - 1 year')) &&
+      headerLower.includes('total return') &&
+      headerLower.includes('1') &&
+      headerLower.includes('year') &&
       !headerLower.includes('category')
     )
       columnMap['1 Year'] = idx;
-    if (headerLower.includes('3 year') && !headerLower.includes('standard deviation'))
+
+    if (
+      headerLower.includes('total return') &&
+      headerLower.includes('3') &&
+      headerLower.includes('year') &&
+      !headerLower.includes('category')
+    )
       columnMap['3 Year'] = idx;
-    if (headerLower.includes('5 year') && !headerLower.includes('standard deviation'))
+
+    if (
+      headerLower.includes('total return') &&
+      headerLower.includes('5') &&
+      headerLower.includes('year') &&
+      !headerLower.includes('category')
+    )
       columnMap['5 Year'] = idx;
-    if (headerLower.includes('10 year')) columnMap['10 Year'] = idx;
+
+    if (
+      headerLower.includes('total return') &&
+      headerLower.includes('10') &&
+      headerLower.includes('year') &&
+      !headerLower.includes('category')
+    )
+      columnMap['10 Year'] = idx;
+
     if (headerLower.includes('sharpe')) columnMap['Sharpe Ratio'] = idx;
     if (headerLower.includes('standard deviation - 3')) columnMap['StdDev3Y'] = idx;
     if (headerLower.includes('standard deviation - 5')) columnMap['Standard Deviation'] = idx;
     if (headerLower.includes('net exp')) columnMap['Net Expense Ratio'] = idx;
     if (headerLower.includes('manager tenure')) columnMap['Manager Tenure'] = idx;
     if (headerLower.includes('vehicle type') || headerLower === 'type') columnMap.type = idx;
+
+    if (headerLower.includes('alpha') && headerLower.includes('5 year'))
+      columnMap['Alpha (Asset Class) - 5 Year'] = idx;
+    if (headerLower.includes('up capture') && headerLower.includes('3 year'))
+      columnMap['Up Capture Ratio (Morningstar Standard) - 3 Year'] = idx;
+    if (headerLower.includes('down capture') && headerLower.includes('3 year'))
+      columnMap['Down Capture Ratio (Morningstar Standard) - 3 Year'] = idx;
   });
 
   const cleanNumber = val => {
@@ -110,6 +143,13 @@ export default async function parseFundFile(rows, options = {}) {
     const sharpe = cleanNumber(f['Sharpe Ratio']);
     const stdDev3y = cleanNumber(f.StdDev3Y);
     const stdDev5y = cleanNumber(f['Standard Deviation'] ?? f.StdDev5Y);
+    const alpha5Y = cleanNumber(f['Alpha (Asset Class) - 5 Year']);
+    const upCapture3Y = cleanNumber(
+      f['Up Capture Ratio (Morningstar Standard) - 3 Year']
+    );
+    const downCapture3Y = cleanNumber(
+      f['Down Capture Ratio (Morningstar Standard) - 3 Year']
+    );
     const expense = cleanNumber(f['Net Expense Ratio']);
 
     const row = {
@@ -125,6 +165,9 @@ export default async function parseFundFile(rows, options = {}) {
       'Sharpe Ratio': sharpe,
       '3Y Std Dev': stdDev3y,
       '5Y Std Dev': stdDev5y,
+      'Alpha (Asset Class) - 5 Year': alpha5Y,
+      'Up Capture Ratio (Morningstar Standard) - 3 Year': upCapture3Y,
+      'Down Capture Ratio (Morningstar Standard) - 3 Year': downCapture3Y,
       'Net Expense Ratio': expense,
       'Manager Tenure': f['Manager Tenure'],
       Type: f.type || '',
@@ -136,6 +179,9 @@ export default async function parseFundFile(rows, options = {}) {
       sharpe,
       stdDev3y,
       stdDev5y,
+      alpha5Y,
+      upCapture3Y,
+      downCapture3Y,
       expense,
     };
     // keep header-style copy for legacy filters/exports
