@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom';
 import AnalysisView from '../components/Views/AnalysisView.jsx';
 
 const sampleFunds = [
@@ -25,11 +26,15 @@ test('gap filter and row click work', async () => {
 
   expect(screen.getAllByRole('row')).toHaveLength(3); // header + 2 rows
 
-  const input = screen.getByLabelText(/Gap/);
+  const input = screen.getByLabelText(/Bench.*Median/);
   await userEvent.clear(input);
   await userEvent.type(input, '7');
 
   expect(screen.getAllByRole('row')).toHaveLength(2); // header + 1 row
+
+  const toggle = screen.getByLabelText('toggle view');
+  await userEvent.click(toggle);
+  expect(screen.getByRole('table')).toBeInTheDocument();
 
   await userEvent.click(screen.getByText('Large Cap'));
   expect(handler).toHaveBeenCalledWith('Large Cap');

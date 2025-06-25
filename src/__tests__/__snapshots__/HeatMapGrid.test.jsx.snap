@@ -1,0 +1,61 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders heatmap snapshot 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="heatmap"
+  >
+    <div
+      class="grid grid-cols-4 font-semibold border-b text-sm"
+      role="row"
+    >
+      <div
+        class="p-2"
+      >
+        Asset Class
+      </div>
+      <div
+        class="p-2 text-right"
+      >
+        Benchmark Score
+      </div>
+      <div
+        class="p-2 text-right"
+      >
+        Median Peer
+      </div>
+      <div
+        class="p-2 text-right"
+      >
+        Gap
+      </div>
+    </div>
+    <div
+      class="grid grid-cols-4 border-b last:border-b-0 cursor-pointer hover:bg-gray-50"
+      role="row"
+    >
+      <div
+        class="p-2"
+      >
+        Large Cap
+      </div>
+      <div
+        class="p-2 text-right"
+      >
+        60.0
+      </div>
+      <div
+        class="p-2 text-right"
+      >
+        50.0
+      </div>
+      <div
+        class="p-2 text-right bg-green-500 text-white"
+        title="60.0 vs 50.0"
+      >
+        +10.0
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
