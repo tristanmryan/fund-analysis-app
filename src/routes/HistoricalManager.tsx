@@ -6,10 +6,12 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete'
 import CheckIcon from '@mui/icons-material/Check'
 import UploadIcon from '@mui/icons-material/Upload'
+import DownloadIcon from '@mui/icons-material/Download'
 import { parseFundFile } from '../utils/parseFundFile'
 import db, { addSnapshot, softDeleteSnapshot } from '../services/snapshotStore'
 import { applyTagRules } from '../services/tagRules'
 import { useSnapshot } from '../contexts/SnapshotContext'
+import { buildSnapshotPdf } from '../services/pdfExport'
 
 export default function HistoricalManager () {
   const { active, setActive, list } = useSnapshot()
@@ -70,6 +72,16 @@ export default function HistoricalManager () {
                   onClick={() => setActive(s.id)}
                   disabled={active?.id === s.id}
                 ><CheckIcon /></IconButton>
+
+                <IconButton
+                  title="Download PDF"
+                  onClick={async () => {
+                    const pdf = await buildSnapshotPdf(s)
+                    pdf.save(`Lightship_${s.id}.pdf`)
+                  }}
+                >
+                  <DownloadIcon />
+                </IconButton>
 
                 <IconButton
                   title="Delete"
