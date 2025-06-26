@@ -21,6 +21,8 @@ exports[`renders table snapshot 1`] = `
         <col />
         <col />
         <col />
+        <col />
+        <col />
       </colgroup>
       <thead>
         <tr
@@ -45,6 +47,16 @@ exports[`renders table snapshot 1`] = `
             style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
           >
             Score
+          </th>
+          <th
+            style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
+          >
+            Δ
+          </th>
+          <th
+            style="padding: 0.75rem; text-align: left; font-weight: 500; cursor: pointer;"
+          >
+            Trend
           </th>
           <th
             style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
@@ -116,6 +128,12 @@ exports[`renders table snapshot 1`] = `
               75.0 - Strong
             </span>
           </td>
+          <td
+            style="padding: 0.5rem; text-align: center;"
+          />
+          <td
+            style="padding: 0.5rem;"
+          />
           <td
             style="padding: 0.5rem; text-align: right;"
           >

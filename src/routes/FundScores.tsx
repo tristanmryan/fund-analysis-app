@@ -11,6 +11,10 @@ import { addSnapshot, setActiveSnapshot } from '../services/snapshotStore'
 import UploadIcon from '@mui/icons-material/Upload'
 import { Download } from 'lucide-react'
 import { exportToExcel } from '../services/exportService'
+import SparkLine from '../components/SparkLine'
+import { getScoreSeries, delta } from '../services/trendAnalysis'
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp'
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import {
   Box, Button, Dialog, DialogTitle, DialogContent, DialogActions,
   TextField, MenuItem
@@ -25,6 +29,18 @@ const months = ['01','02','03','04','05','06','07','08','09','10','11','12']
 export default function FundScores () {
   const { active } = useSnapshot()
   const rows: NormalisedRow[] = active?.rows ?? []
+
+  const [deltas, setDeltas] = React.useState<Record<string, number>>({})
+  const [spark, setSpark] = React.useState<Record<string, number[]>>({})
+  const [seriesCache] = React.useState<Record<string, number[]>>({})
+
+  const getSeries = async (symbol: string) => {
+    if (!seriesCache[symbol]) {
+      const series = await getScoreSeries(symbol, 6)
+      seriesCache[symbol] = series.map(s => s.score)
+    }
+    return seriesCache[symbol]
+  }
 
   const {
     selectedClass,
@@ -69,6 +85,22 @@ export default function FundScores () {
     if (filteredFunds.length === 0) return
     exportToExcel(filteredFunds)
   }
+
+  React.useEffect(() => {
+    (async () => {
+      const nextD: Record<string, number> = {}
+      const nextS: Record<string, number[]> = {}
+
+      await Promise.all(rows.map(async r => {
+        const series = await getSeries(r.symbol)
+        nextS[r.symbol] = series
+        const d = delta(series.map(s => ({ score: s })))
+        if (d != null) nextD[r.symbol] = d
+      }))
+
+      setDeltas(nextD); setSpark(nextS)
+    })()
+  }, [rows])
 
   if (!active) {
     return (
@@ -118,9 +150,9 @@ export default function FundScores () {
       {filteredFunds.length === 0 ? (
         <p style={{ color: '#6b7280' }}>No funds match your current filter selection.</p>
       ) : grouped ? (
-        <GroupedTable funds={filteredFunds as any} onRowClick={setSelectedFund} />
+        <GroupedTable funds={filteredFunds as any} onRowClick={setSelectedFund} deltas={deltas} spark={spark} />
       ) : (
-        <FundTableAny funds={filteredFunds as any} onRowClick={setSelectedFund as any} />
+        <FundTableAny funds={filteredFunds as any} onRowClick={setSelectedFund as any} deltas={deltas} spark={spark} />
       )}
       {selectedFund && (
         <FundDetailsModal fund={selectedFund} onClose={() => setSelectedFund(null)} />
