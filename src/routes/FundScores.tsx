@@ -9,6 +9,7 @@ import { useSnapshot } from '../contexts/SnapshotContext'
 import { NormalisedRow, parseFundFile } from '../utils/parseFundFile'
 import db, { addSnapshot, setActiveSnapshot } from '../services/snapshotStore'
 import { applyTagRules } from '../services/tagRules'
+import { attachScores } from '../services/scoringUtils'
 import UploadIcon from '@mui/icons-material/Upload'
 import { Download } from 'lucide-react'
 import { exportToExcel } from '../services/exportService'
@@ -54,20 +55,21 @@ export default function FundScores () {
   const [selectedFund, setSelectedFund] = useState<any>(null)
   const [grouped, setGrouped] = useState(() => localStorage.getItem('ls_grouped_view') === 'true')
 
-  const [open, setOpen] = useState(false)
+  const [uploadOpen, setUploadOpen] = useState(false)
   const [file, setFile] = useState<File | null>(null)
   const [year, setYear] = useState('')
   const [month, setMonth] = useState('')
 
   const handleQuickUpload = async () => {
     if (!file || !year || !month) return
-    const snap = await parseFundFile(file)
+    let snap = await parseFundFile(file)
+    snap = attachScores(snap)
     const id = `${year}-${month}`
     const recent = await db.snapshots.orderBy('id').reverse().limit(2).toArray()
-    const tagged = applyTagRules([...recent.reverse(), snap])
-    await addSnapshot(tagged, id, 'quick upload')
+    snap = applyTagRules([...recent.reverse(), snap])
+    await addSnapshot(snap, id, 'quick upload')
     await setActiveSnapshot(id)
-    setOpen(false); setFile(null); setYear(''); setMonth('')
+    setUploadOpen(false); setFile(null); setYear(''); setMonth('')
   }
 
   const filteredFunds = useMemo(() => {
@@ -108,8 +110,8 @@ export default function FundScores () {
   if (!active) {
     return (
       <Box p={3} textAlign='center'>
-        <Button variant='contained' startIcon={<UploadIcon />} onClick={() => setOpen(true)}>Quick Upload</Button>
-        <Dialog open={open} onClose={() => setOpen(false)}>
+        <Button variant='contained' startIcon={<UploadIcon />} onClick={() => setUploadOpen(true)}>Quick Upload</Button>
+        <Dialog open={uploadOpen} onClose={() => setUploadOpen(false)}>
           <DialogTitle>Quick Upload</DialogTitle>
           <DialogContent sx={{ display:'flex', flexDirection:'column', gap:2, mt:1 }}>
             <Button component='label' variant='outlined'>
@@ -124,7 +126,7 @@ export default function FundScores () {
             </TextField>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setOpen(false)}>Cancel</Button>
+            <Button onClick={() => setUploadOpen(false)}>Cancel</Button>
             <Button onClick={handleQuickUpload} variant='contained' disabled={!file || !year || !month}>Save</Button>
           </DialogActions>
         </Dialog>
@@ -148,7 +150,7 @@ export default function FundScores () {
       <Box mb={2} display='flex' gap={1}>
         <Button startIcon={<Download />} onClick={handleExport} variant='contained' color='success'>Export to Excel</Button>
         <Button onClick={toggleView} variant='outlined'>{grouped ? 'Flat' : 'Grouped'} View</Button>
-        <Button startIcon={<UploadIcon />} onClick={() => setOpen(true)} variant='outlined'>Quick Upload</Button>
+        <Button startIcon={<UploadIcon />} onClick={() => setUploadOpen(true)} variant='outlined'>Quick Upload</Button>
       </Box>
       {filteredFunds.length === 0 ? (
         <p style={{ color: '#6b7280' }}>No funds match your current filter selection.</p>
@@ -160,7 +162,7 @@ export default function FundScores () {
       {selectedFund && (
         <FundDetailsModal fund={selectedFund} onClose={() => setSelectedFund(null)} />
       )}
-      <Dialog open={open} onClose={() => setOpen(false)}>
+      <Dialog open={uploadOpen} onClose={() => setUploadOpen(false)}>
         <DialogTitle>Quick Upload</DialogTitle>
         <DialogContent sx={{ display:'flex', flexDirection:'column', gap:2, mt:1 }}>
           <Button component='label' variant='outlined'>
@@ -175,7 +177,7 @@ export default function FundScores () {
           </TextField>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpen(false)}>Cancel</Button>
+          <Button onClick={() => setUploadOpen(false)}>Cancel</Button>
           <Button onClick={handleQuickUpload} variant='contained' disabled={!file || !year || !month}>Save</Button>
         </DialogActions>
       </Dialog>

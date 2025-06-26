@@ -8,6 +8,7 @@ import CheckIcon from '@mui/icons-material/Check'
 import UploadIcon from '@mui/icons-material/Upload'
 import DownloadIcon from '@mui/icons-material/Download'
 import { parseFundFile } from '../utils/parseFundFile'
+import { attachScores } from '../services/scoringUtils'
 import db, { addSnapshot, softDeleteSnapshot } from '../services/snapshotStore'
 import { applyTagRules } from '../services/tagRules'
 import { useSnapshot } from '../contexts/SnapshotContext'
@@ -27,11 +28,12 @@ export default function HistoricalManager () {
 
   const handleUpload = async () => {
     if (!file || !year || !month) return
-    const snap = await parseFundFile(file)
+    let snap = await parseFundFile(file)
+    snap = attachScores(snap)
     const id = `${year}-${month}`
     const recent = await db.snapshots.orderBy('id').reverse().limit(2).toArray()
-    const tagged = applyTagRules([...recent.reverse(), snap])
-    await addSnapshot(tagged, id, 'manual upload')
+    snap = applyTagRules([...recent.reverse(), snap])
+    await addSnapshot(snap, id, 'manual upload')
     await setActive(id)
     setOpen(false); setFile(null); setYear(''); setMonth('')
   }

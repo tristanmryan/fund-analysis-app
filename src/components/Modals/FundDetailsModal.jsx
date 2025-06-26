@@ -23,8 +23,8 @@ const FundDetailsModal = ({ fund, onClose }) => {
         </h3>
         <p style={{ marginBottom: '0.75rem', color: '#6b7280' }}>
           Asset Class: {fund.assetClass} · Score:&nbsp;
-          <span style={{ color: getScoreColor(fund.scores.final) }}>
-            {fund.scores.final} ({getScoreLabel(fund.scores.final)})
+          <span style={{ color: getScoreColor(fund.score ?? fund.scores.final) }}>
+            {(fund.score ?? fund.scores.final).toFixed(1)} ({getScoreLabel(fund.score ?? fund.scores.final)})
           </span>
         </p>
 
@@ -33,7 +33,7 @@ const FundDetailsModal = ({ fund, onClose }) => {
             <XAxis dataKey="date" fontSize={11} />
             <YAxis width={30} fontSize={11} />
             <Tooltip />
-            <Line type="monotone" dataKey="score" stroke={getScoreColor(fund.scores.final)} dot={false} />
+            <Line type="monotone" dataKey="score" stroke={getScoreColor(fund.score ?? fund.scores.final)} dot={false} />
           </LineChart>
         )}
 

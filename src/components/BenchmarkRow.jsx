@@ -34,7 +34,11 @@ const BenchmarkRow = ({ fund }) => {
       <td style={{ padding: '0.75rem' }}>{row['Fund Name'] || row.name}</td>
       <td style={{ padding: '0.75rem' }}>Benchmark</td>
       <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-        {row.scores ? <ScoreBadge score={row.scores.final} /> : '-'}
+        {row.score != null
+          ? <ScoreBadge score={row.score} />
+          : row.scores
+            ? <ScoreBadge score={row.scores.final} />
+            : '-'}
       </td>
       <td style={{ padding: '0.75rem' }}></td>
       <td style={{ padding: '0.75rem' }}></td>

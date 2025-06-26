@@ -26,10 +26,10 @@ const GroupedFundTable = ({ funds = [], onRowClick = () => {}, deltas = {}, spar
         const peers = rows.filter(r => !r.isBenchmark);
         const avg = peers.length
           ? Math.round(
-              peers.reduce((s, f) => s + (f.scores?.final || 0), 0) / peers.length
+              peers.reduce((s, f) => s + (f.score ?? f.scores?.final || 0), 0) / peers.length
             )
           : 0;
-        const benchScore = benchmark?.scores?.final;
+        const benchScore = benchmark?.score ?? benchmark?.scores?.final;
         return (
           <div key={cls} style={{ marginBottom: '1rem' }}>
             <div
