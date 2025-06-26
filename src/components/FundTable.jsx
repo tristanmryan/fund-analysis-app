@@ -34,7 +34,7 @@ const columns = [
   { key: 'Symbol', label: 'Symbol', numeric: false },
   { key: 'Fund Name', label: 'Fund Name', numeric: false },
   { key: 'Type', label: 'Type', numeric: false, accessor: f => (f.isBenchmark ? 'Benchmark' : f.isRecommended ? 'Recommended' : '') },
-  { key: 'Score', label: 'Score', numeric: true, accessor: f => f.scores?.final },
+  { key: 'Score', label: 'Score', numeric: true, accessor: f => f.score ?? f.scores?.final },
   { key: 'Delta', label: '\u0394', numeric: true },
   { key: 'Trend', label: 'Trend', numeric: false },
   { key: 'YTD', label: 'YTD', numeric: true, accessor: f => f.ytd ?? f.YTD },
@@ -126,7 +126,11 @@ const FundTable = ({ funds = [], rows, benchmark, onRowClick = () => {}, deltas 
               {fund.isBenchmark ? 'Benchmark' : fund.isRecommended ? 'Recommended' : ''}
             </td>
             <td style={{ padding: '0.5rem', textAlign: 'center' }}>
-              {fund.scores ? <ScoreBadge score={fund.scores.final} /> : '-'}
+              {fund.score != null
+                ? <ScoreBadge score={fund.score} />
+                : fund.scores
+                  ? <ScoreBadge score={fund.scores.final} />
+                  : '—'}
             </td>
             <td style={{ padding: '0.5rem', textAlign: 'center' }}>
               {(() => {

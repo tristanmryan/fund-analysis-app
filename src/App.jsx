@@ -1,7 +1,7 @@
 // App.jsx
 import React, { useState, useEffect, useContext } from 'react';
 import { toast } from 'react-hot-toast';
-import { RefreshCw, Settings, Plus, Trash2, LayoutGrid, AlertCircle, TrendingUp, Award, Clock, Database, Calendar } from 'lucide-react';
+import { Settings, Plus, Trash2, LayoutGrid, AlertCircle, TrendingUp, Award, Clock, Database, Calendar } from 'lucide-react';
 import { getStoredConfig, saveStoredConfig } from './data/storage';
 import {
   recommendedFunds as defaultRecommendedFunds,
@@ -60,12 +60,9 @@ const App = () => {
   } = useContext(AppContext);
 
   const [scoredFundData, setScoredFundData] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('funds');
   const [selectedClassView, setSelectedClassView] = useState('');
   const [classSummaries, setClassSummaries] = useState({});
-  const [currentSnapshotDate, setCurrentSnapshotDate] = useState(null);
-  const [uploadedFileName, setUploadedFileName] = useState('');
 
   // Historical data states
   const [snapshots, setSnapshots] = useState([]);
@@ -142,37 +139,6 @@ const App = () => {
     }
   };
 
-  const handleFileUpload = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    setLoading(true);
-    try {
-      const module = await import('./services/fundProcessingService.js');
-      const funds = await module.process(file, {
-        recommendedFunds,
-        assetClassBenchmarks,
-      });
-
-      const snapshotId = await dataStore.saveSnapshot({
-        date: new Date().toISOString().slice(0, 10),
-        funds,
-        fileName: file.name,
-      });
-      const snapshot = await dataStore.getSnapshot(snapshotId);
-      if (snapshot) {
-        setFundData(snapshot.funds);
-        setScoredFundData(snapshot.funds);
-        setCurrentSnapshotDate(snapshot.date);
-      }
-      await loadSnapshots();
-    } catch (err) {
-      toast.error('Upload failed – check file format');
-      console.error('File processing error', err);
-    }
-    setLoading(false);
-    setUploadedFileName(file.name);
-  };
 
   const loadSnapshot = async (snapshot) => {
     setSelectedSnapshot(snapshot);
@@ -355,40 +321,6 @@ const App = () => {
         </button>
       </div>
 
-      {/* File Upload Section - Show on all tabs except admin and history */}
-      {activeTab !== 'admin' && activeTab !== 'history' && (
-        <div style={{ 
-          marginBottom: '1.5rem', 
-          padding: '1rem', 
-          backgroundColor: '#f3f4f6', 
-          borderRadius: '0.5rem' 
-        }}>
-          <input
-            type="file"
-            accept=".xlsx,.xls,.csv"
-            onChange={handleFileUpload}
-            style={{ marginRight: '1rem' }}
-          />
-          {loading && (
-            <span style={{ display: 'inline-flex', alignItems: 'center', color: '#3b82f6' }}>
-              <RefreshCw size={16} style={{ marginRight: '0.25rem', animation: 'spin 1s linear infinite' }} />
-              Processing and calculating scores...
-            </span>
-          )}
-          {scoredFundData.length > 0 && !loading && (
-            <div style={{ marginTop: '0.5rem' }}>
-              <span style={{ color: '#059669' }}>
-                ✓ {scoredFundData.length} funds loaded and scored
-              </span>
-              {currentSnapshotDate && (
-                <span style={{ marginLeft: '1rem', color: '#6b7280' }}>
-                  | Date: {currentSnapshotDate} | File: {uploadedFileName}
-                </span>
-              )}
-            </div>
-          )}
-        </div>
-      )}
 
       {/* Dashboard Tab */}
       {activeTab === 'dashboard' && (
