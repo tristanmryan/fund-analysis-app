@@ -21,7 +21,7 @@ import ClassView from './routes/ClassView';
 import AdminPanel from './components/AdminPanel.jsx';
 import AppContext from './context/AppContext.jsx';
 import TagFilterBar from './components/Filters/TagFilterBar.jsx';
-import AnalysisView from './components/Views/AnalysisView.jsx';
+import AnalysisView from './routes/AnalysisView';
 import HistoricalManager from './routes/HistoricalManager';
 // Score badge component for visual display
 const ScoreBadge = ({ score, size = 'normal' }) => {
