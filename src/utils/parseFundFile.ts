@@ -1,6 +1,6 @@
 // src/utils/parseFundFile.ts
 import * as XLSX from 'xlsx'
-import { createHash } from 'crypto'
+import { sha1Hex } from './hash'
 import { recommendedFunds } from '../data/config.js'
 
 export const COLUMN_MAP: Record<string, keyof NormalisedRow> = {
@@ -105,10 +105,6 @@ async function readFileAsRows(file: File): Promise<any[][]> {
   return XLSX.utils.sheet_to_json(sheet, { header: 1 }) as any[][]
 }
 
-async function sha1(file: File): Promise<string> {
-  const buf = await file.arrayBuffer()
-  return createHash('sha1').update(Buffer.from(buf)).digest('hex')
-}
 
 export async function parseFundFile(
   file: File,
@@ -193,7 +189,7 @@ export async function parseFundFile(
     id: undefined,
     rows: list,
     source: file.name,
-    checksum: await sha1(file)
+    checksum: await sha1Hex(file)
   }
 }
 

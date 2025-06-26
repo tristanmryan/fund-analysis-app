@@ -1,5 +1,9 @@
 import { parseFundFile } from '../parseFundFile'
 import fs from 'fs/promises'
+import { File as NodeFile } from 'node:buffer'
+
+// polyfill File for older Node / jsdom environments
+(global as any).File = (global as any).File || NodeFile
 
 describe('parseFundFile', () => {
   it('parses Raymond James sample', async () => {
