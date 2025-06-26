@@ -15,9 +15,9 @@ import {
 import dataStore from './services/dataStore';
 import { loadAssetClassMap } from './services/dataLoader';
 import { fmtPct, fmtNumber } from './utils/formatters';
-import FundScores from './components/Views/FundScores.jsx';
+import FundScores from './routes/FundScores';
 import DashboardView from './components/Views/DashboardView.jsx';
-import ClassView from './components/ClassView.jsx';
+import ClassView from './routes/ClassView';
 import AdminPanel from './components/AdminPanel.jsx';
 import AppContext from './context/AppContext.jsx';
 import TagFilterBar from './components/Filters/TagFilterBar.jsx';
