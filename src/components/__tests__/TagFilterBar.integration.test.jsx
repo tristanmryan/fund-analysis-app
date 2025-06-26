@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import FundScores from '../Views/FundScores.jsx';
+import FundScores from '../../routes/FundScores';
 import AppContext from '../../context/AppContext.jsx';
 import React, { useState } from 'react';
 
