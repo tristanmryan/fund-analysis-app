@@ -7,7 +7,8 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import CheckIcon from '@mui/icons-material/Check'
 import UploadIcon from '@mui/icons-material/Upload'
 import { parseFundFile } from '../utils/parseFundFile'
-import { addSnapshot, softDeleteSnapshot } from '../services/snapshotStore'
+import db, { addSnapshot, softDeleteSnapshot } from '../services/snapshotStore'
+import { applyTagRules } from '../services/tagRules'
 import { useSnapshot } from '../contexts/SnapshotContext'
 
 export default function HistoricalManager () {
@@ -26,7 +27,9 @@ export default function HistoricalManager () {
     if (!file || !year || !month) return
     const snap = await parseFundFile(file)
     const id = `${year}-${month}`
-    await addSnapshot(snap, id, 'manual upload')
+    const recent = await db.snapshots.orderBy('id').reverse().limit(2).toArray()
+    const tagged = applyTagRules([...recent.reverse(), snap])
+    await addSnapshot(tagged, id, 'manual upload')
     await setActive(id)
     setOpen(false); setFile(null); setYear(''); setMonth('')
   }

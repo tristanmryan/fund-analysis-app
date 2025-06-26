@@ -7,7 +7,8 @@ import FundDetailsModal from '../components/Modals/FundDetailsModal.jsx'
 import AppContext from '../context/AppContext.jsx'
 import { useSnapshot } from '../contexts/SnapshotContext'
 import { NormalisedRow, parseFundFile } from '../utils/parseFundFile'
-import { addSnapshot, setActiveSnapshot } from '../services/snapshotStore'
+import db, { addSnapshot, setActiveSnapshot } from '../services/snapshotStore'
+import { applyTagRules } from '../services/tagRules'
 import UploadIcon from '@mui/icons-material/Upload'
 import { Download } from 'lucide-react'
 import { exportToExcel } from '../services/exportService'
@@ -62,7 +63,9 @@ export default function FundScores () {
     if (!file || !year || !month) return
     const snap = await parseFundFile(file)
     const id = `${year}-${month}`
-    await addSnapshot(snap, id, 'quick upload')
+    const recent = await db.snapshots.orderBy('id').reverse().limit(2).toArray()
+    const tagged = applyTagRules([...recent.reverse(), snap])
+    await addSnapshot(tagged, id, 'quick upload')
     await setActiveSnapshot(id)
     setOpen(false); setFile(null); setYear(''); setMonth('')
   }

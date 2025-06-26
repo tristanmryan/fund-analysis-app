@@ -1,4 +1,5 @@
 import React from 'react';
+import Chip from '@mui/material/Chip';
 
 const TAG_COLORS = {
   Review: '#dc2626',
@@ -22,19 +23,13 @@ const TagList = ({ tags }) => {
       {tags.map(tag => {
         const color = TAG_COLORS[tag] || '#6b7280';
         return (
-          <span
+          <Chip
             key={tag}
-            style={{
-              backgroundColor: `${color}20`,
-              color,
-              border: `1px solid ${color}40`,
-              borderRadius: '9999px',
-              fontSize: '0.7rem',
-              padding: '0.125rem 0.5rem'
-            }}
-          >
-            {tag}
-          </span>
+            label={tag}
+            size="small"
+            style={{ backgroundColor: `${color}20`, color, borderColor: `${color}40` }}
+            variant="outlined"
+          />
         );
       })}
     </div>
