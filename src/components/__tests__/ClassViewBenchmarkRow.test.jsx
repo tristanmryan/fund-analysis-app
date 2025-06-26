@@ -1,11 +1,16 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ClassView from '../ClassView.jsx';
+import { useSnapshot } from '../../contexts/SnapshotContext';
+jest.mock('../../contexts/SnapshotContext', () => ({
+  useSnapshot: jest.fn(),
+}))
 
 const mockLargeCapGrowth = [
   {
     Symbol: 'IWF',
     'Fund Name': 'Russell 1000 Growth',
+    assetClass: 'Large Cap Growth',
     isBenchmark: true,
     ytd: 1,
     oneYear: 2,
@@ -19,6 +24,7 @@ const mockLargeCapGrowth = [
   {
     Symbol: 'AAA',
     'Fund Name': 'Fund A',
+    assetClass: 'Large Cap Growth',
     ytd: 0.5,
     oneYear: 1,
     threeYear: 1.5,
@@ -31,7 +37,8 @@ const mockLargeCapGrowth = [
 ];
 
 test('benchmark row visible in class view', () => {
-  render(<ClassView funds={mockLargeCapGrowth} />);
+  useSnapshot.mockReturnValue({ active: { rows: mockLargeCapGrowth } })
+  render(<ClassView defaultAssetClass="Large Cap Growth" />);
   expect(screen.getByText(/Benchmark — IWF/i)).toBeInTheDocument();
 });
 

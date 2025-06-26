@@ -17,6 +17,8 @@ const sample = [{
 }];
 
 test('renders table snapshot', () => {
-  const { asFragment } = render(<FundTable funds={sample} onRowClick={() => {}} />);
+  const { asFragment } = render(
+    <FundTable funds={sample} onRowClick={() => {}} deltas={{}} spark={{}} />
+  );
   expect(asFragment()).toMatchSnapshot();
 });

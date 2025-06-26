@@ -7,7 +7,7 @@ import FundTable from './FundTable.jsx';
  * @param {Array<Object>} funds
  * @param {Function} onRowClick
  */
-const GroupedFundTable = ({ funds = [], onRowClick = () => {} }) => {
+const GroupedFundTable = ({ funds = [], onRowClick = () => {}, deltas = {}, spark = {} }) => {
   const groups = {};
   funds.forEach(f => {
     const cls = f.assetClass || 'Uncategorized';
@@ -51,7 +51,7 @@ const GroupedFundTable = ({ funds = [], onRowClick = () => {} }) => {
             </div>
             {open[cls] && (
               <div style={{ marginTop: '0.5rem' }}>
-                <FundTable rows={peers} benchmark={benchmark} onRowClick={onRowClick} />
+                <FundTable rows={peers} benchmark={benchmark} onRowClick={onRowClick} deltas={deltas} spark={spark} />
               </div>
             )}
           </div>
