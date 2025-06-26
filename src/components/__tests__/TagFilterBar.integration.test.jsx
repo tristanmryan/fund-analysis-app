@@ -1,17 +1,7 @@
-import { render, screen, act } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import FundScores from '../../routes/FundScores';
 import AppContext from '../../context/AppContext.jsx';
-import { useSnapshot } from '../../contexts/SnapshotContext';
-jest.mock('../../contexts/SnapshotContext', () => ({ useSnapshot: jest.fn() }))
-jest.mock('../../services/trendAnalysis', () => ({
-  getScoreSeries: jest.fn().mockResolvedValue([]),
-  delta: jest.fn().mockReturnValue(null)
-}))
-jest.mock('../../services/exportService', () => ({
-  exportToExcel: jest.fn(),
-  exportToPDF: jest.fn(),
-}))
 import React, { useState } from 'react';
 
 function Wrapper({ children }) {
@@ -39,17 +29,11 @@ function Wrapper({ children }) {
 }
 
 test('filter pill toggles rows', async () => {
-  useSnapshot.mockReturnValue({ active: { rows: [
-    { symbol: 'A', assetClass: 'X', scores: { final: 50 }, tags: ['Review'] },
-    { symbol: 'B', assetClass: 'X', scores: { final: 60 }, tags: [] }
-  ] } })
-  await act(async () => {
-    render(
-      <Wrapper>
-        <FundScores />
-      </Wrapper>
-    );
-  });
+  render(
+    <Wrapper>
+      <FundScores />
+    </Wrapper>
+  );
   const table = screen.getByRole('table');
   expect(table.querySelectorAll('tbody tr').length).toBe(2);
   await userEvent.click(screen.getByRole('button', { name: 'Review' }));
