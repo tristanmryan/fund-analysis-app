@@ -63,6 +63,7 @@ export interface NormalisedRow {
   upCapture3y?: number | null
   downCapture3y?: number | null
   rankYtd?: number | null
+  tags?: string[]
 }
 
 export interface ParsedSnapshot {
