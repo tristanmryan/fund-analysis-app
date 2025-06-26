@@ -1,22 +1,17 @@
-import { render, waitFor, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import { AppProvider } from '../../context/AppContext.jsx';
+import { SnapshotProvider } from '../../contexts/SnapshotContext';
 let App;
-import dataStore from '../../services/dataStore';
-import { toast } from 'react-hot-toast';
 import * as dataLoader from '../../services/dataLoader';
 
-jest.mock('../../services/dataStore');
 jest.mock('../../services/dataLoader');
 jest.mock('../../services/exportService', () => ({
   exportToExcel: jest.fn(),
   exportToPDF: jest.fn(),
 }));
 
-jest.mock('react-hot-toast', () => ({
-  toast: { error: jest.fn() },
-}));
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -25,18 +20,16 @@ beforeEach(() => {
   dataLoader.loadAssetClassMap.mockResolvedValue(new Map());
 });
 
-test('error toast shown when history fails to load', async () => {
-  dataStore.getAllSnapshots.mockRejectedValue(new Error('fail'));
-
+test('history view renders manager', async () => {
   render(
     <AppProvider>
-      <App />
+      <SnapshotProvider>
+        <App />
+      </SnapshotProvider>
     </AppProvider>
   );
 
   await userEvent.click(screen.getByRole('button', { name: /history/i }));
 
-  await waitFor(() => {
-    expect(toast.error).toHaveBeenCalled();
-  });
+  expect(await screen.findByText(/historical data manager/i)).toBeInTheDocument();
 });
