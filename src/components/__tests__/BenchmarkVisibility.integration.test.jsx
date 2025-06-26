@@ -1,10 +1,19 @@
+import 'fake-indexeddb/auto';
 import fs from 'fs';
 import path from 'path';
 import * as XLSX from 'xlsx';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ClassView from '../ClassView.jsx';
+import { useSnapshot } from '../../contexts/SnapshotContext';
+
+jest.mock('../../contexts/SnapshotContext', () => ({
+  useSnapshot: jest.fn()
+}));
 import parseFundFile from '../../services/parseFundFile';
+
+global.structuredClone =
+  global.structuredClone || ((v) => JSON.parse(JSON.stringify(v)));
 import { recommendedFunds, assetClassBenchmarks } from '../../data/config';
 import { calculateScores } from '../../services/scoring';
 import { ensureBenchmarkRows } from '../../services/dataLoader';
@@ -34,13 +43,15 @@ async function loadFunds() {
   return calculateScores(withBench);
 }
 
-test('benchmarks visible in class views', async () => {
+beforeEach(async () => {
   const scored = await loadFunds();
-  const largeCap = scored.filter(f => f.assetClass === 'Large Cap Growth');
-  render(<ClassView funds={largeCap} />);
+  useSnapshot.mockReturnValue({ active: { rows: scored }, setActive: jest.fn(), list: [] })
+})
+
+test('benchmarks visible in class views', async () => {
+  render(<ClassView defaultAssetClass="Large Cap Growth" />);
   expect(screen.getByText(/Benchmark — IWF/i)).toBeVisible();
 
-  const muni = scored.filter(f => f.assetClass === 'Intermediate Muni');
-  render(<ClassView funds={muni} />);
+  render(<ClassView defaultAssetClass="Intermediate Muni" />);
   expect(screen.getByText(/Benchmark — ITM/i)).toBeVisible();
 });

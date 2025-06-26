@@ -36,6 +36,8 @@ const BenchmarkRow = ({ fund }) => {
       <td style={{ padding: '0.75rem', textAlign: 'center' }}>
         {row.scores ? <ScoreBadge score={row.scores.final} /> : '-'}
       </td>
+      <td style={{ padding: '0.75rem' }}></td>
+      <td style={{ padding: '0.75rem' }}></td>
       <td style={{ padding: '0.75rem', textAlign: 'right' }}>
         {fmtPct(row.ytd ?? row.YTD)}
       </td>

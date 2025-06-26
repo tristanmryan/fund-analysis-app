@@ -1,12 +1,21 @@
+import 'fake-indexeddb/auto';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ClassView from '../ClassView.jsx';
+
+jest.mock('../../contexts/SnapshotContext', () => ({
+  useSnapshot: jest.fn()
+}));
+
+global.structuredClone =
+  global.structuredClone || ((v) => JSON.parse(JSON.stringify(v)));
 
 const mockLargeCapGrowth = [
   {
     Symbol: 'IWF',
     'Fund Name': 'Russell 1000 Growth',
     isBenchmark: true,
+    assetClass: 'Large Cap Growth',
     ytd: 1,
     oneYear: 2,
     threeYear: 3,
@@ -19,6 +28,7 @@ const mockLargeCapGrowth = [
   {
     Symbol: 'AAA',
     'Fund Name': 'Fund A',
+    assetClass: 'Large Cap Growth',
     ytd: 0.5,
     oneYear: 1,
     threeYear: 1.5,
@@ -30,8 +40,12 @@ const mockLargeCapGrowth = [
   }
 ];
 
+
+import { useSnapshot } from '../../contexts/SnapshotContext';
+
 test('benchmark row visible in class view', () => {
-  render(<ClassView funds={mockLargeCapGrowth} />);
+  useSnapshot.mockReturnValue({ active: { rows: mockLargeCapGrowth }, setActive: jest.fn(), list: [] });
+  render(<ClassView defaultAssetClass="Large Cap Growth" />);
   expect(screen.getByText(/Benchmark — IWF/i)).toBeInTheDocument();
 });
 

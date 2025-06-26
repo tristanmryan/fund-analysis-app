@@ -1,8 +1,22 @@
+import 'fake-indexeddb/auto';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import FundScores from '../../routes/FundScores';
 import AppContext from '../../context/AppContext.jsx';
 import React, { useState } from 'react';
+
+jest.mock('../../contexts/SnapshotContext', () => ({
+  useSnapshot: jest.fn()
+}));
+import { useSnapshot } from '../../contexts/SnapshotContext';
+
+global.structuredClone =
+  global.structuredClone || ((v) => JSON.parse(JSON.stringify(v)));
+
+jest.mock('../../services/exportService', () => ({
+  exportToExcel: jest.fn(),
+}));
+
 
 function Wrapper({ children }) {
   const [selectedTags, setSelectedTags] = useState([]);
@@ -29,6 +43,14 @@ function Wrapper({ children }) {
 }
 
 test('filter pill toggles rows', async () => {
+  useSnapshot.mockReturnValue({
+    active: { rows: [
+      { symbol: 'A', score: 50, assetClass: 'X', tags: ['Review'] },
+      { symbol: 'B', score: 60, assetClass: 'X', tags: [] }
+    ] },
+    setActive: jest.fn(),
+    list: []
+  });
   render(
     <Wrapper>
       <FundScores />
