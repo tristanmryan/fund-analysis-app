@@ -4,8 +4,6 @@ import * as XLSX from 'xlsx';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ClassView from '../ClassView.jsx';
-import { useSnapshot } from '../../contexts/SnapshotContext';
-jest.mock('../../contexts/SnapshotContext', () => ({ useSnapshot: jest.fn() }))
 import parseFundFile from '../../services/parseFundFile';
 import { recommendedFunds, assetClassBenchmarks } from '../../data/config';
 import { calculateScores } from '../../services/scoring';
@@ -39,12 +37,10 @@ async function loadFunds() {
 test('benchmarks visible in class views', async () => {
   const scored = await loadFunds();
   const largeCap = scored.filter(f => f.assetClass === 'Large Cap Growth');
-  useSnapshot.mockReturnValueOnce({ active: { rows: largeCap } })
-  render(<ClassView defaultAssetClass="Large Cap Growth" />);
+  render(<ClassView funds={largeCap} />);
   expect(screen.getByText(/Benchmark — IWF/i)).toBeVisible();
 
   const muni = scored.filter(f => f.assetClass === 'Intermediate Muni');
-  useSnapshot.mockReturnValueOnce({ active: { rows: muni } })
-  render(<ClassView defaultAssetClass="Intermediate Muni" />);
+  render(<ClassView funds={muni} />);
   expect(screen.getByText(/Benchmark — ITM/i)).toBeVisible();
 });
