@@ -3,13 +3,16 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App.jsx';
 import { AppProvider } from './context/AppContext.jsx';
+import { SnapshotProvider } from './contexts/SnapshotContext';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <AppProvider>
-      <App />
+      <SnapshotProvider>
+        <App />
+      </SnapshotProvider>
     </AppProvider>
   </React.StrictMode>
 );
