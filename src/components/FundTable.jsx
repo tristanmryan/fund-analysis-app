@@ -3,6 +3,7 @@ import TagList from './TagList.jsx';
 import BenchmarkRow from './BenchmarkRow.jsx';
 import { getScoreColor, getScoreLabel } from '../utils/scoreTags';
 import { fmtPct, fmtNumber } from '../utils/formatters';
+import SparkLine from './SparkLine';
 
 const ScoreBadge = ({ score }) => {
   const color = getScoreColor(score);
@@ -32,6 +33,8 @@ const columns = [
   { key: 'Fund Name', label: 'Fund Name', numeric: false },
   { key: 'Type', label: 'Type', numeric: false, accessor: f => (f.isBenchmark ? 'Benchmark' : f.isRecommended ? 'Recommended' : '') },
   { key: 'Score', label: 'Score', numeric: true, accessor: f => f.scores?.final },
+  { key: 'Delta', label: 'Δ vs last', numeric: true },
+  { key: 'Trend', label: 'Trend', numeric: false },
   { key: 'YTD', label: 'YTD', numeric: true, accessor: f => f.ytd ?? f.YTD },
   { key: '1Y', label: '1Y', numeric: true, accessor: f => f.oneYear ?? f['1 Year'] },
   { key: '3Y', label: '3Y', numeric: true, accessor: f => f.threeYear ?? f['3 Year'] },
@@ -42,7 +45,14 @@ const columns = [
   { key: 'Tags', label: 'Tags', numeric: false, accessor: f => f.tags }
 ];
 
-const FundTable = ({ funds = [], rows, benchmark, onRowClick = () => {} }) => {
+const FundTable = ({
+  funds = [],
+  rows,
+  benchmark,
+  deltas = {},
+  spark = {},
+  onRowClick = () => {}
+}) => {
   const data = rows || funds;
   const [sort, setSort] = useState({ key: null, dir: 'asc', numeric: false });
 
@@ -123,6 +133,26 @@ const FundTable = ({ funds = [], rows, benchmark, onRowClick = () => {} }) => {
             <td style={{ padding: '0.5rem', textAlign: 'center' }}>
               {fund.scores ? <ScoreBadge score={fund.scores.final} /> : '-'}
             </td>
+            {(() => {
+              const sym = fund.Symbol || fund.symbol
+              const d = deltas[sym]
+              return (
+                <>
+                  <td style={{ padding: '0.5rem', minWidth: '70px', textAlign: 'right' }}>
+                    {d == null ? '' : d > 0 ? (
+                      <><span style={{color:'green'}}>▲</span>{d}</>
+                    ) : d < 0 ? (
+                      <><span style={{color:'red'}}>▼</span>{Math.abs(d)}</>
+                    ) : (
+                      '—'
+                    )}
+                  </td>
+                  <td style={{ padding: '0.5rem' }}>
+                    <SparkLine data={spark[sym] ?? []} />
+                  </td>
+                </>
+              )
+            })()}
             <td style={{ padding: '0.5rem', textAlign: 'right' }}>
               {fmtPct(fund.ytd ?? fund.YTD)}
             </td>
