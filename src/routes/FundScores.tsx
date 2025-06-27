@@ -19,7 +19,7 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import {
   Box, Button, Dialog, DialogTitle, DialogContent, DialogActions,
-  TextField, MenuItem
+  TextField, MenuItem, Typography
 } from '@mui/material'
 
 const GroupedTable: React.FC<any> = GroupedFundTable as unknown as React.FC<any>
@@ -109,8 +109,15 @@ export default function FundScores () {
 
   if (!active) {
     return (
-      <Box p={3} textAlign='center'>
-        <Button variant='contained' startIcon={<UploadIcon />} onClick={() => setUploadOpen(true)}>Quick Upload</Button>
+      <Box p={3} textAlign="center">
+        <Typography mb={2}>
+          No snapshot saved yet – upload one to get started.
+        </Typography>
+
+        <Button variant="contained" onClick={() => setUploadOpen(true)}>
+          QUICK UPLOAD
+        </Button>
+
         <Dialog open={uploadOpen} onClose={() => setUploadOpen(false)}>
           <DialogTitle>Quick Upload</DialogTitle>
           <DialogContent sx={{ display:'flex', flexDirection:'column', gap:2, mt:1 }}>
@@ -130,7 +137,6 @@ export default function FundScores () {
             <Button onClick={handleQuickUpload} variant='contained' disabled={!file || !year || !month}>Save</Button>
           </DialogActions>
         </Dialog>
-        <Box mt={4}>No snapshot selected – upload one or pick from Historical Data.</Box>
       </Box>
     )
   }
