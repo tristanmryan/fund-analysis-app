@@ -20,7 +20,12 @@ export function SnapshotProvider ({ children }: { children: ReactNode }) {
     liveQuery(getActiveSnapshot)
   )
   const list = useObservable<SnapshotRow[], SnapshotRow[]>(
-    () => liveQuery(() => db.snapshots.toArray()),
+    () =>
+      liveQuery(() =>
+        db.snapshots
+          .filter(row => row.deleted !== true)
+          .toArray()
+      ),
     [],
     []
   )
