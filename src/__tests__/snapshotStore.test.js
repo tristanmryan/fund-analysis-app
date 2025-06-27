@@ -54,4 +54,10 @@ describe('snapshotStore', () => {
     expect(row.deleted).toBe(true)
     expect(row.active).toBe(false)
   })
+
+  test('deleted snapshots can be re-added', async () => {
+    await addSnapshot(baseSnap, '2024-06')
+    await softDeleteSnapshot('2024-06')
+    await expect(addSnapshot(baseSnap, '2024-07')).resolves.toBeUndefined()
+  })
 })
