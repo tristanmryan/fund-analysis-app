@@ -24,12 +24,12 @@ const GroupedFundTable = ({ funds = [], onRowClick = () => {}, deltas = {}, spar
       {Object.entries(groups).map(([cls, rows]) => {
         const benchmark = rows.find(r => r.isBenchmark);
         const peers = rows.filter(r => !r.isBenchmark);
-        const avg = peers.length
-          ? Math.round(
-              peers.reduce((s, f) => s + (f.score ?? f.scores?.final || 0), 0) / peers.length
-            )
-          : 0;
-        const benchScore = benchmark?.score ?? benchmark?.scores?.final;
+          const avg = peers.length
+            ? Math.round(
+                peers.reduce((s, f) => s + ((f.score ?? f.scores?.final) || 0), 0) / peers.length
+              )
+            : 0;
+        const benchScore = (benchmark?.score ?? benchmark?.scores?.final) || 0;
         return (
           <div key={cls} style={{ marginBottom: '1rem' }}>
             <div
