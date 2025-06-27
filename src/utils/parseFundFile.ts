@@ -1,7 +1,8 @@
 // src/utils/parseFundFile.ts
 import * as XLSX from 'xlsx'
 import { sha1Hex } from './hash'
-import { recommendedFunds } from '../data/config.js'
+import { recommendedFunds, assetClassBenchmarks } from '../data/config.js'
+import { loadAssetClassMap, lookupAssetClass } from '../services/dataLoader.js'
 
 export const COLUMN_MAP: Record<string, keyof NormalisedRow> = {
   'Symbol': 'symbol',
@@ -64,6 +65,9 @@ export interface NormalisedRow {
   downCapture3y?: number | null
   rankYtd?: number | null
   tags?: string[]
+  assetClass?: string
+  isBenchmark?: boolean
+  benchmarkForClass?: string
 }
 
 export interface ParsedSnapshot {
@@ -112,6 +116,7 @@ export async function parseFundFile(
   columnMap = COLUMN_MAP
 ): Promise<ParsedSnapshot> {
   const rows = await readFileAsRows(file)
+  await loadAssetClassMap()
   const headerIndex = rows.findIndex(r =>
     r.some(c => typeof c === 'string' && c.toLowerCase().includes('symbol'))
   )
@@ -184,6 +189,30 @@ export async function parseFundFile(
     const rec = recommendedFunds.find(r => r.symbol.toUpperCase() === obj.symbol)
     if (rec) obj.productName = rec.name
     if (obj.productName === undefined) obj.productName = null
+
+    let assetClass: string | null | undefined = rec?.assetClass
+    let benchmarkForClass: string | undefined
+    if (!assetClass) {
+      for (const [ac, b] of Object.entries(assetClassBenchmarks)) {
+        if (b.ticker.toUpperCase() === obj.symbol) {
+          assetClass = ac
+          benchmarkForClass = ac
+          break
+        }
+      }
+    }
+    if (!assetClass) {
+      const lookedUp = lookupAssetClass(obj.symbol)
+      assetClass = lookedUp == null ? 'Unknown' : lookedUp
+    }
+
+    obj.assetClass = assetClass || 'Unknown'
+    obj['Asset Class'] = obj.assetClass
+    if (benchmarkForClass) {
+      obj.isBenchmark = true
+      obj.benchmarkForClass = benchmarkForClass
+    }
+
     list.push(obj as NormalisedRow)
   }
   return {
