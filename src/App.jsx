@@ -23,6 +23,8 @@ import AppContext from './context/AppContext.jsx';
 import TagFilterBar from './components/Filters/TagFilterBar.jsx';
 import AnalysisView from './routes/AnalysisView';
 import HistoricalManager from './routes/HistoricalManager';
+import UploadDialog from './components/UploadDialog';
+import { Button } from '@mui/material';
 // Score badge component for visual display
 const ScoreBadge = ({ score, size = 'normal' }) => {
   const color = getScoreColor(score);
@@ -72,6 +74,7 @@ const App = () => {
 
   const [recommendedFunds, setRecommendedFunds] = useState([]);
   const [assetClassBenchmarks, setAssetClassBenchmarks] = useState({});
+  const [uploadOpen, setUploadOpen] = useState(false);
 
   // Load history snapshots from localStorage on startup
   useEffect(() => {
@@ -370,6 +373,10 @@ const App = () => {
           >
             <TrendingUp size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
             <p>Upload a fund performance file to see scores</p>
+            <Button variant="contained" onClick={() => setUploadOpen(true)} style={{ marginTop: '1rem' }}>
+              Quick Upload
+            </Button>
+            <UploadDialog open={uploadOpen} onClose={() => setUploadOpen(false)} />
           </div>
         )
       )}
