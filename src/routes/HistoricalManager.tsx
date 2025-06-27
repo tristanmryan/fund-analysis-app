@@ -9,7 +9,7 @@ import UploadIcon from '@mui/icons-material/Upload'
 import DownloadIcon from '@mui/icons-material/Download'
 import { parseFundFile } from '../utils/parseFundFile'
 import { attachScores } from '../services/scoringUtils'
-import db, { addSnapshot, softDeleteSnapshot } from '../services/snapshotStore'
+import db, { addSnapshot, softDeleteSnapshot, setActiveSnapshot } from '../services/snapshotStore'
 import { applyTagRules } from '../services/tagRules'
 import { useSnapshot } from '../contexts/SnapshotContext'
 import { buildSnapshotPdf } from '../services/pdfExport'
@@ -34,6 +34,7 @@ export default function HistoricalManager () {
     const recent = await db.snapshots.orderBy('id').reverse().limit(2).toArray()
     snap = applyTagRules([...recent.reverse(), snap])
     await addSnapshot(snap, id, 'manual upload')
+    await setActiveSnapshot(id)
     await setActive(id)
     setOpen(false); setFile(null); setYear(''); setMonth('')
   }
