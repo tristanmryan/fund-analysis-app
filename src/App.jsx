@@ -145,8 +145,6 @@ const App = () => {
     setFundData(snapshot.funds);
     setScoredFundData(snapshot.funds);
     setClassSummaries(snapshot.classSummaries || {});
-    setCurrentSnapshotDate(new Date(snapshot.date).toLocaleDateString());
-    setUploadedFileName(snapshot.metadata?.fileName || 'Historical snapshot');
     
     // Extract benchmark data
     const benchmarks = {};
