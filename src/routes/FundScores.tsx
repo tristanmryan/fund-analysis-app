@@ -6,10 +6,8 @@ import GroupedFundTable from '../components/GroupedFundTable.jsx'
 import FundDetailsModal from '../components/Modals/FundDetailsModal.jsx'
 import AppContext from '../context/AppContext.jsx'
 import { useSnapshot } from '../contexts/SnapshotContext'
-import { NormalisedRow, parseFundFile } from '../utils/parseFundFile'
-import db, { addSnapshot, setActiveSnapshot } from '../services/snapshotStore'
-import { applyTagRules } from '../services/tagRules'
-import { attachScores } from '../services/scoringUtils'
+import { NormalisedRow } from '../utils/parseFundFile'
+import UploadDialog from '../components/UploadDialog'
 import UploadIcon from '@mui/icons-material/Upload'
 import { Download } from 'lucide-react'
 import { exportToExcel } from '../services/exportService'
@@ -17,19 +15,15 @@ import SparkLine from '../components/SparkLine'
 import { getScoreSeries, delta } from '../services/trendAnalysis'
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
-import {
-  Box, Button, Dialog, DialogTitle, DialogContent, DialogActions,
-  TextField, MenuItem, Typography
-} from '@mui/material'
+import { Box, Button, Typography } from '@mui/material'
 
 const GroupedTable: React.FC<any> = GroupedFundTable as unknown as React.FC<any>
 const FundTableAny: React.FC<any> = FundTable as unknown as React.FC<any>
 
-const years = Array.from({ length: 20 }, (_, i) => 2010 + i).reverse()
-const months = ['01','02','03','04','05','06','07','08','09','10','11','12']
 
 export default function FundScores () {
   const { active } = useSnapshot()
+  console.log('FundScores active snapshot:', active)
   const rows: NormalisedRow[] = active?.rows ?? []
 
   const [deltas, setDeltas] = React.useState<Record<string, number>>({})
@@ -56,21 +50,6 @@ export default function FundScores () {
   const [grouped, setGrouped] = useState(() => localStorage.getItem('ls_grouped_view') === 'true')
 
   const [uploadOpen, setUploadOpen] = useState(false)
-  const [file, setFile] = useState<File | null>(null)
-  const [year, setYear] = useState('')
-  const [month, setMonth] = useState('')
-
-  const handleQuickUpload = async () => {
-    if (!file || !year || !month) return
-    let snap = await parseFundFile(file)
-    snap = attachScores(snap)
-    const id = `${year}-${month}`
-    const recent = await db.snapshots.orderBy('id').reverse().limit(2).toArray()
-    snap = applyTagRules([...recent.reverse(), snap])
-    await addSnapshot(snap, id, 'quick upload')
-    await setActiveSnapshot(id)
-    setUploadOpen(false); setFile(null); setYear(''); setMonth('')
-  }
 
   const filteredFunds = useMemo(() => {
     return rows.filter((f: any) => {
@@ -111,32 +90,14 @@ export default function FundScores () {
     return (
       <Box p={3} textAlign="center">
         <Typography mb={2}>
-          No snapshot saved yet – upload one to get started.
+          No month selected yet — upload one to get started.
         </Typography>
 
         <Button variant="contained" onClick={() => setUploadOpen(true)}>
           QUICK UPLOAD
         </Button>
 
-        <Dialog open={uploadOpen} onClose={() => setUploadOpen(false)}>
-          <DialogTitle>Quick Upload</DialogTitle>
-          <DialogContent sx={{ display:'flex', flexDirection:'column', gap:2, mt:1 }}>
-            <Button component='label' variant='outlined'>
-              {file ? file.name : 'Choose CSV'}
-              <input hidden type='file' accept='.csv,.xlsx' onChange={e => setFile(e.target.files?.[0] ?? null)} />
-            </Button>
-            <TextField select label='Year' value={year} onChange={e => setYear(e.target.value)}>
-              {years.map(y => <MenuItem key={y} value={y}>{y}</MenuItem>)}
-            </TextField>
-            <TextField select label='Month' value={month} onChange={e => setMonth(e.target.value)}>
-              {months.map(m => <MenuItem key={m} value={m}>{m}</MenuItem>)}
-            </TextField>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setUploadOpen(false)}>Cancel</Button>
-            <Button onClick={handleQuickUpload} variant='contained' disabled={!file || !year || !month}>Save</Button>
-          </DialogActions>
-        </Dialog>
+        <UploadDialog open={uploadOpen} onClose={() => setUploadOpen(false)} />
       </Box>
     )
   }
@@ -168,25 +129,7 @@ export default function FundScores () {
       {selectedFund && (
         <FundDetailsModal fund={selectedFund} onClose={() => setSelectedFund(null)} />
       )}
-      <Dialog open={uploadOpen} onClose={() => setUploadOpen(false)}>
-        <DialogTitle>Quick Upload</DialogTitle>
-        <DialogContent sx={{ display:'flex', flexDirection:'column', gap:2, mt:1 }}>
-          <Button component='label' variant='outlined'>
-            {file ? file.name : 'Choose CSV'}
-            <input hidden type='file' accept='.csv,.xlsx' onChange={e => setFile(e.target.files?.[0] ?? null)} />
-          </Button>
-          <TextField select label='Year' value={year} onChange={e => setYear(e.target.value)}>
-            {years.map(y => <MenuItem key={y} value={y}>{y}</MenuItem>)}
-          </TextField>
-          <TextField select label='Month' value={month} onChange={e => setMonth(e.target.value)}>
-            {months.map(m => <MenuItem key={m} value={m}>{m}</MenuItem>)}
-          </TextField>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setUploadOpen(false)}>Cancel</Button>
-          <Button onClick={handleQuickUpload} variant='contained' disabled={!file || !year || !month}>Save</Button>
-        </DialogActions>
-      </Dialog>
+      <UploadDialog open={uploadOpen} onClose={() => setUploadOpen(false)} />
     </Box>
   )
 }
