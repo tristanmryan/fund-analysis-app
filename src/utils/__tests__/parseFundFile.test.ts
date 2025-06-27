@@ -1,9 +1,13 @@
 import { parseFundFile } from '../parseFundFile'
 import fs from 'fs/promises'
-import { File as NodeFile } from 'node:buffer'
+import { File as NodeFile, Blob as NodeBlob } from 'node:buffer'
+import * as crypto from 'crypto'
 
-// polyfill File for older Node / jsdom environments
-(global as any).File = (global as any).File || NodeFile
+// use Node's File implementation for tests so .text() works
+const g: any = global
+g.File = NodeFile as any
+g.crypto = g.crypto || (crypto as any).webcrypto
+g.Blob = NodeBlob as any
 
 describe('parseFundFile', () => {
   it('parses Raymond James sample', async () => {
@@ -14,6 +18,7 @@ describe('parseFundFile', () => {
     const sample = snap.rows[0]
     expect(sample).toHaveProperty('symbol')
     expect(sample).toHaveProperty('ytdReturn')
+    expect(sample).toHaveProperty('assetClass')
   })
 
   it('parses YCharts sample', async () => {
@@ -21,5 +26,6 @@ describe('parseFundFile', () => {
     const file = new File([buf], 'June2024_FundPerformance.csv')
     const snap = await parseFundFile(file)
     expect(snap.rows.length).toBeGreaterThan(100)
+    expect(snap.rows[0]).toHaveProperty('assetClass')
   })
 })
