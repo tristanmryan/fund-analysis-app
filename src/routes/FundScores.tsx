@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState } from 'react'
+import React, { useContext, useMemo, useState, useEffect } from 'react'
 import GlobalFilterBar from '../components/Filters/GlobalFilterBar.jsx'
 import TagFilterBar from '../components/Filters/TagFilterBar.jsx'
 import FundTable from '../components/FundTable.jsx'
@@ -16,6 +16,7 @@ import { getScoreSeries, delta } from '../services/trendAnalysis'
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import { Box, Button, Typography } from '@mui/material'
+import { savePref, getPref } from '../services/dataStore'
 
 const GroupedTable: React.FC<any> = GroupedFundTable as unknown as React.FC<any>
 const FundTableAny: React.FC<any> = FundTable as unknown as React.FC<any>
@@ -47,7 +48,7 @@ export default function FundScores () {
   } = useContext(AppContext)
 
   const [selectedFund, setSelectedFund] = useState<any>(null)
-  const [grouped, setGrouped] = useState(() => localStorage.getItem('ls_grouped_view') === 'true')
+  const [grouped, setGrouped] = useState(false)
 
   const [uploadOpen, setUploadOpen] = useState(false)
 
@@ -59,10 +60,14 @@ export default function FundScores () {
     })
   }, [rows, selectedClass, selectedTags])
 
+  useEffect(() => {
+    getPref('ls_grouped_view', false).then(setGrouped)
+  }, [])
+
   const toggleView = () => {
     const next = !grouped
     setGrouped(next)
-    localStorage.setItem('ls_grouped_view', String(next))
+    savePref('ls_grouped_view', next)
   }
 
   const handleExport = () => {
