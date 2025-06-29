@@ -22,13 +22,11 @@ describe('parseFundFile', () => {
       ['APDJX', 'Artisan International Small-Mid', '0.12', 'MF', '18.05']
     ];
     const result = await parseFundFile(rows, { recommendedFunds, assetClassBenchmarks });
-    expect(result[0]['Net Expense Ratio']).toBeCloseTo(0.04);
-    expect(result[0].Type).toBe('MF');
-    expect(result[0]['5Y Std Dev']).toBeCloseTo(18.05);
+    expect(result[0].expenseRatio).toBeCloseTo(0.04);
+    expect(result[0].type).toBe('MF');
+    expect(result[0].stdDev5y).toBeCloseTo(18.05);
     expect(result[0].assetClass).toBe('Large Cap Blend');
-    expect(result[0]['Asset Class']).toBe('Large Cap Blend');
     expect(result[1].assetClass).toBe('International Stock (Small/Mid Cap)');
-    expect(result[1]['Asset Class']).toBe('International Stock (Small/Mid Cap)');
   });
 
   test('does not throw and sets assetClass', async () => {
@@ -40,7 +38,7 @@ describe('parseFundFile', () => {
     expect(result[0].assetClass).toBeTruthy();
   });
 
-  test('IWF row keeps header copy', async () => {
+  test('IWF row parsed', async () => {
     const csvPath = path.resolve(__dirname, '../../../data/Fund_Performance_Data.csv');
     const csv = fs.readFileSync(csvPath, 'utf8');
     const wb = XLSX.read(csv, { type: 'string' });
@@ -48,6 +46,5 @@ describe('parseFundFile', () => {
     const result = await parseFundFile(rows, { recommendedFunds, assetClassBenchmarks });
     const iwf = result.find(f => f.Symbol === 'IWF');
     expect(iwf.assetClass).toBe('Large Cap Growth');
-    expect(iwf['Asset Class']).toBe('Large Cap Growth');
   });
 });

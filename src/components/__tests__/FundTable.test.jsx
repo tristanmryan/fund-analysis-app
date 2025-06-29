@@ -3,16 +3,16 @@ import FundTable from '../FundTable.jsx';
 
 const sample = [{
   Symbol: 'ABC',
-  'Fund Name': 'Alpha Fund',
-  'Asset Class': 'Large Cap',
+  fundName: 'Alpha Fund',
+  assetClass: 'Large Cap',
   scores: { final: 75 },
-  YTD: 2,
-  '1 Year': 10,
-  '3 Year': 12,
-  '5 Year': 15,
-  'Sharpe Ratio': 0.8,
-  'Standard Deviation': 18,
-  'Net Expense Ratio': 0.5,
+  ytd: 2,
+  oneYear: 10,
+  threeYear: 12,
+  fiveYear: 15,
+  sharpe3y: 0.8,
+  stdDev5y: 18,
+  expenseRatio: 0.5,
   tags: ['outperformer']
 }];
 

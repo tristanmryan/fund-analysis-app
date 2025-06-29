@@ -11,7 +11,7 @@ import {
 export const COLUMN_MAP: Record<string, keyof NormalisedRow> = {
   'Symbol': 'symbol',
   [CUR[0]]: 'symbol',
-  [CUR[1]]: 'productName',
+  [CUR[1]]: 'fundName',
   [CUR[4]]: 'ytdReturn',
   [CUR[6]]: 'oneYearReturn',
   'Total Return - 3 Year (%)': 'threeYearReturn',
@@ -53,7 +53,7 @@ export const COLUMN_MAP: Record<string, keyof NormalisedRow> = {
 
 export interface NormalisedRow {
   symbol: string
-  productName: string | null
+  fundName: string | null
   ytdReturn: number | null
   oneYearReturn: number | null
   threeYearReturn: number | null
@@ -146,7 +146,7 @@ export async function parseFundFile(
     if (!row || row.every(v => v == null || String(v).trim() === '')) continue
     const obj: any = {
       symbol: '',
-      productName: null,
+      fundName: null,
       ytdReturn: null,
       oneYearReturn: null,
       threeYearReturn: null,
@@ -167,8 +167,8 @@ export async function parseFundFile(
       const val = row[idx]
       if (key === 'symbol') {
         obj.symbol = (val ?? '').toString().trim().toUpperCase()
-      } else if (key === 'productName') {
-        obj.productName = val ? String(val).trim() : null
+      } else if (key === 'fundName') {
+        obj.fundName = val ? String(val).trim() : null
       } else if (
         key === 'upCapture3y' ||
         key === 'downCapture3y' ||
@@ -191,8 +191,8 @@ export async function parseFundFile(
       }
     }
     const rec = recommendedFunds.find(r => r.symbol.toUpperCase() === obj.symbol)
-    if (rec) obj.productName = rec.name
-    if (obj.productName === undefined) obj.productName = null
+    if (rec) obj.fundName = rec.name
+    if (obj.fundName === undefined) obj.fundName = null
 
     let assetClass: string | null | undefined = rec?.assetClass
     let benchmarkForClass: string | undefined
@@ -211,7 +211,6 @@ export async function parseFundFile(
     }
 
     obj.assetClass = assetClass || 'Unknown'
-    obj['Asset Class'] = obj.assetClass
     if (benchmarkForClass) {
       obj.isBenchmark = true
       obj.benchmarkForClass = benchmarkForClass

@@ -26,8 +26,8 @@ export default async function parseFundFile(rows, options = {}) {
     const headerLower = header.toLowerCase();
 
     if (headerLower.includes('symbol')) columnMap.Symbol = idx;
-    if (headerLower.includes('product name')) columnMap['Fund Name'] = idx;
-    if (headerLower === 'asset class') columnMap['Asset Class'] = idx;
+    if (headerLower.includes('product name')) columnMap.fundName = idx;
+    if (headerLower === 'asset class') columnMap.assetClass = idx;
 
     if (
       headerLower.includes('total return') &&
@@ -121,7 +121,7 @@ export default async function parseFundFile(rows, options = {}) {
 
   return parsed.map(f => {
     const symbolClean = clean(f.Symbol);
-    let assetClass = f['Asset Class'];
+    let assetClass = f.assetClass;
 
     if (!assetClass) {
       const rec = recommendedFunds.find(r => clean(r.symbol) === symbolClean);
@@ -147,7 +147,7 @@ export default async function parseFundFile(rows, options = {}) {
     const threeYear = cleanNumber(f['3 Year']);
     const fiveYear = cleanNumber(f['5 Year']);
     const tenYear = cleanNumber(f['10 Year']);
-    const sharpe = cleanNumber(f['Sharpe Ratio']);
+    const sharpe3y = cleanNumber(f['Sharpe Ratio']);
     const stdDev3y = cleanNumber(f.StdDev3Y);
     const stdDev5y = cleanNumber(f['Standard Deviation'] ?? f.StdDev5Y);
     const alpha5Y = cleanNumber(f[CUR[14]]);
@@ -157,38 +157,24 @@ export default async function parseFundFile(rows, options = {}) {
 
     const row = {
       Symbol: f.Symbol,
-      'Fund Name': f['Fund Name'],
+      symbol: f.Symbol,
+      fundName: f['Fund Name'],
       assetClass: assetClassFinal,
-      'Asset Class': assetClassFinal,
-      YTD: ytd,
-      '1 Year': oneYear,
-      '3 Year': threeYear,
-      '5 Year': fiveYear,
-      '10 Year': tenYear,
-      'Sharpe Ratio': sharpe,
-      '3Y Std Dev': stdDev3y,
-      '5Y Std Dev': stdDev5y,
-      [CUR[14]]: alpha5Y,
-      [CUR[16]]: upCapture3Y,
-      [CUR[17]]: downCapture3Y,
-      'Net Expense Ratio': expense,
-      'Manager Tenure': f['Manager Tenure'],
-      Type: f.type || '',
       ytd,
       oneYear,
       threeYear,
       fiveYear,
       tenYear,
-      sharpe,
+      sharpe3y,
       stdDev3y,
       stdDev5y,
       alpha5Y,
       upCapture3Y,
       downCapture3Y,
-      expense,
+      expenseRatio: expense,
+      managerTenure: f['Manager Tenure'],
+      type: f.type || ''
     };
-    // keep header-style copy for legacy filters/exports
-    row['Asset Class'] = row.assetClass;
     return row;
   });
 }

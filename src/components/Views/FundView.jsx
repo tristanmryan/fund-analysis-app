@@ -28,7 +28,7 @@ const FundTable = ({ funds = [], onRowClick = () => {} }) => (
             onClick={() => onRowClick(fund)}
           >
             <td style={{ padding: '0.5rem' }}>{fund.Symbol}</td>
-            <td style={{ padding: '0.5rem' }}>{fund['Fund Name']}</td>
+            <td style={{ padding: '0.5rem' }}>{fund.fundName}</td>
             <td style={{ padding: '0.5rem' }}>{fund.assetClass}</td>
             <td style={{ padding: '0.5rem', textAlign: 'center' }}>
               {fund.scores ? (

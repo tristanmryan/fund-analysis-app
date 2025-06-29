@@ -28,8 +28,8 @@ function Wrapper({ children }) {
   const resetFilters = () => setSelectedTags([]);
   const value = {
     fundData: [
-      { Symbol: 'A', 'Fund Name': 'A', assetClass: 'X', scores: { final: 50 }, tags: ['Review'] },
-      { Symbol: 'B', 'Fund Name': 'B', assetClass: 'X', scores: { final: 60 }, tags: [] }
+      { Symbol: 'A', fundName: 'A', assetClass: 'X', scores: { final: 50 }, tags: ['Review'] },
+      { Symbol: 'B', fundName: 'B', assetClass: 'X', scores: { final: 60 }, tags: [] }
     ],
     availableClasses: ['X'],
     availableTags: ['Review'],

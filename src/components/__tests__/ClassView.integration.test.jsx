@@ -24,7 +24,7 @@ function ClassView({ funds }) {
           {peers.map(f => (
             <tr key={f.Symbol}>
               <td>{f.Symbol}</td>
-              <td>{f['Fund Name']}</td>
+              <td>{f.fundName}</td>
             </tr>
           ))}
         </tbody>

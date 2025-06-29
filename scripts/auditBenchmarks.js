@@ -29,10 +29,9 @@ function ensureBenchmarkRows(list = []) {
       list.push({
         Symbol: ticker,
         symbol: ticker,
-        'Fund Name': name,
+        fundName: name,
         name,
         assetClass,
-        'Asset Class': assetClass,
         isBenchmark: true,
         benchmarkForClass: assetClass,
         ytd: null,
@@ -47,8 +46,7 @@ function ensureBenchmarkRows(list = []) {
       const row = map.get(key);
       row.isBenchmark = true;
       if (!row.benchmarkForClass) row.benchmarkForClass = assetClass;
-      if (!row.assetClass) row.assetClass = row['Asset Class'] || assetClass;
-      row['Asset Class'] = row.assetClass;
+      if (!row.assetClass) row.assetClass = assetClass;
     }
   });
   return list;
@@ -98,8 +96,7 @@ async function main() {
       isRecommended: !!rec,
       isBenchmark,
       benchmarkForClass,
-      assetClass: resolved || f['Asset Class'],
-      'Asset Class': resolved || f['Asset Class']
+      assetClass: resolved || f.assetClass,
     };
   });
   stageLogs.push({ stage: 'flagRows', module: 'App.jsx mapping', before: parsed.length, after: flagged.length, benchmarks: flagged.filter(r => r.isBenchmark).length });

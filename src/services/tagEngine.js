@@ -12,7 +12,7 @@ export function applyTagRules(funds = []) {
 
   // collect metrics per asset class excluding benchmarks
   funds.forEach(f => {
-    const cls = f.assetClass || f['Asset Class'] || 'Unknown';
+    const cls = f.assetClass || 'Unknown';
     if (!statsByClass[cls]) {
       statsByClass[cls] = {
         expenseRatio: [],
@@ -54,7 +54,7 @@ export function applyTagRules(funds = []) {
   });
 
   return funds.map(fund => {
-    const cls = fund.assetClass || fund['Asset Class'] || 'Unknown';
+    const cls = fund.assetClass || 'Unknown';
     const stats = summaries[cls] || {};
     const m = fund.metrics || {};
     const tags = [];

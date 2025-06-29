@@ -63,7 +63,7 @@ export function clearAssetClassMap() {
 export function getAssetClassOptions(funds = []) {
   const set = new Set();
   funds.forEach(f => {
-    const cls = f['Asset Class'] || f.assetClass;
+    const cls = f.assetClass;
     if (cls && cls !== 'Benchmark') set.add(cls);
   });
   return Array.from(set).sort();
@@ -83,10 +83,9 @@ export function ensureBenchmarkRows(list = []) {
       list.push({
         Symbol: ticker,
         symbol: ticker,
-        'Fund Name': name,
+        fundName: name,
         name,
         assetClass,
-        'Asset Class': assetClass,
         isBenchmark: true,
         benchmarkForClass: assetClass,
         ytd: null,
@@ -95,19 +94,17 @@ export function ensureBenchmarkRows(list = []) {
         fiveYear: null,
         sharpe: null,
         stdDev5y: null,
-        expense: null,
+        expense: null
       });
     } else {
       const row = map.get(key);
       row.isBenchmark = true;
       if (!row.benchmarkForClass) row.benchmarkForClass = assetClass;
-      const existingClass = row.assetClass || row['Asset Class'];
+      const existingClass = row.assetClass;
       if (!existingClass || existingClass === 'Benchmark') {
         row.assetClass = assetClass;
-        row['Asset Class'] = assetClass;
       } else {
         row.assetClass = existingClass;
-        row['Asset Class'] = existingClass;
       }
     }
   });

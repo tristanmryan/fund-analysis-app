@@ -3,6 +3,7 @@
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { LABELS } from '../constants/labels';
 
 /**
  * Export an array of fund objects to an Excel (.xlsx) file.
@@ -17,8 +18,8 @@ export function exportToExcel(filteredFunds, filename) {
 
   const rows = filteredFunds.map(fund => ({
     Symbol: fund.cleanSymbol || fund.Symbol || fund.symbol || '',
-    'Fund Name': fund['Fund Name'] || fund.name || '',
-    'Asset Class': fund['Asset Class'] || fund.assetClass || '',
+    [LABELS.FUND_NAME]: fund.fundName || fund.name || '',
+    [LABELS.ASSET_CLASS]: fund.assetClass || '',
     Score: fund.scores?.final ?? '',
     Tags: Array.isArray(fund.tags) ? fund.tags.join(', ') : '',
     'Expense Ratio': fund.metrics?.expenseRatio ?? '',
@@ -64,15 +65,15 @@ export function exportToPDF(funds, filename) {
     .filter(f => f.isRecommended)
     .map(f => [
       f.cleanSymbol || f.Symbol || f.symbol || '',
-      f['Fund Name'] || f.name || '',
-      f['Asset Class'] || f.assetClass || '',
+      f.fundName || f.name || '',
+      f.assetClass || '',
       f.scores?.final != null ? String(f.scores.final) : '',
       Array.isArray(f.tags) ? f.tags.join(', ') : '',
       f.isBenchmark ? 'Yes' : ''
     ]);
 
   doc.autoTable({
-    head: [['Symbol', 'Fund Name', 'Asset Class', 'Score', 'Tags', 'Benchmark?']],
+    head: [['Symbol', LABELS.FUND_NAME, LABELS.ASSET_CLASS, 'Score', 'Tags', 'Benchmark?']],
     body: rows,
     startY: 34,
     styles: { fontSize: 8 },

@@ -11,8 +11,8 @@ global.structuredClone =
   global.structuredClone || ((v) => JSON.parse(JSON.stringify(v)));
 
 const funds = [
-  { Symbol: 'IWF', 'Fund Name': 'Index', isBenchmark: true, scores: { final: 60 } },
-  { Symbol: 'AAA', 'Fund Name': 'Fund A', scores: { final: 70 } }
+  { Symbol: 'IWF', fundName: 'Index', isBenchmark: true, scores: { final: 60 } },
+  { Symbol: 'AAA', fundName: 'Fund A', scores: { final: 70 } }
 ];
 
 

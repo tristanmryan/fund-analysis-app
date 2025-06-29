@@ -4,8 +4,8 @@ import FundTable from '../FundTable.jsx';
 
 test('clicking numeric header sorts desc then asc', async () => {
   const data = [
-    { Symbol: 'A', 'Fund Name': 'A', scores: { final: 50 } },
-    { Symbol: 'B', 'Fund Name': 'B', scores: { final: 70 } }
+    { Symbol: 'A', fundName: 'A', scores: { final: 50 } },
+    { Symbol: 'B', fundName: 'B', scores: { final: 70 } }
   ];
   render(<FundTable rows={data} />);
   const scoreHeader = screen.getByRole('columnheader', { name: /Score/i });

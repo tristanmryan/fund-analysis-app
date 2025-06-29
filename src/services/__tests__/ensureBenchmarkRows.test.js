@@ -12,12 +12,10 @@ test('existing benchmark row retains its asset class', () => {
       symbol: 'IWF',
       name: 'iShares Russell 1000 Growth',
       assetClass: 'Large Cap Growth',
-      'Asset Class': 'Large Cap Growth',
     },
   ];
   const result = ensureBenchmarkRows(list);
   const fund = result.find(r => r.symbol === 'IWF');
   expect(fund.assetClass).toBe('Large Cap Growth');
-  expect(fund['Asset Class']).toBe('Large Cap Growth');
   expect(fund.isBenchmark).toBe(true);
 });
