@@ -28,7 +28,9 @@ export async function addSnapshot (
   id: string,
   note: string | null = null
 ): Promise<void> {
-  const duplicate = await db.snapshots.filter(r => r.checksum === snap.checksum).first()
+  const duplicate = await db.snapshots
+    .filter(r => r.checksum === snap.checksum && r.deleted !== true)
+    .first()
   if (duplicate) throw new Error('duplicate checksum')
   const row: SnapshotRow = {
     ...snap,
@@ -56,7 +58,9 @@ export async function setActiveSnapshot (id: string): Promise<void> {
 }
 
 export async function getActiveSnapshot (): Promise<SnapshotRow | undefined> {
-  return await db.snapshots.filter(r => r.active === true).first()
+  return await db.snapshots
+    .filter(r => r.active === true && r.deleted !== true)
+    .first()
 }
 
 export async function softDeleteSnapshot (id: string): Promise<void> {
