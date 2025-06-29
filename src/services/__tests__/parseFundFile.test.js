@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import * as XLSX from 'xlsx';
 import parseFundFile from '../parseFundFile';
+import { CURRENT_PERFORMANCE_HEADERS as CUR } from '../../../docs/schema';
 import { recommendedFunds, assetClassBenchmarks } from '../../data/config';
 import { loadAssetClassMap, clearAssetClassMap } from '../dataLoader';
 
@@ -16,7 +17,7 @@ describe('parseFundFile', () => {
 
   test('parses expense, type and asset class', async () => {
     const rows = [
-      ['Symbol', 'Product Name', 'Net Exp Ratio (%)', 'Vehicle Type', 'Standard Deviation - 5 Year'],
+      ['Symbol', CUR[1], CUR[21], 'Vehicle Type', 'Standard Deviation - 5 Year'],
       ['VFIAX', 'Vanguard 500 Index Admiral', '0.04', 'MF', '18.05'],
       ['APDJX', 'Artisan International Small-Mid', '0.12', 'MF', '18.05']
     ];
@@ -32,7 +33,7 @@ describe('parseFundFile', () => {
 
   test('does not throw and sets assetClass', async () => {
     const rows = [
-      ['Symbol', 'Product Name', 'Net Exp Ratio (%)'],
+      ['Symbol', CUR[1], CUR[21]],
       ['VFIAX', 'Vanguard 500 Index Admiral', '0.04']
     ];
     const result = await parseFundFile(rows, { recommendedFunds, assetClassBenchmarks });

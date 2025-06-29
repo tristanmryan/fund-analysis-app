@@ -11,6 +11,7 @@ jest.mock('../../contexts/SnapshotContext', () => ({
   useSnapshot: jest.fn()
 }));
 import parseFundFile from '../../services/parseFundFile';
+import { CURRENT_PERFORMANCE_HEADERS as CUR } from '../../../docs/schema';
 
 global.structuredClone =
   global.structuredClone || ((v) => JSON.parse(JSON.stringify(v)));
@@ -27,7 +28,7 @@ async function loadFunds() {
   const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
   const parsed = await parseFundFile(rows, { recommendedFunds, assetClassBenchmarks });
   const withFlags = parsed.map(f => {
-    const sym = clean(f.Symbol || f['Symbol/CUSIP']);
+    const sym = clean(f.Symbol || f[CUR[0]]);
     let benchmarkForClass = null;
     Object.entries(assetClassBenchmarks).forEach(([ac, b]) => {
       if (clean(b.ticker) === sym) benchmarkForClass = ac;

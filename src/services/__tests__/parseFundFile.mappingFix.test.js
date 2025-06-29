@@ -1,16 +1,17 @@
 import parseFundFile from '../parseFundFile';
+import { CURRENT_PERFORMANCE_HEADERS as CUR } from '../../../docs/schema';
 
 const headers = [
   'Symbol',
   'Fund Name',
-  'Total Return - YTD (%)',
-  'Total Return - 1 Year (%)',
-  'Annualized Total Return - 3 Year (%)',
-  'Annualized Total Return - 5 Year (%)',
-  'Annualized Total Return - 10 Year (%)',
-  'Alpha (Asset Class) - 5 Year',
-  'Up Capture Ratio (Morningstar Standard) - 3 Year',
-  'Down Capture Ratio (Morningstar Standard) - 3 Year'
+  CUR[4],
+  CUR[6],
+  CUR[8],
+  CUR[10],
+  CUR[12],
+  CUR[14],
+  CUR[16],
+  CUR[17]
 ];
 
 const dataRow = [
