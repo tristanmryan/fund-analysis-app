@@ -59,7 +59,7 @@ const FundTile = ({ fund }) => {
         gap: '0.25rem'
       }}
     >
-      <div style={{ fontWeight: 600 }}>{fund['Fund Name']}</div>
+      <div style={{ fontWeight: 600 }}>{fund.fundName}</div>
       <div style={{ fontSize: '0.875rem', color: '#374151' }}>{fund.Symbol}</div>
       <ScoreBadge score={fund.scores?.final || 0} />
       {Array.isArray(fund.tags) && fund.tags.length > 0 && (

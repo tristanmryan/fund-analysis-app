@@ -19,7 +19,7 @@ const FundDetailsModal = ({ fund, onClose }) => {
     }}>
       <div style={{ background: '#fff', borderRadius: '0.5rem', padding: '1.5rem', width: '500px' }}>
         <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem' }}>
-          {fund.Symbol} – {fund['Fund Name']}
+          {fund.Symbol} – {fund.fundName}
         </h3>
         <p style={{ marginBottom: '0.75rem', color: '#6b7280' }}>
           Asset Class: {fund.assetClass} · Score:&nbsp;
@@ -39,9 +39,9 @@ const FundDetailsModal = ({ fund, onClose }) => {
 
         <h4 style={{ marginTop: '1rem', fontWeight: 600 }}>Key Metrics</h4>
         <ul style={{ fontSize: '0.875rem', lineHeight: 1.4 }}>
-          <li>YTD: {fund['YTD'] ?? 'N/A'}%</li>
-          <li>1-Year: {fund['1 Year'] ?? 'N/A'}%</li>
-          <li>3-Year: {fund['3 Year'] ?? 'N/A'}%</li>
+          <li>YTD: {fund.ytd ?? 'N/A'}%</li>
+          <li>1-Year: {fund.oneYear ?? 'N/A'}%</li>
+          <li>3-Year: {fund.threeYear ?? 'N/A'}%</li>
           <li>Sharpe (3Y): {fund.metrics?.sharpeRatio3Y ?? 'N/A'}</li>
           <li>Std Dev (3Y): {fund.metrics?.stdDev3Y ?? 'N/A'}</li>
           <li>Expense Ratio: {fund.metrics?.expenseRatio ?? 'N/A'}%</li>

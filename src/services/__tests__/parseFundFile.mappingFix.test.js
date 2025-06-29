@@ -30,11 +30,11 @@ const dataRow = [
 test('correctly maps annualized returns and capture ratios', async () => {
   const result = await parseFundFile([headers, dataRow]);
   const row = result[0];
-  expect(row.YTD).toBeCloseTo(9.2);
-  expect(row['1 Year']).toBeCloseTo(7.83);
-  expect(row['3 Year']).toBeCloseTo(5.38911);
-  expect(row['5 Year']).toBeCloseTo(5.78925);
-  expect(row['10 Year']).toBeCloseTo(4.95502);
+  expect(row.ytd).toBeCloseTo(9.2);
+  expect(row.oneYear).toBeCloseTo(7.83);
+  expect(row.threeYear).toBeCloseTo(5.38911);
+  expect(row.fiveYear).toBeCloseTo(5.78925);
+  expect(row.tenYear).toBeCloseTo(4.95502);
   expect(row.alpha5Y).toBeCloseTo(0.34);
   expect(row.upCapture3Y).toBeCloseTo(102.5);
   expect(row.downCapture3Y).toBeCloseTo(98.7);

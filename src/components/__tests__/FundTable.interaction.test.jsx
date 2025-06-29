@@ -5,8 +5,8 @@ import FundTable from '../FundTable.jsx';
 test('row click calls handler', async () => {
   const fund = {
     Symbol: 'XYZ',
-    'Fund Name': 'XYZ Fund',
-    'Asset Class': 'Bond',
+    fundName: 'XYZ Fund',
+    assetClass: 'Bond',
     scores: { final: 60 },
     YTD: 1,
     '1 Year': 5,

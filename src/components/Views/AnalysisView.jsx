@@ -123,7 +123,7 @@ const AnalysisView = ({ funds = [], reviewCandidates = [], onSelectClass }) => {
               <div key={i} className={`border rounded p-4 ${fund.isRecommended ? 'bg-red-50' : 'bg-white'}`}>
                 <div className="flex justify-between mb-2">
                   <div>
-                    <h3 className="font-bold text-lg">{fund['Fund Name']}</h3>
+                    <h3 className="font-bold text-lg">{fund.fundName}</h3>
                     <p className="text-sm text-gray-600">{fund.Symbol} | {fund.assetClass}{fund.isRecommended && (
                       <span className="ml-1 text-red-600 font-bold">(Recommended Fund)</span>
                     )}</p>
@@ -139,9 +139,9 @@ const AnalysisView = ({ funds = [], reviewCandidates = [], onSelectClass }) => {
                   </ul>
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-sm mt-2">
-                  <div><span className="text-gray-600">1Y Return:</span> <strong>{fmtPct(fund.oneYear ?? fund['1 Year'])}</strong></div>
-                  <div><span className="text-gray-600">Sharpe:</span> <strong>{fmtNumber(fund.sharpe ?? fund['Sharpe Ratio'])}</strong></div>
-                  <div><span className="text-gray-600">Expense:</span> <strong>{fmtPct(fund.expense ?? fund['Net Expense Ratio'])}</strong></div>
+                  <div><span className="text-gray-600">1Y Return:</span> <strong>{fmtPct(fund.oneYear)}</strong></div>
+                  <div><span className="text-gray-600">Sharpe:</span> <strong>{fmtNumber(fund.sharpe3y)}</strong></div>
+                  <div><span className="text-gray-600">Expense:</span> <strong>{fmtPct(fund.expenseRatio)}</strong></div>
                 </div>
               </div>
             ))}

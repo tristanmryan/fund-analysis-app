@@ -17,7 +17,7 @@ const sampleFunds = [
 ];
 
 const reviewCandidates = [
-  { 'Fund Name': 'Test Fund', Symbol: 'A', assetClass: 'Large Cap', scores: { final: 45 }, reviewReasons: ['Low score'] }
+  { fundName: 'Test Fund', Symbol: 'A', assetClass: 'Large Cap', scores: { final: 45 }, reviewReasons: ['Low score'] }
 ];
 
 test('gap filter and row click work', async () => {

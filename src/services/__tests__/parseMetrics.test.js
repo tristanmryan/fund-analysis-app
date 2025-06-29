@@ -15,6 +15,6 @@ test('BUYZ metrics parsed correctly', async () => {
   expect(typeof buyz.ytd).toBe('number');
   expect(buyz.ytd).toBeCloseTo(5.31, 2);
   expect(buyz.ytd).not.toBeCloseTo(buyz.oneYear ?? 0, 2);
-  expect(buyz['Net Expense Ratio']).toBeCloseTo(0.5);
-  expect(typeof buyz['3 Year']).toBe('number');
+  expect(buyz.expenseRatio).toBeCloseTo(0.5);
+  expect(typeof buyz.threeYear).toBe('number');
 });

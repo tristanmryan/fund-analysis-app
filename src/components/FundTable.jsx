@@ -3,6 +3,7 @@ import TagList from './TagList.jsx';
 import BenchmarkRow from './BenchmarkRow.jsx';
 import { getScoreColor, getScoreLabel } from '../utils/scoreTags';
 import { fmtPct, fmtNumber } from '../utils/formatters';
+import { LABELS } from '../constants/labels';
 import SparkLine from './SparkLine';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -32,18 +33,18 @@ const ScoreBadge = ({ score }) => {
 
 const columns = [
   { key: 'Symbol', label: 'Symbol', numeric: false },
-  { key: 'Fund Name', label: 'Fund Name', numeric: false },
+  { key: 'fundName', label: LABELS.FUND_NAME, numeric: false },
   { key: 'Type', label: 'Type', numeric: false, accessor: f => (f.isBenchmark ? 'Benchmark' : f.isRecommended ? 'Recommended' : '') },
   { key: 'Score', label: 'Score', numeric: true, accessor: f => f.score ?? f.scores?.final },
   { key: 'Delta', label: '\u0394', numeric: true },
   { key: 'Trend', label: 'Trend', numeric: false },
   { key: 'YTD', label: 'YTD', numeric: true, accessor: f => f.ytd ?? f.YTD },
-  { key: '1Y', label: '1Y', numeric: true, accessor: f => f.oneYear ?? f['1 Year'] },
-  { key: '3Y', label: '3Y', numeric: true, accessor: f => f.threeYear ?? f['3 Year'] },
-  { key: '5Y', label: '5Y', numeric: true, accessor: f => f.fiveYear ?? f['5 Year'] },
-  { key: 'Sharpe', label: 'Sharpe', numeric: true, accessor: f => f.sharpe ?? f['Sharpe Ratio'] },
-  { key: 'Std Dev (5Y)', label: 'Std Dev (5Y)', numeric: true, accessor: f => f.stdDev5y ?? f['Standard Deviation'] },
-  { key: 'Expense', label: 'Expense', numeric: true, accessor: f => f.expense ?? f['Net Expense Ratio'] },
+  { key: '1Y', label: '1Y', numeric: true, accessor: f => f.oneYear },
+  { key: '3Y', label: '3Y', numeric: true, accessor: f => f.threeYear },
+  { key: '5Y', label: '5Y', numeric: true, accessor: f => f.fiveYear },
+  { key: 'Sharpe', label: 'Sharpe', numeric: true, accessor: f => f.sharpe3y },
+  { key: 'Std Dev (5Y)', label: 'Std Dev (5Y)', numeric: true, accessor: f => f.stdDev5y },
+  { key: 'Expense', label: 'Expense', numeric: true, accessor: f => f.expenseRatio },
   { key: 'Tags', label: 'Tags', numeric: false, accessor: f => f.tags }
 ];
 
@@ -121,7 +122,7 @@ const FundTable = ({ funds = [], rows, benchmark, onRowClick = () => {}, deltas 
             onClick={() => onRowClick(fund)}
           >
             <td style={{ padding: '0.5rem' }}>{fund.Symbol}</td>
-            <td style={{ padding: '0.5rem' }}>{fund['Fund Name']}</td>
+            <td style={{ padding: '0.5rem' }}>{fund.fundName}</td>
             <td style={{ padding: '0.5rem' }}>
               {fund.isBenchmark ? 'Benchmark' : fund.isRecommended ? 'Recommended' : ''}
             </td>
@@ -146,25 +147,25 @@ const FundTable = ({ funds = [], rows, benchmark, onRowClick = () => {}, deltas 
               <SparkLine data={spark[fund.Symbol] ?? []} />
             </td>
             <td style={{ padding: '0.5rem', textAlign: 'right' }}>
-              {fmtPct(fund.ytd ?? fund.YTD)}
+              {fmtPct(fund.ytd)}
             </td>
             <td style={{ padding: '0.5rem', textAlign: 'right' }}>
-              {fmtPct(fund.oneYear ?? fund['1 Year'])}
+              {fmtPct(fund.oneYear)}
             </td>
             <td style={{ padding: '0.5rem', textAlign: 'right' }}>
-              {fmtPct(fund.threeYear ?? fund['3 Year'])}
+              {fmtPct(fund.threeYear)}
             </td>
             <td style={{ padding: '0.5rem', textAlign: 'right' }}>
-              {fmtPct(fund.fiveYear ?? fund['5 Year'])}
+              {fmtPct(fund.fiveYear)}
             </td>
             <td style={{ padding: '0.5rem', textAlign: 'right' }}>
-              {fmtNumber(fund.sharpe ?? fund['Sharpe Ratio'])}
+              {fmtNumber(fund.sharpe3y)}
             </td>
             <td style={{ padding: '0.5rem', textAlign: 'right' }}>
-              {fmtPct(fund.stdDev5y ?? fund['Standard Deviation'])}
+              {fmtPct(fund.stdDev5y)}
             </td>
             <td style={{ padding: '0.5rem', textAlign: 'right' }}>
-              {fmtPct(fund.expense ?? fund['Net Expense Ratio'])}
+              {fmtPct(fund.expenseRatio)}
             </td>
             <td style={{ padding: '0.5rem' }}>
               {Array.isArray(fund.tags) && fund.tags.length > 0 ? (

@@ -125,35 +125,19 @@ const METRIC_WEIGHTS = {
     // Map the column names from your Excel file to our metric names
     // Note: Some metrics might be in different columns or missing
     return {
-      ytd: parseMetricValue(fundData['YTD']),
-      oneYear: parseMetricValue(fundData['1 Year']),
-      threeYear: parseMetricValue(fundData['3 Year']),
-      fiveYear: parseMetricValue(fundData['5 Year']),
-      tenYear: parseMetricValue(fundData['10 Year']),
-      sharpeRatio3Y: parseMetricValue(fundData['Sharpe Ratio']),
-      stdDev3Y: parseMetricValue(
-        fundData['3Y Std Dev'] ?? fundData['Standard Deviation - 3 Year']
-      ),
-      stdDev5Y: parseMetricValue(
-        fundData['5Y Std Dev'] ??
-        fundData['Standard Deviation - 5 Year'] ??
-        fundData['Standard Deviation']
-      ),
-      upCapture3Y: parseMetricValue(
-        fundData['Up Capture Ratio - 3Y'] ??
-        fundData[CUR[16]] ??
-        fundData['Up Capture Ratio']
-      ),
-      downCapture3Y: parseMetricValue(
-        fundData['Down Capture Ratio - 3Y'] ??
-        fundData[CUR[17]] ??
-        fundData['Down Capture Ratio']
-      ),
-      alpha5Y: parseMetricValue(
-        fundData['Alpha - 5Y'] ?? fundData[CUR[14]] ?? fundData['Alpha']
-      ),
-      expenseRatio: parseMetricValue(fundData['Net Expense Ratio']),
-      managerTenure: parseMetricValue(fundData['Manager Tenure'])
+      ytd: parseMetricValue(fundData.ytd),
+      oneYear: parseMetricValue(fundData.oneYear),
+      threeYear: parseMetricValue(fundData.threeYear),
+      fiveYear: parseMetricValue(fundData.fiveYear),
+      tenYear: parseMetricValue(fundData.tenYear),
+      sharpeRatio3Y: parseMetricValue(fundData.sharpe3y),
+      stdDev3Y: parseMetricValue(fundData.stdDev3y),
+      stdDev5Y: parseMetricValue(fundData.stdDev5y),
+      upCapture3Y: parseMetricValue(fundData.upCapture3Y),
+      downCapture3Y: parseMetricValue(fundData.downCapture3Y),
+      alpha5Y: parseMetricValue(fundData.alpha5Y),
+      expenseRatio: parseMetricValue(fundData.expenseRatio),
+      managerTenure: parseMetricValue(fundData.managerTenure)
     };
   }
   
@@ -275,7 +259,7 @@ const METRIC_WEIGHTS = {
     // Group funds by asset class and ignore rows explicitly marked as Benchmark
     const fundsByClass = {};
     funds.forEach(fund => {
-      const assetClass = fund.assetClass || fund['Asset Class'] || 'Unknown';
+      const assetClass = fund.assetClass || 'Unknown';
       if (!fundsByClass[assetClass]) {
         fundsByClass[assetClass] = [];
       }

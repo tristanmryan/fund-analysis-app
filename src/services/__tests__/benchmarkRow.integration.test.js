@@ -30,5 +30,5 @@ test('Large Cap Growth benchmark included with metrics', async () => {
   const bench = scored.find(f => f.isBenchmark && f.benchmarkForClass === 'Large Cap Growth');
   expect(bench).toBeDefined();
   expect(bench.Symbol).toBe('IWF');
-  expect(typeof bench['1 Year']).toBe('number');
+  expect(typeof bench.oneYear).toBe('number');
 });
