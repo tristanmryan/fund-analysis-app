@@ -4,6 +4,7 @@ import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
 import { recommendedFunds, assetClassBenchmarks } from '../src/data/config.js';
 import { calculateScores } from '../src/services/scoring.js';
+import { CURRENT_PERFORMANCE_HEADERS as CUR } from '../docs/schema'
 
 function loadAssetClassMapSync() {
   const csv = fs.readFileSync(path.resolve('data/FundListAssetClasses.csv'), 'utf8');
@@ -75,12 +76,12 @@ async function main() {
       });
       return obj;
     })
-    .filter(r => r.Symbol || r['Symbol/CUSIP']);
+    .filter(r => r.Symbol || r[CUR[0]]);
 
   stageLogs.push({ stage: 'parseFundFile', module: 'parseFundFile', before: rows.length - 1, after: parsed.length, benchmarks: 0 });
 
   let flagged = parsed.map(f => {
-    const sym = clean(f.Symbol || f['Symbol/CUSIP']);
+    const sym = clean(f.Symbol || f[CUR[0]]);
     const rec = recommendedFunds.find(r => clean(r.symbol) === sym);
     let isBenchmark = false;
     let benchmarkForClass = null;

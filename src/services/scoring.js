@@ -6,6 +6,7 @@
  */
 
 import { getScoreColor, getScoreLabel } from '../utils/scoreTags';
+import { CURRENT_PERFORMANCE_HEADERS as CUR } from '../../docs/schema'
 
 // Metric weights configuration - these match your Word document
 const METRIC_WEIGHTS = {
@@ -140,16 +141,16 @@ const METRIC_WEIGHTS = {
       ),
       upCapture3Y: parseMetricValue(
         fundData['Up Capture Ratio - 3Y'] ??
-        fundData['Up Capture Ratio (Morningstar Standard) - 3 Year'] ??
+        fundData[CUR[16]] ??
         fundData['Up Capture Ratio']
       ),
       downCapture3Y: parseMetricValue(
         fundData['Down Capture Ratio - 3Y'] ??
-        fundData['Down Capture Ratio (Morningstar Standard) - 3 Year'] ??
+        fundData[CUR[17]] ??
         fundData['Down Capture Ratio']
       ),
       alpha5Y: parseMetricValue(
-        fundData['Alpha - 5Y'] ?? fundData['Alpha (Asset Class) - 5 Year'] ?? fundData['Alpha']
+        fundData['Alpha - 5Y'] ?? fundData[CUR[14]] ?? fundData['Alpha']
       ),
       expenseRatio: parseMetricValue(fundData['Net Expense Ratio']),
       managerTenure: parseMetricValue(fundData['Manager Tenure'])
