@@ -12,7 +12,7 @@ import {
   getScoreColor,
   getScoreLabel
 } from './services/scoring';
-import dataStore from './services/dataStore';
+import dataStore, { savePref, getPref } from './services/dataStore';
 import { loadAssetClassMap } from './services/dataLoader';
 import { fmtPct, fmtNumber } from './utils/formatters';
 import FundScores from './routes/FundScores';
@@ -76,17 +76,19 @@ const App = () => {
   const [assetClassBenchmarks, setAssetClassBenchmarks] = useState({});
   const [uploadOpen, setUploadOpen] = useState(false);
 
-  // Load history snapshots from localStorage on startup
+  // Load history snapshots from storage on startup
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem('ls_history') || '[]');
-    if (stored.length > 0) {
-      setHistorySnapshots(stored);
-    }
+    (async () => {
+      const stored = await getPref('ls_history', []);
+      if (stored.length > 0) {
+        setHistorySnapshots(stored);
+      }
+    })();
   }, [setHistorySnapshots]);
 
-  // Persist history snapshots to localStorage whenever they change
+  // Persist history snapshots whenever they change
   useEffect(() => {
-    localStorage.setItem('ls_history', JSON.stringify(historySnapshots));
+    savePref('ls_history', historySnapshots);
   }, [historySnapshots]);
 
   // Initialize configuration

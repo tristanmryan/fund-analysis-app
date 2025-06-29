@@ -8,6 +8,10 @@
 const DB_NAME = 'LightshipFundAnalysis';
 const DB_VERSION = 1;
 
+if (typeof globalThis.structuredClone !== 'function') {
+  globalThis.structuredClone = obj => JSON.parse(JSON.stringify(obj));
+}
+
 // Object store names
 const STORES = {
   SNAPSHOTS: 'snapshots',
@@ -16,39 +20,37 @@ const STORES = {
   AUDIT_LOG: 'auditLog'
 };
 
-// Initialize database connection and fallback flag
+// Initialize database connection
 let db = null;
-let fallback = false;
 
 /**
  * Open IndexedDB connection and create stores if needed
  * @returns {Promise<IDBDatabase>} Database connection
  */
 async function openDB() {
-  if (fallback) return null;
   if (db) return db;
 
-  if (typeof window === 'undefined' || !window.indexedDB) {
-    fallback = true;
-    console.warn('IndexedDB not available, using localStorage fallback');
-    return null;
+  if (!globalThis.indexedDB) {
+    try {
+      await import('fake-indexeddb/auto');
+    } catch (err) {
+      throw new Error('IndexedDB not available');
+    }
   }
 
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     let request;
     try {
-      request = window.indexedDB.open(DB_NAME, DB_VERSION);
+      request = globalThis.indexedDB.open(DB_NAME, DB_VERSION);
     } catch (err) {
       console.error('Failed to open database:', err);
-      fallback = true;
-      resolve(null);
+      reject(err);
       return;
     }
 
     request.onerror = () => {
       console.error('Failed to open database:', request.error);
-      fallback = true;
-      resolve(null);
+      reject(request.error);
     };
 
     request.onsuccess = () => {
@@ -96,7 +98,7 @@ export async function initializeObjectStore(database) {
   if (database.objectStoreNames.contains(STORES.SNAPSHOTS)) return;
   database.close();
   return new Promise((resolve, reject) => {
-    const req = window.indexedDB.open(DB_NAME, database.version + 1);
+    const req = globalThis.indexedDB.open(DB_NAME, database.version + 1);
     req.onupgradeneeded = e => {
       e.target.result.createObjectStore(
         STORES.SNAPSHOTS,
@@ -127,32 +129,6 @@ function generateSnapshotId(date) {
  */
 export async function saveSnapshot(snapshotData) {
   const database = await openDB();
-
-  // Fallback to localStorage when IndexedDB unavailable
-  if (fallback || !database) {
-    const snapshotDate = snapshotData.date || new Date().toISOString();
-    const id = generateSnapshotId(snapshotDate);
-    const snapshot = {
-      id,
-      date: snapshotDate,
-      funds: snapshotData.funds || [],
-      metadata: {
-        uploadDate: new Date().toISOString(),
-        uploadedBy: snapshotData.uploadedBy || 'user',
-        totalFunds: snapshotData.funds?.length || 0,
-        recommendedFunds: snapshotData.funds?.filter(f => f.isRecommended).length || 0,
-        fileName: snapshotData.fileName,
-        ...snapshotData.metadata
-      },
-      classSummaries: snapshotData.classSummaries || {},
-      reviewCandidates: snapshotData.reviewCandidates || []
-    };
-
-    const stored = JSON.parse(localStorage.getItem('lightship-snapshots') || '[]');
-    const filtered = stored.filter(s => s.id !== id);
-    localStorage.setItem('lightship-snapshots', JSON.stringify([...filtered, snapshot]));
-    return id;
-  }
   
   // Generate ID based on date
   const snapshotDate = snapshotData.date || new Date().toISOString();
@@ -207,13 +183,6 @@ export async function saveSnapshot(snapshotData) {
  */
 export async function getAllSnapshots() {
   try {
-    if (fallback) {
-      const stored = JSON.parse(
-        localStorage.getItem('lightship-snapshots') || '[]'
-      );
-      stored.sort((a, b) => new Date(b.date) - new Date(a.date));
-      return stored;
-    }
 
     let database;
     try {
@@ -253,11 +222,6 @@ export async function getSnapshot(snapshotId) {
   try {
     const database = await openDB();
 
-    if (fallback || !database) {
-      const stored = JSON.parse(localStorage.getItem('lightship-snapshots') || '[]');
-      return stored.find(s => s.id === snapshotId);
-    }
-
     return await new Promise((resolve, reject) => {
       const transaction = database.transaction([STORES.SNAPSHOTS], 'readonly');
       const store = transaction.objectStore(STORES.SNAPSHOTS);
@@ -285,13 +249,6 @@ export async function getSnapshot(snapshotId) {
 export async function deleteSnapshot(snapshotId) {
   try {
     const database = await openDB();
-
-    if (fallback || !database) {
-      const stored = JSON.parse(localStorage.getItem('lightship-snapshots') || '[]');
-      const filtered = stored.filter(s => s.id !== snapshotId);
-      localStorage.setItem('lightship-snapshots', JSON.stringify(filtered));
-      return;
-    }
 
     if (!database.objectStoreNames.contains(STORES.SNAPSHOTS)) {
       await initializeObjectStore(database);
@@ -444,6 +401,16 @@ export async function getPreference(key) {
       reject(request.error);
     };
   });
+}
+
+// Lightweight helpers around preferences
+export async function savePref(key, value) {
+  await savePreference(key, value);
+}
+
+export async function getPref(key, defaultValue) {
+  const val = await getPreference(key);
+  return val ?? defaultValue;
 }
 
 /**
@@ -725,6 +692,8 @@ const dataStoreApi = {
   getConfig,
   savePreference,
   getPreference,
+  savePref,
+  getPref,
   getAuditLog,
   compareSnapshots,
   exportAllData,
