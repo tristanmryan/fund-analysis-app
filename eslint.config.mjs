@@ -5,6 +5,14 @@ import pluginReact from "eslint-plugin-react";
 
 export default [
   js.configs.recommended,
-  { files: ["**/*.{js,mjs,cjs,jsx}"], languageOptions: { globals: globals.browser } },
+  {
+    files: ["**/*.{js,mjs,cjs,jsx}"],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.es2020,
+      },
+    },
+  },
   pluginReact.configs.flat.recommended,
 ];
