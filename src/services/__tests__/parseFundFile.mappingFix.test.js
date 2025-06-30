@@ -1,5 +1,5 @@
 import parseFundFile from '../parseFundFile';
-import { CURRENT_PERFORMANCE_HEADERS as CUR } from '../../../docs/schema';
+import { CURRENT_PERFORMANCE_HEADERS as CUR } from '@/docs/schema';
 
 const headers = [
   'Symbol',

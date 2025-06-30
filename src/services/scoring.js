@@ -6,7 +6,7 @@
  */
 
 import { getScoreColor, getScoreLabel } from '../utils/scoreTags';
-import { CURRENT_PERFORMANCE_HEADERS as CUR } from '../../docs/schema'
+import { CURRENT_PERFORMANCE_HEADERS as CUR } from '@/docs/schema'
 
 // Metric weights configuration - these match your Word document
 const METRIC_WEIGHTS = {

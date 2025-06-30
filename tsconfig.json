@@ -12,7 +12,11 @@
     "jsx": "react-jsx",
     "lib": ["es2020", "dom"],
     "types": ["node", "jest"]
-    ,"noEmit": true
+    ,"noEmit": true,
+    "baseUrl": "src",
+    "paths": {
+      "@/*": ["*"]
+    }
   },
   "include": ["src/**/*", "scripts/**/*"],
   "exclude": ["node_modules"]

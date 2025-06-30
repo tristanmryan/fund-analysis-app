@@ -1,3 +1,4 @@
+/* eslint-env es2020, browser */
 // src/services/dataStore.js
 
 /**
