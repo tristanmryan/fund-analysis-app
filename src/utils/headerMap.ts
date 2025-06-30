@@ -4,7 +4,6 @@ export type NormalizedRow = Partial<FundMetrics>
 
 const HEADER_MAP: Record<string, keyof FundMetrics> = {
   [CURRENT_PERFORMANCE_HEADERS[0]]: 'symbolCusip',
-  [HISTORICAL_PERFORMANCE_HEADERS[0]]: 'symbolCusip',
   [CURRENT_PERFORMANCE_HEADERS[1]]: 'productName',
   [CURRENT_PERFORMANCE_HEADERS[2]]: 'fundFamilyName',
   [CURRENT_PERFORMANCE_HEADERS[3]]: 'starRating',
