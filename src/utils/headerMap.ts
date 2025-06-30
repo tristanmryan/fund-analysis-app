@@ -1,4 +1,4 @@
-import { CURRENT_PERFORMANCE_HEADERS, HISTORICAL_PERFORMANCE_HEADERS, type FundMetrics, type KnownCsvHeader } from '../../docs/schema'
+import { CURRENT_PERFORMANCE_HEADERS, HISTORICAL_PERFORMANCE_HEADERS, type FundMetrics, type KnownCsvHeader } from '@/docs/schema'
 
 export type NormalizedRow = Partial<FundMetrics>
 

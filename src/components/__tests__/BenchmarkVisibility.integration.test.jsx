@@ -11,7 +11,7 @@ jest.mock('../../contexts/SnapshotContext', () => ({
   useSnapshot: jest.fn()
 }));
 import parseFundFile from '../../services/parseFundFile';
-import { CURRENT_PERFORMANCE_HEADERS as CUR } from '../../../docs/schema';
+import { CURRENT_PERFORMANCE_HEADERS as CUR } from '@/docs/schema';
 
 global.structuredClone =
   global.structuredClone || ((v) => JSON.parse(JSON.stringify(v)));

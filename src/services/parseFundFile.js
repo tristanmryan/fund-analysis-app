@@ -1,5 +1,5 @@
 import { loadAssetClassMap, lookupAssetClass } from './dataLoader';
-import { CURRENT_PERFORMANCE_HEADERS as CUR } from '../../docs/schema';
+import { CURRENT_PERFORMANCE_HEADERS as CUR } from '@/docs/schema';
 
 /**
  * Parse uploaded fund CSV/XLSX rows into normalized fund objects.

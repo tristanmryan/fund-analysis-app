@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import * as XLSX from 'xlsx';
 import parseFundFile from '../parseFundFile';
-import { CURRENT_PERFORMANCE_HEADERS as CUR } from '../../../docs/schema';
+import { CURRENT_PERFORMANCE_HEADERS as CUR } from '@/docs/schema';
 import { recommendedFunds, assetClassBenchmarks } from '../../data/config';
 import { loadAssetClassMap, clearAssetClassMap } from '../dataLoader';
 

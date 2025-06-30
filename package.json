@@ -40,6 +40,11 @@
     "eject": "react-scripts eject",
     "audit:benchmarks": "tsx scripts/auditBenchmarks.js"
   },
+  "jest": {
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1"
+    }
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
