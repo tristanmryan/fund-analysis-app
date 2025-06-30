@@ -80,7 +80,7 @@ Frontend built with React and XLSX.js for Excel parsing
 
 Data is loaded by uploading one file per month: FundPerformance.xlsx
 
-Recommended fund list and benchmark mappings are stored in a local file or localStorage
+Recommended fund list and benchmark mappings are stored in **IndexedDB** (via `dataStore`)
 
 The app has 3 main tabs:
 
@@ -247,7 +247,7 @@ Files to modify: Create src/services/dataStore.js
 Implement:
 
 IndexedDB setup for historical snapshots
-Migration from current localStorage config
+ Migration from legacy localStorage config (🗸 completed Jun 2025)
 Snapshot comparison functions
 Data validation layer
 

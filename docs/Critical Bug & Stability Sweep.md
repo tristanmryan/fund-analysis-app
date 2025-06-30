@@ -1,3 +1,7 @@
+> **Note (Jun 2025):**  
+> The code snippets below refer to `localStorage` for historical context.  
+> The app now persists all data and preferences in **IndexedDB** via `src/services/dataStore.js`.
+
 # Lightship Fund Analysis — Bug & Stability Audit
 💡 Run this check on the repo *exactly as it exists now* (don’t assume any other agent’s fixes).
 
