@@ -6,7 +6,7 @@ import { loadAssetClassMap, lookupAssetClass } from '../services/dataLoader.js'
 import {
   CURRENT_PERFORMANCE_HEADERS as CUR,
   HISTORICAL_PERFORMANCE_HEADERS as HIST,
-} from '@/docs/schema';
+} from '../docs/schema';
 
 export const COLUMN_MAP: Record<string, keyof NormalisedRow> = {
   'Symbol': 'symbol',
