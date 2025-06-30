@@ -35,7 +35,6 @@ export const COLUMN_MAP: Record<string, keyof NormalisedRow> = {
   [CUR[15]]: 'stdDev5y',
   'Std Dev 5Y (%)': 'stdDev5y',
   [CUR[14]]: 'alpha5y',
-  [CUR[14]]: 'alpha5y',
   'Alpha 5Y (%)': 'alpha5y',
   'Net Expense Ratio (%)': 'netExpenseRatio',
   [CUR[21]]: 'netExpenseRatio',
