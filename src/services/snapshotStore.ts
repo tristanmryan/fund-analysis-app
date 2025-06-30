@@ -40,15 +40,21 @@ export async function addSnapshot(
   id: string,
   note: string | null = null
 ): Promise<string> {
-  /* 1 · Fast lookup for duplicate checksum ------------------------------ */
+  // 1 · Fast lookup for duplicate checksum ------------------------------
   const existing = await db.snapshots
     .where('checksum')
     .equals(snap.checksum)
     .first();
 
   if (existing) {
-    return existing.id;                  // already saved – hand id back
+    /* NEW — undelete & update timestamp so it’s visible again */
+    await db.snapshots.update(existing.id, {
+      deleted: false,
+      uploaded: new Date().toISOString(),
+    });
+    return existing.id;
   }
+
 
   /* 2 · No duplicate – insert new row ----------------------------------- */
   await db.snapshots.add({
