@@ -38,9 +38,9 @@ function ensureBenchmarkRows(list = []) {
         oneYear: null,
         threeYear: null,
         fiveYear: null,
-        sharpe: null,
-        stdDev5y: null,
-        expense: null
+        sharpe3Y: null,
+        stdDev5Y: null,
+        expenseRatio: null
       });
     } else {
       const row = map.get(key);
