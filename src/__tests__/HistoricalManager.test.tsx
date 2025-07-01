@@ -6,9 +6,9 @@ global.structuredClone =
 import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import React from 'react'
-import HistoricalManager from '../routes/HistoricalManager'
-import { SnapshotProvider } from '../contexts/SnapshotContext'
-import { addSnapshot } from '../services/snapshotStore'
+import HistoricalManager from '@/routes/HistoricalManager'
+import { SnapshotProvider } from '@/contexts/SnapshotContext'
+import { addSnapshot } from '@/services/snapshotStore'
 
 const baseSnap = {
   rows: [{ symbol: 'A' }],
@@ -18,7 +18,7 @@ const baseSnap = {
 
 describe('HistoricalManager', () => {
   beforeEach(async () => {
-    const db = (await import('../services/snapshotStore')).default
+    const db = (await import('@/services/snapshotStore')).default
     await db.delete()
     await db.open()
     await addSnapshot(baseSnap as any, '2024-01')
@@ -34,7 +34,7 @@ describe('HistoricalManager', () => {
   })
 
   test('filters deleted snapshots', async () => {
-    const { softDeleteSnapshot, addSnapshot } = await import('../services/snapshotStore')
+    const { softDeleteSnapshot, addSnapshot } = await import('@/services/snapshotStore')
     const altSnap = { ...baseSnap, checksum: 'y' }
     await addSnapshot(altSnap as any, '2024-02')
     await softDeleteSnapshot('2024-02')

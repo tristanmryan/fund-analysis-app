@@ -1,5 +1,5 @@
 import React from 'react';
-import { fmtPct, fmtNumber } from '../utils/formatters';
+import { fmtPct, fmtNumber } from '@/utils/formatters';
 import ScoreBadge from '@/components/ScoreBadge';
 
 const BenchmarkRow = ({ fund }) => {

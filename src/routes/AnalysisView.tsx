@@ -1,7 +1,7 @@
 import React from 'react'
 import { Box, Tooltip, Typography } from '@mui/material'
-import { useSnapshot } from '../contexts/SnapshotContext'
-import db from '../services/snapshotStore'
+import { useSnapshot } from '@/contexts/SnapshotContext'
+import db from '@/services/snapshotStore'
 
 export function bucket (score: number | null) {
   if (score == null) return 'blank'

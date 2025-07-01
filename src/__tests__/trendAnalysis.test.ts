@@ -4,8 +4,8 @@ import 'fake-indexeddb/auto'
 (global as any).structuredClone =
   (global as any).structuredClone || ((v: any) => JSON.parse(JSON.stringify(v)))
 
-import db, { addSnapshot } from '../services/snapshotStore'
-import { getScoreSeries, delta } from '../services/trendAnalysis'
+import db, { addSnapshot } from '@/services/snapshotStore'
+import { getScoreSeries, delta } from '@/services/trendAnalysis'
 
 describe('trendAnalysis', () => {
   beforeEach(async () => {

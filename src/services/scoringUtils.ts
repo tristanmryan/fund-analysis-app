@@ -1,4 +1,4 @@
-import { ParsedSnapshot } from '../utils/parseFundFile'
+import { ParsedSnapshot } from '@/utils/parseFundFile'
 
 const W = { ytd:0.05, one:0.10, three:0.20, five:0.15,
             sharpe:0.25, std:-0.10, exp:-0.10, tenure:0.05 }

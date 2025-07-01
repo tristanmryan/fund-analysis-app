@@ -1,4 +1,4 @@
-import { applyTagRules } from '../tagEngine';
+import { applyTagRules } from '@/services/tagEngine';
 
 describe('tag engine rules', () => {
   const peer1 = {

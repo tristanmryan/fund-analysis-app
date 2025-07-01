@@ -1,4 +1,4 @@
-import { bucket } from '../routes/AnalysisView'
+import { bucket } from '@/routes/AnalysisView'
 
 describe('bucket', () => {
   test('categorises scores', () => {

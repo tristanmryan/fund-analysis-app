@@ -3,7 +3,7 @@
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { LABELS } from '../constants/labels';
+import { LABELS } from '@/constants/labels';
 
 /**
  * Export an array of fund objects to an Excel (.xlsx) file.

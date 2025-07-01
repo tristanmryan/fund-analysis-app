@@ -3,8 +3,8 @@ import path from 'path';
 import * as XLSX from 'xlsx';
 import parseFundFile from '@/utils/parseFundFile';
 import { CURRENT_PERFORMANCE_HEADERS as CUR } from '@/docs/schema';
-import { recommendedFunds, assetClassBenchmarks } from '../../data/config';
-import { loadAssetClassMap, clearAssetClassMap } from '../dataLoader';
+import { recommendedFunds, assetClassBenchmarks } from '@/data/config';
+import { loadAssetClassMap, clearAssetClassMap } from '@/services/dataLoader';
 
 describe('parseFundFile', () => {
   beforeAll(async () => {

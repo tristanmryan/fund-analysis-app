@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
-import BenchmarkRow from '../BenchmarkRow.jsx';
-import { fmtPct, fmtNumber } from '../../utils/formatters';
+import BenchmarkRow from '@/components/BenchmarkRow.jsx';
+import { fmtPct, fmtNumber } from '@/utils/formatters';
 
 const benchmark = { Symbol: 'IWF', fundName: 'Index', ytd: 1, oneYear: 2, threeYear: 3, fiveYear: 4, sharpe3Y: 1, stdDev5Y: 10, expenseRatio: 0.2 };
 const fund = { Symbol: 'AAA', fundName: 'Fund A', ytd: null, oneYear: 5, threeYear: null, fiveYear: 7, sharpe3Y: 0.8, stdDev5Y: 12, expenseRatio: 0.3 };

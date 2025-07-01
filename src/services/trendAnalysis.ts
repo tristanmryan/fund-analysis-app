@@ -1,5 +1,5 @@
 import db from './snapshotStore'
-import { NormalisedRow } from '../utils/parseFundFile'
+import { NormalisedRow } from '@/utils/parseFundFile'
 
 /** Return score series (sorted oldest->newest) for given symbol, max N points */
 export async function getScoreSeries (symbol: string, limit = 6):

@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import HeatMapGrid from '../components/HeatMapGrid.jsx';
+import HeatMapGrid from '@/components/HeatMapGrid.jsx';
 
 const rows = [
   { assetClass: 'Large Cap', benchmarkScore: 60, medianPeerScore: 50, gap: 10 }

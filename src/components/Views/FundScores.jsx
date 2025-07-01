@@ -1,1 +1,1 @@
-export { default } from '../../routes/FundScores'
+export { default } from '@/routes/FundScores'

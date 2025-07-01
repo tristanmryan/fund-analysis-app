@@ -1,8 +1,8 @@
 import React from 'react';
-import { getScoreColor } from '../../services/scoring';
+import { getScoreColor } from '@/services/scoring';
 import ScoreBadge from '@/components/ScoreBadge';
 import { LayoutGrid } from 'lucide-react';
-import TagList from '../TagList.jsx';
+import TagList from '@/components/TagList.jsx';
 
 /**
  * Render a heatmap of fund scores grouped by asset class.
