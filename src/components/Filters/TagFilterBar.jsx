@@ -20,19 +20,7 @@ const TagFilterBar = () => {
   };
 
   return (
-    <div
-      style={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 20,
-        background: 'white',
-        padding: '0.5rem',
-        borderBottom: '1px solid #e5e7eb',
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '0.5rem'
-      }}
-    >
+    <div className="sticky top-0 z-20 bg-white p-2 border-b border-gray-200 flex flex-wrap gap-2">
       {TAGS.map(tag => {
         const active = selectedTags.includes(tag);
         return (
@@ -40,16 +28,11 @@ const TagFilterBar = () => {
             key={tag}
             type="button"
             onClick={() => handleToggle(tag)}
-            style={{
-              cursor: 'pointer',
-              borderRadius: '9999px',
-              padding: '0.25rem 0.75rem',
-              fontSize: '0.75rem',
-              border: `1px solid ${active ? '#2563eb' : '#d1d5db'}`,
-              backgroundColor: active ? '#2563eb20' : 'transparent',
-              color: active ? '#2563eb' : '#374151',
-              fontWeight: active ? 600 : 400
-            }}
+            className={`cursor-pointer rounded-full px-3 py-1 text-xs border ${
+              active
+                ? 'border-blue-600 bg-blue-600/20 text-blue-600 font-semibold'
+                : 'border-gray-300 text-gray-700'
+            }`}
           >
             {tag}
           </button>
@@ -58,13 +41,7 @@ const TagFilterBar = () => {
       <button
         type="button"
         onClick={() => resetFilters && resetFilters()}
-        style={{
-          cursor: 'pointer',
-          borderRadius: '9999px',
-          padding: '0.25rem 0.75rem',
-          fontSize: '0.75rem',
-          border: '1px solid #d1d5db'
-        }}
+        className="cursor-pointer rounded-full px-3 py-1 text-xs border border-gray-300"
       >
         Clear
       </button>

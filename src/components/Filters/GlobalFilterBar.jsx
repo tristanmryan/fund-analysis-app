@@ -47,28 +47,15 @@ const GlobalFilterBar = ({
     tag.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        alignItems: 'flex-end',
-        gap: '1rem',
-        padding: '0.75rem 0'
-      }}
-    >
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <label style={{ fontSize: '0.875rem', marginBottom: '0.25rem' }}>
+    <div className="flex flex-wrap items-end gap-4 py-3">
+      <div className="flex flex-col">
+        <label className="text-sm mb-1">
           Asset Class
         </label>
         <select
           value={selectedClass || ''}
           onChange={handleClassChange}
-          style={{
-            minWidth: '160px',
-            padding: '0.5rem',
-            border: '1px solid #d1d5db',
-            borderRadius: '0.375rem'
-          }}
+          className="min-w-[160px] p-2 border border-gray-300 rounded-md"
         >
           <option value=''>All Classes</option>
           {availableClasses.slice().sort().map(cls => (
@@ -77,37 +64,24 @@ const GlobalFilterBar = ({
         </select>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <label style={{ fontSize: '0.875rem', marginBottom: '0.25rem' }}>
+      <div className="flex flex-col">
+        <label className="text-sm mb-1">
           Tags
         </label>
         <select
           multiple
           value={selectedTags}
           onChange={handleTagChange}
-          style={{
-            minWidth: '200px',
-            padding: '0.5rem',
-            border: '1px solid #d1d5db',
-            borderRadius: '0.375rem'
-          }}
+          className="min-w-[200px] p-2 border border-gray-300 rounded-md"
         >
           {availableTags.slice().sort().map(tag => (
             <option key={tag} value={tag}>{formatTag(tag)}</option>
           ))}
         </select>
       </div>
-
       <button
         onClick={() => typeof onReset === 'function' && onReset()}
-        style={{
-          padding: '0.5rem 1rem',
-          backgroundColor: '#e5e7eb',
-          border: '1px solid #d1d5db',
-          borderRadius: '0.375rem',
-          cursor: 'pointer',
-          fontSize: '0.875rem'
-        }}
+        className="px-4 py-2 bg-gray-200 border border-gray-300 rounded-md cursor-pointer text-sm"
       >
         Reset Filters
       </button>
