@@ -19,6 +19,13 @@ import TagList from '../TagList.jsx';
 
 const FundTile = ({ fund }) => {
   const color = getScoreColor(fund.scores?.final || 0);
+  const colorClasses = {
+    '#16a34a': 'border-green-600/50 bg-green-600/20',
+    '#22c55e': 'border-green-500/50 bg-green-500/20',
+    '#6b7280': 'border-gray-500/50 bg-gray-500/20',
+    '#eab308': 'border-yellow-500/50 bg-yellow-500/20',
+    '#dc2626': 'border-red-600/50 bg-red-600/20'
+  };
   const tooltipParts = [];
   if (fund.metrics?.expenseRatio != null) {
     tooltipParts.push(`Expense Ratio: ${fund.metrics.expenseRatio}%`);
@@ -30,18 +37,10 @@ const FundTile = ({ fund }) => {
   return (
     <div
       title={tooltipParts.join(' | ')}
-      style={{
-        backgroundColor: `${color}20`,
-        border: `1px solid ${color}50`,
-        borderRadius: '0.5rem',
-        padding: '0.5rem',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '0.25rem'
-      }}
+      className={`flex flex-col gap-1 rounded-lg border p-2 ${colorClasses[color] || 'border-gray-200 bg-gray-200/20'}`}
     >
-      <div style={{ fontWeight: 600 }}>{fund.fundName}</div>
-      <div style={{ fontSize: '0.875rem', color: '#374151' }}>{fund.Symbol}</div>
+      <div className="font-semibold">{fund.fundName}</div>
+      <div className="text-sm text-gray-700">{fund.Symbol}</div>
       <ScoreBadge score={fund.scores?.final || 0} showLabel={false} size="small" />
       {Array.isArray(fund.tags) && fund.tags.length > 0 && (
         <TagList tags={fund.tags} />
@@ -74,16 +73,9 @@ const PerformanceHeatmap = ({ funds }) => {
   const benchmarks = funds.filter(f => f.isBenchmark);
 
   return (
-    <div style={{ marginBottom: '1.5rem' }}>
+    <div className="mb-6">
       <h3
-        style={{
-          fontSize: '1.25rem',
-          fontWeight: 'bold',
-          marginBottom: '0.5rem',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem'
-        }}
+        className="mb-2 flex items-center gap-2 text-xl font-bold"
       >
         <LayoutGrid size={18} /> Performance Heatmap
       </h3>
@@ -91,14 +83,10 @@ const PerformanceHeatmap = ({ funds }) => {
       {Object.entries(byClass).map(([assetClass, classFunds]) => {
         const benchmark = benchmarks.find(b => b.assetClass === assetClass);
         return (
-          <div key={assetClass} style={{ marginBottom: '1rem' }}>
-            <h4 style={{ fontWeight: 'bold', marginBottom: '0.25rem' }}>{assetClass}</h4>
+          <div key={assetClass} className="mb-4">
+            <h4 className="mb-1 font-bold">{assetClass}</h4>
             <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                gap: '0.5rem'
-              }}
+              className="grid gap-2 [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]"
             >
               {benchmark && <FundTile key={benchmark.Symbol} fund={benchmark} />}
               {classFunds.map(fund => (

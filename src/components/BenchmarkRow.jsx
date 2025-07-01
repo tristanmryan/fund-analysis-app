@@ -1,6 +1,6 @@
 import React from 'react';
-import ScoreBadge from '@/components/ScoreBadge';
 import { fmtPct, fmtNumber } from '../utils/formatters';
+import { getScoreColor, getScoreLabel } from '../services/scoring';
 
 const BenchmarkRow = ({ fund }) => {
   const row = fund;

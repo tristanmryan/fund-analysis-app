@@ -1,15 +1,14 @@
 import React from 'react';
-import Chip from '@mui/material/Chip';
-
-const TAG_COLORS = {
-  Review: '#dc2626',
-  Expensive: '#eab308',
-  Underperf: '#9ca3af',
-  'High Risk': '#f97316',
-  'Tenure Low': '#6b7280',
-  Consistent: '#16a34a',
-  Momentum: '#2563eb',
-  'Turnaround?': '#3b82f6'
+const TAG_COLOR_CLASSES = {
+  Review: 'bg-red-600/20 text-red-600 border-red-600/40',
+  Expensive: 'bg-yellow-500/20 text-yellow-500 border-yellow-500/40',
+  Underperf: 'bg-gray-400/20 text-gray-400 border-gray-400/40',
+  'High Risk': 'bg-orange-500/20 text-orange-500 border-orange-500/40',
+  'Tenure Low': 'bg-gray-500/20 text-gray-500 border-gray-500/40',
+  Consistent: 'bg-green-600/20 text-green-600 border-green-600/40',
+  Momentum: 'bg-blue-600/20 text-blue-600 border-blue-600/40',
+  'Turnaround?': 'bg-blue-500/20 text-blue-500 border-blue-500/40',
+  default: 'bg-gray-500/20 text-gray-500 border-gray-500/40'
 };
 
 /**
@@ -19,17 +18,16 @@ const TAG_COLORS = {
 const TagList = ({ tags }) => {
   if (!Array.isArray(tags) || tags.length === 0) return null;
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
+    <div className="flex flex-wrap gap-1">
       {tags.map(tag => {
-        const color = TAG_COLORS[tag] || '#6b7280';
+        const classes = TAG_COLOR_CLASSES[tag] || TAG_COLOR_CLASSES.default;
         return (
-          <Chip
+          <span
             key={tag}
-            label={tag}
-            size="small"
-            style={{ backgroundColor: `${color}20`, color, borderColor: `${color}40` }}
-            variant="outlined"
-          />
+            className={`rounded-full border px-2 py-0.5 text-xs ${classes}`}
+          >
+            {tag}
+          </span>
         );
       })}
     </div>

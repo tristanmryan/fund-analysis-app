@@ -123,7 +123,8 @@ exports[`renders table snapshot 1`] = `
             class="p-2 text-center"
           >
             <span
-              class="inline-block rounded-full border font-bold text-center text-xs px-2 py-1 min-w-[3rem] text-[#16a34a] bg-[#16a34a]/20 border-[#16a34a]/50"
+              class="inline-block min-w-[3rem] rounded-full border px-2 py-1 text-center text-xs font-bold"
+              style="background-color: rgba(22, 163, 74, 0.125); color: rgb(22, 163, 74); border-color: #16a34a50;"
             >
               75.0 - Strong
             </span>
@@ -173,18 +174,13 @@ exports[`renders table snapshot 1`] = `
             class="p-2"
           >
             <div
-              style="display: flex; flex-wrap: wrap; gap: 0.25rem;"
+              class="flex flex-wrap gap-1"
             >
-              <div
-                class="MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-outlinedDefault css-1d2be57-MuiChip-root"
-                style="background-color: rgba(107, 114, 128, 0.125); color: rgb(107, 114, 128); border-color: #6b728040;"
+              <span
+                class="rounded-full border px-2 py-0.5 text-xs bg-gray-500/20 text-gray-500 border-gray-500/40"
               >
-                <span
-                  class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
-                >
-                  outperformer
-                </span>
-              </div>
+                outperformer
+              </span>
             </div>
           </td>
         </tr>

@@ -31,17 +31,10 @@ const GroupedFundTable = ({ funds = [], onRowClick = () => {}, deltas = {}, spar
             : 0;
         const benchScore = (benchmark?.score ?? benchmark?.scores?.final) || 0;
         return (
-          <div key={cls} style={{ marginBottom: '1rem' }}>
+          <div key={cls} className="mb-4">
             <div
               onClick={() => toggle(cls)}
-              style={{
-                cursor: 'pointer',
-                fontWeight: '500',
-                display: 'flex',
-                justifyContent: 'space-between',
-                padding: '0.5rem 0',
-                borderBottom: '1px solid #e5e7eb'
-              }}
+              className="cursor-pointer font-medium flex justify-between py-2 border-b border-gray-200"
             >
               <span>{cls}</span>
               <span>
@@ -50,7 +43,7 @@ const GroupedFundTable = ({ funds = [], onRowClick = () => {}, deltas = {}, spar
               </span>
             </div>
             {open[cls] && (
-              <div style={{ marginTop: '0.5rem' }}>
+              <div className="mt-2">
                 <FundTable rows={peers} benchmark={benchmark} onRowClick={onRowClick} deltas={deltas} spark={spark} />
               </div>
             )}

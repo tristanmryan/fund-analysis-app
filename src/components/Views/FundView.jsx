@@ -3,56 +3,44 @@ import GlobalFilterBar from '../Filters/GlobalFilterBar.jsx';
 import TagList from '../TagList.jsx';
 import { Download } from 'lucide-react';
 import { exportToExcel } from '../../services/exportService';
-import { getScoreColor, getScoreLabel } from '../../services/scoring';
 import AppContext from '../../context/AppContext.jsx';
 import FundDetailsModal from '../Modals/FundDetailsModal.jsx';
 
 /* ---------- simple table component ---------- */
 const FundTable = ({ funds = [], onRowClick = () => {} }) => (
-  <div style={{ overflowX: 'auto' }}>
-    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+  <div className="overflow-x-auto">
+    <table className="w-full border-collapse">
       <thead>
-        <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
-          <th style={{ textAlign: 'left',  padding: '0.75rem' }}>Symbol</th>
-          <th style={{ textAlign: 'left',  padding: '0.75rem' }}>Fund Name</th>
-          <th style={{ textAlign: 'left',  padding: '0.75rem' }}>Asset Class</th>
-          <th style={{ textAlign: 'center',padding: '0.75rem' }}>Score</th>
-          <th style={{ textAlign: 'left',  padding: '0.75rem' }}>Tags</th>
+        <tr className="border-b-2 border-gray-200">
+          <th className="p-3 text-left">Symbol</th>
+          <th className="p-3 text-left">Fund Name</th>
+          <th className="p-3 text-left">Asset Class</th>
+          <th className="p-3 text-center">Score</th>
+          <th className="p-3 text-left">Tags</th>
         </tr>
       </thead>
       <tbody>
         {funds.map(fund => (
           <tr
             key={fund.Symbol}
-            style={{ borderBottom: '1px solid #f3f4f6', cursor: 'pointer' }}
+            className="cursor-pointer border-b border-gray-100"
             onClick={() => onRowClick(fund)}
           >
-            <td style={{ padding: '0.5rem' }}>{fund.Symbol}</td>
-            <td style={{ padding: '0.5rem' }}>{fund.fundName}</td>
-            <td style={{ padding: '0.5rem' }}>{fund.assetClass}</td>
-            <td style={{ padding: '0.5rem', textAlign: 'center' }}>
+            <td className="p-2">{fund.Symbol}</td>
+            <td className="p-2">{fund.fundName}</td>
+            <td className="p-2">{fund.assetClass}</td>
+            <td className="p-2 text-center">
               {fund.scores ? (
-                <span
-                  style={{
-                    backgroundColor: `${getScoreColor(fund.scores.final)}20`,
-                    color          :  getScoreColor(fund.scores.final),
-                    border         : `1px solid ${getScoreColor(fund.scores.final)}50`,
-                    borderRadius   : '9999px',
-                    fontSize       : '0.75rem',
-                    padding        : '0.25rem 0.5rem'
-                  }}
-                >
-                  {fund.scores.final} – {getScoreLabel(fund.scores.final)}
-                </span>
+                <ScoreBadge score={fund.scores.final} />
               ) : (
-                <span style={{ color: '#9ca3af' }}>-</span>
+                <span className="text-gray-400">-</span>
               )}
             </td>
-            <td style={{ padding: '0.5rem' }}>
+            <td className="p-2">
               {Array.isArray(fund.tags) && fund.tags.length > 0 ? (
                 <TagList tags={fund.tags} />
               ) : (
-                <span style={{ color: '#9ca3af' }}>-</span>
+                <span className="text-gray-400">-</span>
               )}
             </td>
           </tr>
@@ -104,20 +92,10 @@ const FundView = () => {
         onTagToggle={toggleTag}
         onReset={resetFilters}
       />
-      <div style={{ marginBottom: '1rem' }}>
+      <div className="mb-4">
         <button
           onClick={handleExport}
-          style={{
-            padding: '0.5rem 1rem',
-            backgroundColor: '#10b981',
-            color: 'white',
-            border: 'none',
-            borderRadius: '0.375rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}
+          className="flex items-center gap-2 rounded-md bg-emerald-500 px-4 py-2 text-white"
         >
           <Download size={16} />
           Export to Excel
@@ -125,7 +103,7 @@ const FundView = () => {
       </div>
 
       {filteredFunds.length === 0 ? (
-        <p style={{ color: '#6b7280' }}>No funds match your current filter selection.</p>
+        <p className="text-gray-500">No funds match your current filter selection.</p>
       ) : (
         <FundTable funds={filteredFunds} onRowClick={setSelectedFund} />
       )}
