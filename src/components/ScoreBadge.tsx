@@ -7,10 +7,10 @@ export interface ScoreBadgeProps {
   size?: 'small' | 'normal' | 'large'
 }
 
-const SIZE_STYLES = {
-  small: { fontSize: '0.75rem', padding: '0.125rem 0.5rem', minWidth: '2.5rem' },
-  normal: { fontSize: '0.75rem', padding: '0.25rem 0.5rem', minWidth: '3rem' },
-  large: { fontSize: '1rem', padding: '0.375rem 0.75rem', minWidth: '3.5rem' }
+const SIZE_CLASSES = {
+  small: 'text-xs px-2 py-0.5 min-w-[2.5rem]',
+  normal: 'text-xs px-2 py-1 min-w-[3rem]',
+  large: 'text-base px-3 py-1.5 min-w-[3.5rem]'
 } as const
 
 export default function ScoreBadge({
@@ -21,18 +21,11 @@ export default function ScoreBadge({
   const color = getScoreColor(score)
   const label = getScoreLabel(score)
 
+  const colorClasses = `text-[${color}] bg-[${color}]/20 border-[${color}]/50`
+
   return (
     <span
-      style={{
-        backgroundColor: `${color}20`,
-        color,
-        border: `1px solid ${color}50`,
-        borderRadius: '9999px',
-        fontWeight: 'bold',
-        textAlign: 'center',
-        display: 'inline-block',
-        ...SIZE_STYLES[size]
-      }}
+      className={`inline-block rounded-full border font-bold text-center ${SIZE_CLASSES[size]} ${colorClasses}`}
     >
       {Number(score).toFixed(1)}
       {showLabel && ` - ${label}`}
