@@ -8,23 +8,6 @@ import SparkLine from './SparkLine';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
-const ScoreBadge = ({ score }) => {
-  const color = getScoreColor(score);
-  const label = getScoreLabel(score);
-  return (
-    <span
-      style={{
-        backgroundColor: `${color}20`,
-        color,
-        borderColor: `${color}50`
-      }}
-      className="inline-block min-w-[3rem] rounded-full border px-2 py-1 text-center text-xs font-bold"
-    >
-      {Number(score).toFixed(1)} - {label}
-    </span>
-  );
-};
-
 const columns = [
   { key: 'Symbol', label: 'Symbol', numeric: false },
   { key: 'fundName', label: LABELS.FUND_NAME, numeric: false },
