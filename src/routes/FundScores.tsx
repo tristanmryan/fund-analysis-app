@@ -1,12 +1,12 @@
 import React, { useContext, useMemo, useState, useEffect } from 'react'
 import GlobalFilterBar from '../components/Filters/GlobalFilterBar.jsx'
 import TagFilterBar from '../components/Filters/TagFilterBar.jsx'
-import FundTable from '../components/FundTable.jsx'
-import GroupedFundTable from '../components/GroupedFundTable.jsx'
+import FundTable from '../components/FundTable'
+import GroupedFundTable from '../components/GroupedFundTable'
 import FundDetailsModal from '../components/Modals/FundDetailsModal.jsx'
 import AppContext from '../context/AppContext.jsx'
 import { useSnapshot } from '../contexts/SnapshotContext'
-import { NormalisedRow } from '../utils/parseFundFile'
+import type { Fund } from '../types/fund'
 import UploadDialog from '../components/UploadDialog'
 import UploadIcon from '@mui/icons-material/Upload'
 import { Download } from 'lucide-react'
@@ -18,14 +18,11 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import { Box, Button, Typography } from '@mui/material'
 import { savePref, getPref } from '../services/dataStore'
 
-const GroupedTable: React.FC<any> = GroupedFundTable as unknown as React.FC<any>
-const FundTableAny: React.FC<any> = FundTable as unknown as React.FC<any>
-
 
 export default function FundScores () {
   const { active } = useSnapshot()
   console.log('FundScores active snapshot:', active)
-  const rows: NormalisedRow[] = active?.rows ?? []
+  const rows: Fund[] = (active?.rows ?? []) as Fund[]
 
   const [deltas, setDeltas] = React.useState<Record<string, number>>({})
   const [spark, setSpark] = React.useState<Record<string, number[]>>({})
@@ -127,9 +124,9 @@ export default function FundScores () {
       {filteredFunds.length === 0 ? (
         <p style={{ color: '#6b7280' }}>No funds match your current filter selection.</p>
       ) : grouped ? (
-        <GroupedTable funds={filteredFunds as any} onRowClick={setSelectedFund} deltas={deltas} spark={spark} />
+        <GroupedFundTable funds={filteredFunds} onRowClick={setSelectedFund} deltas={deltas} spark={spark} />
       ) : (
-        <FundTableAny funds={filteredFunds as any} onRowClick={setSelectedFund as any} deltas={deltas} spark={spark} />
+        <FundTable funds={filteredFunds} onRowClick={setSelectedFund} deltas={deltas} spark={spark} />
       )}
       {selectedFund && (
         <FundDetailsModal fund={selectedFund} onClose={() => setSelectedFund(null)} />

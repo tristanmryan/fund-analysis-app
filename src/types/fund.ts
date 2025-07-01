@@ -15,4 +15,5 @@ export interface Fund extends NormalisedRow {
   score?: number
   isRecommended?: boolean
   cleanSymbol?: string
+  Symbol?: string
 }

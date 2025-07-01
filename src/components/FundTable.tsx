@@ -1,12 +1,13 @@
-import React, { useState, useMemo } from 'react';
-import TagList from './TagList.jsx';
-import BenchmarkRow from './BenchmarkRow.jsx';
-import { fmtPct, fmtNumber } from '@/utils/formatters';
-import { LABELS } from '../constants/labels';
-import ScoreBadge from '@/components/ScoreBadge';
-import SparkLine from './SparkLine';
-import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import React, { useState, useMemo } from 'react'
+import TagList from './TagList.jsx'
+import BenchmarkRow from './BenchmarkRow.jsx'
+import { fmtPct, fmtNumber } from '@/utils/formatters'
+import { LABELS } from '../constants/labels'
+import ScoreBadge from '@/components/ScoreBadge'
+import SparkLine from './SparkLine'
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp'
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+import type { Fund } from '@/types/fund'
 
 
 const columns = [
@@ -26,7 +27,23 @@ const columns = [
   { key: 'Tags', label: 'Tags', numeric: false, accessor: f => f.tags }
 ];
 
-const FundTable = ({ funds = [], rows, benchmark, onRowClick = () => {}, deltas = {}, spark = {} }) => {
+export interface FundTableProps<T extends Fund = Fund> {
+  funds?: T[]
+  rows?: T[]
+  benchmark?: T
+  onRowClick?: (fund: T) => void
+  deltas?: Record<string, number>
+  spark?: Record<string, number[]>
+}
+
+export default function FundTable<T extends Fund = Fund>({
+  funds = [],
+  rows,
+  benchmark,
+  onRowClick = () => {},
+  deltas = {},
+  spark = {}
+}: FundTableProps<T>) {
   const data = rows || funds;
   const [sort, setSort] = useState({ key: null, dir: 'asc', numeric: false });
 
@@ -153,7 +170,5 @@ const FundTable = ({ funds = [], rows, benchmark, onRowClick = () => {}, deltas 
       </tbody>
     </table>
   </div>
-  );
-};
-
-export default FundTable;
+  )
+}
