@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import TagList from './TagList.jsx';
 import BenchmarkRow from './BenchmarkRow.jsx';
-import { getScoreColor, getScoreLabel } from '../utils/scoreTags';
+import ScoreBadge from '@/components/ScoreBadge';
 import { fmtPct, fmtNumber } from '../utils/formatters';
 import { LABELS } from '../constants/labels';
 import SparkLine from './SparkLine';
@@ -36,8 +36,8 @@ const columns = [
   { key: '1Y', label: '1Y', numeric: true, accessor: f => f.oneYear },
   { key: '3Y', label: '3Y', numeric: true, accessor: f => f.threeYear },
   { key: '5Y', label: '5Y', numeric: true, accessor: f => f.fiveYear },
-  { key: 'Sharpe', label: 'Sharpe', numeric: true, accessor: f => f.sharpe3y },
-  { key: 'Std Dev (5Y)', label: 'Std Dev (5Y)', numeric: true, accessor: f => f.stdDev5y },
+  { key: 'Sharpe', label: 'Sharpe', numeric: true, accessor: f => f.sharpe3Y },
+  { key: 'Std Dev (5Y)', label: 'Std Dev (5Y)', numeric: true, accessor: f => f.stdDev5Y },
   { key: 'Expense', label: 'Expense', numeric: true, accessor: f => f.expenseRatio },
   { key: 'Tags', label: 'Tags', numeric: false, accessor: f => f.tags }
 ];
@@ -148,11 +148,11 @@ const FundTable = ({ funds = [], rows, benchmark, onRowClick = () => {}, deltas 
             <td className="p-2 text-right">
               {fmtPct(fund.fiveYear)}
             </td>
-            <td className="p-2 text-right">
-              {fmtNumber(fund.sharpe3y)}
+            <td style={{ padding: '0.5rem', textAlign: 'right' }}>
+              {fmtNumber(fund.sharpe3Y)}
             </td>
-            <td className="p-2 text-right">
-              {fmtPct(fund.stdDev5y)}
+            <td style={{ padding: '0.5rem', textAlign: 'right' }}>
+              {fmtPct(fund.stdDev5Y)}
             </td>
             <td className="p-2 text-right">
               {fmtPct(fund.expenseRatio)}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { getScoreColor, getScoreLabel } from '../utils/scoreTags';
+import ScoreBadge from '@/components/ScoreBadge';
 import { fmtPct, fmtNumber } from '../utils/formatters';
 
 const ScoreBadge = ({ score }) => {
@@ -44,11 +44,11 @@ const BenchmarkRow = ({ fund }) => {
       <td className="px-3 py-3 text-right">
         {fmtPct(row.fiveYear)}
       </td>
-      <td className="px-3 py-3 text-right">
-        {fmtNumber(row.sharpe3y)}
+      <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+        {fmtNumber(row.sharpe3Y)}
       </td>
-      <td className="px-3 py-3 text-right">
-        {fmtPct(row.stdDev5y)}
+      <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+        {fmtPct(row.stdDev5Y)}
       </td>
       <td className="px-3 py-3 text-right">
         {fmtPct(row.expenseRatio)}

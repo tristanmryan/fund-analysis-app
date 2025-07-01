@@ -10,8 +10,8 @@ const sample = [{
   oneYear: 10,
   threeYear: 12,
   fiveYear: 15,
-  sharpe3y: 0.8,
-  stdDev5y: 18,
+  sharpe3Y: 0.8,
+  stdDev5Y: 18,
   expenseRatio: 0.5,
   tags: ['outperformer']
 }];

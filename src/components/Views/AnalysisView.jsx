@@ -1,21 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { getScoreColor, getScoreLabel } from '../../utils/scoreTags';
+import ScoreBadge from '@/components/ScoreBadge';
 import { fmtPct, fmtNumber } from '../../utils/formatters';
 import { getClassesWhereBenchmarkLeads } from '../../selectors/benchmarkLead';
 import HeatMapGrid from '../HeatMapGrid.jsx';
 
-const ScoreBadge = ({ score }) => {
-  const color = getScoreColor(score);
-  const label = getScoreLabel(score);
-  return (
-    <span
-      className="inline-flex items-center rounded-full px-2 py-1 text-sm font-medium"
-      style={{ backgroundColor: `${color}20`, color, border: `1px solid ${color}50` }}
-    >
-      {Number(score).toFixed(1)} - {label}
-    </span>
-  );
-};
 
 const AnalysisView = ({ funds = [], reviewCandidates = [], onSelectClass }) => {
   const [gap, setGap] = useState(5);
@@ -140,7 +128,7 @@ const AnalysisView = ({ funds = [], reviewCandidates = [], onSelectClass }) => {
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-sm mt-2">
                   <div><span className="text-gray-600">1Y Return:</span> <strong>{fmtPct(fund.oneYear)}</strong></div>
-                  <div><span className="text-gray-600">Sharpe:</span> <strong>{fmtNumber(fund.sharpe3y)}</strong></div>
+                  <div><span className="text-gray-600">Sharpe:</span> <strong>{fmtNumber(fund.sharpe3Y)}</strong></div>
                   <div><span className="text-gray-600">Expense:</span> <strong>{fmtPct(fund.expenseRatio)}</strong></div>
                 </div>
               </div>
