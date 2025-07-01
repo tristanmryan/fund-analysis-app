@@ -1,5 +1,5 @@
 import { process } from '../fundProcessingService';
-import parseFundFile from '../parseFundFile';
+import parseFundFile from '@/utils/parseFundFile';
 import { ensureBenchmarkRows } from '../dataLoader';
 import { calculateScores } from '../scoring';
 import { applyTagRules } from '../tagEngine';
@@ -9,7 +9,7 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-jest.mock('../parseFundFile');
+jest.mock('@/utils/parseFundFile');
 jest.mock('../dataLoader', () => ({ ensureBenchmarkRows: jest.fn() }));
 jest.mock('../scoring', () => ({ calculateScores: jest.fn() }));
 jest.mock('../tagEngine', () => ({ applyTagRules: jest.fn() }));

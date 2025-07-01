@@ -1,4 +1,4 @@
-import parseFundFile from '../parseFundFile';
+import parseFundFile from '@/utils/parseFundFile';
 
 const mockRows = [
   ['Symbol', 'Fund Name', 'YTD', '3 Year'],

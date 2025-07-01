@@ -1,5 +1,5 @@
 import { applyTagRules } from '../tagRules'
-import { ParsedSnapshot } from '../../utils/parseFundFile'
+import { ParsedSnapshot } from '@/utils/parseFundFile'
 
 describe('applyTagRules', () => {
   function makeSnap(id: string, score: number): ParsedSnapshot {
