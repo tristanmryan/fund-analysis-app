@@ -33,9 +33,9 @@ describe('snapshotStore', () => {
     expect(row.id).toBe('2024-06')
   })
 
-  test('duplicate checksum returns existing id', async () => {
+  test('duplicate checksum throws error', async () => {
     await addSnapshot(baseSnap, '2024-06')
-    await expect(addSnapshot(baseSnap, '2024-07')).resolves.toBe('2024-06')
+    await expect(addSnapshot(baseSnap, '2024-07')).rejects.toThrow('duplicate checksum')
   })
 
   test('setActiveSnapshot toggles active flag', async () => {
@@ -58,6 +58,8 @@ describe('snapshotStore', () => {
   test('deleted snapshots can be re-added', async () => {
     await addSnapshot(baseSnap, '2024-06')
     await softDeleteSnapshot('2024-06')
-    await expect(addSnapshot(baseSnap, '2024-07')).resolves.toBe('2024-06')
+    await expect(addSnapshot(baseSnap, '2024-07')).resolves.toBeUndefined()
+    const row = await getSnapshot('2024-07')
+    expect(row).toBeTruthy()
   })
 })

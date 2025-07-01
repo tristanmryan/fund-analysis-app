@@ -1,35 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import TagList from './TagList.jsx';
 import BenchmarkRow from './BenchmarkRow.jsx';
-import { getScoreColor, getScoreLabel } from '../utils/scoreTags';
+import ScoreBadge from '@/components/ScoreBadge';
 import { fmtPct, fmtNumber } from '../utils/formatters';
 import { LABELS } from '../constants/labels';
 import SparkLine from './SparkLine';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
-const ScoreBadge = ({ score }) => {
-  const color = getScoreColor(score);
-  const label = getScoreLabel(score);
-  return (
-    <span
-      style={{
-        backgroundColor: `${color}20`,
-        color,
-        border: `1px solid ${color}50`,
-        borderRadius: '9999px',
-        fontSize: '0.75rem',
-        fontWeight: 'bold',
-        padding: '0.25rem 0.5rem',
-        display: 'inline-block',
-        minWidth: '3rem',
-        textAlign: 'center'
-      }}
-    >
-      {Number(score).toFixed(1)} - {label}
-    </span>
-  );
-};
 
 const columns = [
   { key: 'Symbol', label: 'Symbol', numeric: false },
