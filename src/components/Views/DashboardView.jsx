@@ -6,8 +6,8 @@ const DashboardView = () => {
   const { fundData, config } = useContext(AppContext);
 
   return (
-    <div style={{ padding: '1rem' }}>
-      <h2 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '1rem' }}>
+    <div className="p-4">
+      <h2 className="text-2xl font-semibold mb-4">
         Dashboard Overview
       </h2>
 
