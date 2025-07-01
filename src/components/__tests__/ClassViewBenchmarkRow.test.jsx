@@ -20,8 +20,8 @@ const mockLargeCapGrowth = [
     oneYear: 2,
     threeYear: 3,
     fiveYear: 4,
-    sharpe3y: 1,
-    stdDev5y: 10,
+    sharpe3Y: 1,
+    stdDev5Y: 10,
     expenseRatio: 0.2,
     scores: { final: 60 }
   },
@@ -33,8 +33,8 @@ const mockLargeCapGrowth = [
     oneYear: 1,
     threeYear: 1.5,
     fiveYear: 2,
-    sharpe3y: 0.8,
-    stdDev5y: 12,
+    sharpe3Y: 0.8,
+    stdDev5Y: 12,
     expenseRatio: 0.3,
     scores: { final: 70 }
   }

@@ -20,9 +20,9 @@ export function attachScores (snap: ParsedSnapshot) {
         W.one   * z(+r.oneYear, 'oneYear') +
         W.three * z(+r.threeYear, 'threeYear') +
         W.five  * z(+r.fiveYear, 'fiveYear') +
-        W.sharpe* z(+r.sharpe3y, 'sharpe3y') +
-        W.std   * z(+r.stdDev3y||+r.stdDev5y, 'stdDev3y') +
-        W.exp   * z(+r.netExpenseRatio, 'netExpenseRatio') +
+        W.sharpe* z(+r.sharpe3Y, 'sharpe3Y') +
+        W.std   * z(+r.stdDev3Y||+r.stdDev5Y, 'stdDev3Y') +
+        W.exp   * z(+r.expenseRatio, 'expenseRatio') +
         W.tenure* z(+r.managerTenure, 'managerTenure')
       r.score = Math.round((50 + score*10)*10)/10   // clamp roughly 0-100
     })

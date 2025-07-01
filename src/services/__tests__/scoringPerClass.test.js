@@ -10,8 +10,8 @@ describe('per-class scoring with benchmark integration', () => {
         oneYear: 12,
         threeYear: 14,
         fiveYear: 16,
-        sharpe3y: 1.2,
-        stdDev5y: 15,
+        sharpe3Y: 1.2,
+        stdDev5Y: 15,
         expenseRatio: 0.5,
         isBenchmark: false
       },
@@ -22,8 +22,8 @@ describe('per-class scoring with benchmark integration', () => {
         oneYear: 8,
         threeYear: 9,
         fiveYear: 10,
-        sharpe3y: 0.8,
-        stdDev5y: 18,
+        sharpe3Y: 0.8,
+        stdDev5Y: 18,
         expenseRatio: 0.6,
         isBenchmark: false
       },
@@ -34,8 +34,8 @@ describe('per-class scoring with benchmark integration', () => {
         oneYear: 10,
         threeYear: 11,
         fiveYear: 12,
-        sharpe3y: 1.0,
-        stdDev5y: 16,
+        sharpe3Y: 1.0,
+        stdDev5Y: 16,
         expenseRatio: 0.2,
         isBenchmark: true
       }
