@@ -7,18 +7,8 @@ const ScoreBadge = ({ score }) => {
   const label = getScoreLabel(score);
   return (
     <span
-      style={{
-        backgroundColor: `${color}20`,
-        color,
-        border: `1px solid ${color}50`,
-        borderRadius: '9999px',
-        fontSize: '0.75rem',
-        fontWeight: 'bold',
-        padding: '0.25rem 0.5rem',
-        display: 'inline-block',
-        minWidth: '3rem',
-        textAlign: 'center'
-      }}
+      style={{ backgroundColor: `${color}20`, color, borderColor: `${color}50` }}
+      className="inline-block min-w-[3rem] rounded-full border px-2 py-1 text-center text-xs font-bold"
     >
       {Number(score).toFixed(1)} - {label}
     </span>
@@ -29,41 +19,41 @@ const BenchmarkRow = ({ fund }) => {
   const row = fund;
   if (!row) return null;
   return (
-    <tr className="benchmark-banner">
-      <td style={{ padding: '0.75rem' }}>{`Benchmark — ${row.Symbol}`}</td>
-      <td style={{ padding: '0.75rem' }}>{row.fundName || row.name}</td>
-      <td style={{ padding: '0.75rem' }}>Benchmark</td>
-      <td style={{ padding: '0.75rem', textAlign: 'center' }}>
+    <tr className="bg-slate-100 font-medium">
+      <td className="px-3 py-3">{`Benchmark — ${row.Symbol}`}</td>
+      <td className="px-3 py-3">{row.fundName || row.name}</td>
+      <td className="px-3 py-3">Benchmark</td>
+      <td className="px-3 py-3 text-center">
         {row.score != null
           ? <ScoreBadge score={row.score} />
           : row.scores
             ? <ScoreBadge score={row.scores.final} />
             : '-'}
       </td>
-      <td style={{ padding: '0.75rem' }}></td>
-      <td style={{ padding: '0.75rem' }}></td>
-      <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+      <td className="px-3 py-3"></td>
+      <td className="px-3 py-3"></td>
+      <td className="px-3 py-3 text-right">
         {fmtPct(row.ytd ?? row.YTD)}
       </td>
-      <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+      <td className="px-3 py-3 text-right">
         {fmtPct(row.oneYear)}
       </td>
-      <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+      <td className="px-3 py-3 text-right">
         {fmtPct(row.threeYear)}
       </td>
-      <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+      <td className="px-3 py-3 text-right">
         {fmtPct(row.fiveYear)}
       </td>
-      <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+      <td className="px-3 py-3 text-right">
         {fmtNumber(row.sharpe3y)}
       </td>
-      <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+      <td className="px-3 py-3 text-right">
         {fmtPct(row.stdDev5y)}
       </td>
-      <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+      <td className="px-3 py-3 text-right">
         {fmtPct(row.expenseRatio)}
       </td>
-      <td style={{ padding: '0.75rem' }}></td>
+      <td className="px-3 py-3"></td>
     </tr>
   );
 };

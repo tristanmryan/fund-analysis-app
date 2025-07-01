@@ -22,7 +22,7 @@ const TagFilterPanel = ({ availableTags = [], selectedTags = [], onToggleTag }) 
   };
 
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+    <div className="flex flex-wrap gap-2">
       {availableTags.map(tag => {
         const active = Array.isArray(selectedTags) && selectedTags.includes(tag);
         const color  = TAG_COLORS[tag] || '#6b7280';
@@ -33,15 +33,11 @@ const TagFilterPanel = ({ availableTags = [], selectedTags = [], onToggleTag }) 
             type="button"
             onClick={() => handleToggle(tag)}
             style={{
-              cursor         : 'pointer',
-              borderRadius   : '9999px',
-              padding        : '0.25rem 0.75rem',
-              fontSize       : '0.75rem',
-              border         : `1px solid ${active ? color : '#d1d5db'}`,
+              borderColor: active ? color : '#d1d5db',
               backgroundColor: active ? `${color}20` : 'transparent',
-              color          : active ? color : '#374151',
-              fontWeight     : active ? 600 : 400
+              color: active ? color : '#374151'
             }}
+            className={`cursor-pointer rounded-full border px-3 py-1 text-xs ${active ? 'font-semibold' : ''}`}
           >
             {tag}
           </button>

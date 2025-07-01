@@ -2,7 +2,6 @@ import React, { useMemo } from 'react'
 import FundTable from '../components/FundTable.jsx'
 import { useSnapshot } from '../contexts/SnapshotContext'
 import { NormalisedRow } from '../utils/parseFundFile'
-import '../components/ClassView.css'
 
 interface Props {
   defaultAssetClass?: string
