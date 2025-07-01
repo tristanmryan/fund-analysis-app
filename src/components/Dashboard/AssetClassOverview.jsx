@@ -4,7 +4,6 @@ import { Layers } from 'lucide-react';
 import TagList from '../TagList.jsx';
 import { LineChart, Line } from 'recharts';
 import AppContext from '../../context/AppContext.jsx';
-import './AssetClassOverview.css';
 
 /**
  * Show summary cards for each asset class.
@@ -14,7 +13,7 @@ import './AssetClassOverview.css';
 const AssetClassOverview = ({ funds, config }) => {
   const { historySnapshots } = useContext(AppContext);
   if (!Array.isArray(funds) || funds.length === 0) {
-    return <p style={{ color: '#6b7280' }}>No data loaded yet.</p>;
+    return <p className="text-gray-600">No data loaded yet.</p>;
   }
 
   const getTrendData = (assetClass) => {
@@ -88,46 +87,34 @@ const AssetClassOverview = ({ funds, config }) => {
 
   /* ---------- render ---------- */
   return (
-    <div style={{ marginBottom: '1.5rem' }}>
+    <div className="mb-6">
       <h3
-        style={{
-          fontSize: '1.25rem',
-          fontWeight: 'bold',
-          marginBottom: '0.5rem',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem'
-        }}
+        className="text-xl font-bold mb-2 flex items-center gap-2"
       >
         <Layers size={18} /> Asset Class Overview
       </h3>
 
-      <div className="dashboard-grid">
-        {classInfo.map(info => (
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {classInfo.map(info => {
+          const bgClass = {
+            '#16a34a': 'bg-[#16a34a]/10',
+            '#22c55e': 'bg-[#22c55e]/10',
+            '#6b7280': 'bg-[#6b7280]/10',
+            '#eab308': 'bg-[#eab308]/10',
+            '#dc2626': 'bg-[#dc2626]/10'
+          }[info.color] || '';
+          return (
           <div
             key={info.assetClass}
-            style={{
-              border: '1px solid #e5e7eb',
-              borderRadius: '0.5rem',
-              padding: '0.75rem',
-              backgroundColor: `${info.color}10`,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.25rem'
-            }}
+            className={`border border-gray-200 rounded-lg p-3 flex flex-col gap-1 ${bgClass}`}
           >
-            <div style={{ fontWeight: 600 }}>{info.assetClass}</div>
+            <div className="font-semibold">{info.assetClass}</div>
 
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-              }}
+            <div className="flex justify-between items-center"
             >
               <span>Funds: {info.count}</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                <span style={{ color: info.color }}>Avg {info.avgScore}</span>
+              <div className="flex items-center gap-1">
+                <span className={`text-[${info.color}]`}>Avg {info.avgScore}</span>
                 {info.trend && info.trend.length > 0 && (
                   <LineChart width={120} height={30} data={info.trend}>
                     <Line type="monotone" dataKey="value" stroke={info.color} dot={false} />
@@ -137,37 +124,38 @@ const AssetClassOverview = ({ funds, config }) => {
             </div>
 
             {info.avgSharpe && (
-              <div style={{ fontSize: '0.75rem', color: '#4b5563' }}>
+              <div className="text-xs text-gray-700">
                 Sharpe: {info.avgSharpe}
               </div>
             )}
             {info.avgExpense && (
-              <div style={{ fontSize: '0.75rem', color: '#4b5563' }}>
+              <div className="text-xs text-gray-700">
                 Expense: {info.avgExpense}%
               </div>
             )}
             {info.avgStd && (
-              <div style={{ fontSize: '0.75rem', color: '#4b5563' }}>
+              <div className="text-xs text-gray-700">
                 Std Dev: {info.avgStd}
               </div>
             )}
 
-            <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem' }}>
+            <div className="text-xs text-gray-600 mt-1">
               Benchmark: {info.benchmarkTicker}
               {info.benchmarkScore != null && (
-                <span style={{ marginLeft: '0.25rem', color: info.color }}>
+                <span className={`ml-1 text-[${info.color}]`}>
                   ({info.benchmarkScore})
                 </span>
               )}
             </div>
 
             {info.tags.length > 0 && (
-              <div style={{ marginTop: '0.25rem' }}>
+              <div className="mt-1">
                 <TagList tags={info.tags} />
               </div>
             )}
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

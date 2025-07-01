@@ -31,10 +31,10 @@ const BenchmarkRow = ({ fund }) => {
       <td className="px-3 py-3 text-right">
         {fmtPct(row.fiveYear)}
       </td>
-      <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+      <td className="px-3 py-3 text-right">
         {fmtNumber(row.sharpe3Y)}
       </td>
-      <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+      <td className="px-3 py-3 text-right">
         {fmtPct(row.stdDev5Y)}
       </td>
       <td className="px-3 py-3 text-right">

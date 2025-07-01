@@ -12,18 +12,14 @@ const FundDetailsModal = ({ fund, onClose }) => {
     })) || [];
 
   return (
-    <div style={{
-      position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
-      display: 'flex', justifyContent: 'center', alignItems: 'center',
-      zIndex: 1000
-    }}>
-      <div style={{ background: '#fff', borderRadius: '0.5rem', padding: '1.5rem', width: '500px' }}>
-        <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+    <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+      <div className="bg-white rounded-lg p-6 w-[500px]">
+        <h3 className="text-xl font-semibold mb-2">
           {fund.Symbol} – {fund.fundName}
         </h3>
-        <p style={{ marginBottom: '0.75rem', color: '#6b7280' }}>
+        <p className="mb-3 text-gray-600">
           Asset Class: {fund.assetClass} · Score:&nbsp;
-          <span style={{ color: getScoreColor(fund.score ?? fund.scores.final) }}>
+          <span className={`text-[${getScoreColor(fund.score ?? fund.scores.final)}]`}>
             {(fund.score ?? fund.scores.final).toFixed(1)} ({getScoreLabel(fund.score ?? fund.scores.final)})
           </span>
         </p>
@@ -37,8 +33,8 @@ const FundDetailsModal = ({ fund, onClose }) => {
           </LineChart>
         )}
 
-        <h4 style={{ marginTop: '1rem', fontWeight: 600 }}>Key Metrics</h4>
-        <ul style={{ fontSize: '0.875rem', lineHeight: 1.4 }}>
+        <h4 className="mt-4 font-semibold">Key Metrics</h4>
+        <ul className="text-sm leading-relaxed">
           <li>YTD: {fund.ytd ?? 'N/A'}%</li>
           <li>1-Year: {fund.oneYear ?? 'N/A'}%</li>
           <li>3-Year: {fund.threeYear ?? 'N/A'}%</li>
@@ -49,11 +45,7 @@ const FundDetailsModal = ({ fund, onClose }) => {
 
         <button
           onClick={onClose}
-          style={{
-            marginTop: '1rem', padding: '0.5rem 1rem',
-            background: '#dc2626', color: '#fff', border: 'none',
-            borderRadius: '0.375rem', cursor: 'pointer'
-          }}
+          className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md"
         >
           Close
         </button>
