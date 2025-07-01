@@ -1,6 +1,7 @@
 import { render, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { AppProvider } from './context/AppContext.jsx';
+import { SnapshotProvider } from './contexts/SnapshotContext';
 let App;
 import { loadAssetClassMap } from './services/dataLoader';
 import { toast } from 'react-hot-toast';
@@ -12,6 +13,9 @@ jest.mock('./services/dataLoader', () => ({
 jest.mock('./services/exportService', () => ({
   exportToExcel: jest.fn(),
   exportToPDF: jest.fn(),
+}));
+jest.mock('./services/pdfExport', () => ({
+  buildSnapshotPdf: jest.fn(),
 }));
 
 jest.mock('react-hot-toast', () => ({
@@ -27,9 +31,11 @@ test('shows toast when asset class map fails to load', async () => {
   loadAssetClassMap.mockRejectedValue(new Error('fail'));
 
   render(
-    <AppProvider>
-      <App />
-    </AppProvider>
+    <SnapshotProvider>
+      <AppProvider>
+        <App />
+      </AppProvider>
+    </SnapshotProvider>
   );
 
   await waitFor(() => {

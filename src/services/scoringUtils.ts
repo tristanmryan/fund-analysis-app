@@ -16,10 +16,10 @@ export function attachScores (snap: ParsedSnapshot) {
     set.forEach(r=>{
       const z = (val:number, key:string)=>(val-mean(key))/std(key)
       const score =
-        W.ytd   * z(+r.ytdReturn, 'ytdReturn') +
-        W.one   * z(+r.oneYearReturn, 'oneYearReturn') +
-        W.three * z(+r.threeYearReturn, 'threeYearReturn') +
-        W.five  * z(+r.fiveYearReturn, 'fiveYearReturn') +
+        W.ytd   * z(+r.ytd, 'ytd') +
+        W.one   * z(+r.oneYear, 'oneYear') +
+        W.three * z(+r.threeYear, 'threeYear') +
+        W.five  * z(+r.fiveYear, 'fiveYear') +
         W.sharpe* z(+r.sharpe3y, 'sharpe3y') +
         W.std   * z(+r.stdDev3y||+r.stdDev5y, 'stdDev3y') +
         W.exp   * z(+r.netExpenseRatio, 'netExpenseRatio') +
