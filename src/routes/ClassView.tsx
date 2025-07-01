@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import FundTable from '@/components/FundTable.jsx'
+import FundTable from '@/components/FundTable'
 import { useSnapshot } from '@/contexts/SnapshotContext'
 import type { Fund } from '@/types/fund'
 

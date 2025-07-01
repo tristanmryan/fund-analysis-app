@@ -1,29 +1,40 @@
-import React, { useState } from 'react';
-import BenchmarkRow from './BenchmarkRow.jsx';
-import FundTable from './FundTable.jsx';
+import React, { useState } from 'react'
+import BenchmarkRow from './BenchmarkRow.jsx'
+import FundTable from './FundTable'
+import type { Fund } from '@/types/fund'
+
+export interface GroupedFundTableProps<T extends Fund = Fund> {
+  funds?: T[]
+  onRowClick?: (fund: T) => void
+  deltas?: Record<string, number>
+  spark?: Record<string, number[]>
+}
 
 /**
  * Group funds by asset class and render expandable sections.
- * @param {Array<Object>} funds
- * @param {Function} onRowClick
  */
-const GroupedFundTable = ({ funds = [], onRowClick = () => {}, deltas = {}, spark = {} }) => {
-  const groups = {};
+export default function GroupedFundTable<T extends Fund = Fund>({
+  funds = [],
+  onRowClick = () => {},
+  deltas = {},
+  spark = {}
+}: GroupedFundTableProps<T>) {
+  const groups: Record<string, T[]> = {};
   funds.forEach(f => {
     const cls = f.assetClass || 'Uncategorized';
     if (!groups[cls]) groups[cls] = [];
     groups[cls].push(f);
   });
 
-  const [open, setOpen] = useState({});
-  const toggle = cls =>
+  const [open, setOpen] = useState<Record<string, boolean>>({})
+  const toggle = (cls: string) =>
     setOpen(prev => ({ ...prev, [cls]: !prev[cls] }));
 
   return (
     <div>
-      {Object.entries(groups).map(([cls, rows]) => {
-        const benchmark = rows.find(r => r.isBenchmark);
-        const peers = rows.filter(r => !r.isBenchmark);
+      {(Object.entries(groups) as [string, T[]][]).map(([cls, rows]) => {
+        const benchmark = rows.find(r => r.isBenchmark)
+        const peers = rows.filter(r => !r.isBenchmark)
           const avg = peers.length
             ? Math.round(
                 peers.reduce((s, f) => s + ((f.score ?? f.scores?.final) || 0), 0) / peers.length
@@ -51,7 +62,5 @@ const GroupedFundTable = ({ funds = [], onRowClick = () => {}, deltas = {}, spar
         );
       })}
     </div>
-  );
-};
-
-export default GroupedFundTable;
+  )
+}
