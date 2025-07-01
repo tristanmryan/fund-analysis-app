@@ -1,5 +1,5 @@
 import { render, screen, within } from '@testing-library/react';
-import BenchmarkRow from '../BenchmarkRow.jsx';
+import BenchmarkRow from '@/components/BenchmarkRow.jsx';
 
 const funds = [
   { Symbol: 'IWF', fundName: 'Russell 1000 Growth', scores: { final: 60 }, ytd: 3 },

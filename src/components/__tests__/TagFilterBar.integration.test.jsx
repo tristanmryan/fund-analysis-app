@@ -1,19 +1,19 @@
 import 'fake-indexeddb/auto';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import FundScores from '../../routes/FundScores';
-import AppContext from '../../context/AppContext.jsx';
+import FundScores from '@/routes/FundScores';
+import AppContext from '@/context/AppContext.jsx';
 import React, { useState } from 'react';
 
-jest.mock('../../contexts/SnapshotContext', () => ({
+jest.mock('@/contexts/SnapshotContext', () => ({
   useSnapshot: jest.fn()
 }));
-import { useSnapshot } from '../../contexts/SnapshotContext';
+import { useSnapshot } from '@/contexts/SnapshotContext';
 
 global.structuredClone =
   global.structuredClone || ((v) => JSON.parse(JSON.stringify(v)));
 
-jest.mock('../../services/exportService', () => ({
+jest.mock('@/services/exportService', () => ({
   exportToExcel: jest.fn(),
 }));
 

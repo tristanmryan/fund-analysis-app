@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import AdminPanel from '../AdminPanel.jsx';
+import AdminPanel from '@/components/AdminPanel.jsx';
 
 function setup() {
   const setFunds = jest.fn();

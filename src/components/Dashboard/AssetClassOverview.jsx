@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
-import { getScoreColor as scoreColor } from '../../services/scoring';
+import { getScoreColor as scoreColor } from '@/services/scoring';
 import { Layers } from 'lucide-react';
-import TagList from '../TagList.jsx';
+import TagList from '@/components/TagList.jsx';
 import { LineChart, Line } from 'recharts';
-import AppContext from '../../context/AppContext.jsx';
+import AppContext from '@/context/AppContext.jsx';
 
 /**
  * Show summary cards for each asset class.

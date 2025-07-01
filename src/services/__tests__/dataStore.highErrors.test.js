@@ -7,7 +7,7 @@ beforeEach(() => {
   jest.resetModules();
   originalIndexedDB = global.indexedDB;
   if (typeof window !== 'undefined') originalWindowIndexedDB = window.indexedDB;
-  dataStore = require('../dataStore');
+  dataStore = require('@/dataStore');
 });
 
 afterEach(() => {

@@ -9,7 +9,7 @@ import db, {
   setActiveSnapshot,
   getActiveSnapshot,
   softDeleteSnapshot
-} from '../services/snapshotStore'
+} from '@/services/snapshotStore'
 
 const baseSnap = {
   rows: [],

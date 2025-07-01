@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import * as XLSX from 'xlsx';
 import parseFundFile from '@/utils/parseFundFile';
-import { recommendedFunds, assetClassBenchmarks } from '../../data/config';
+import { recommendedFunds, assetClassBenchmarks } from '@/data/config';
 
 test('BUYZ metrics parsed correctly', async () => {
   const csvPath = path.resolve(__dirname, '../../../data/Fund_Performance_Data.csv');

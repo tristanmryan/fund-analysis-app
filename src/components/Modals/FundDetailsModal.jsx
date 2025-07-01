@@ -1,6 +1,6 @@
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip } from 'recharts';
-import { getScoreColor, getScoreLabel } from '../../services/scoring';
+import { getScoreColor, getScoreLabel } from '@/services/scoring';
 
 const FundDetailsModal = ({ fund, onClose }) => {
   if (!fund) return null;

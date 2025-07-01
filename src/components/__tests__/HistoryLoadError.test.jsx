@@ -1,13 +1,13 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { AppProvider } from '../../context/AppContext.jsx';
-import { SnapshotProvider } from '../../contexts/SnapshotContext';
+import { AppProvider } from '@/context/AppContext.jsx';
+import { SnapshotProvider } from '@/contexts/SnapshotContext';
 let App;
-import * as dataLoader from '../../services/dataLoader';
+import * as dataLoader from '@/services/dataLoader';
 
-jest.mock('../../services/dataLoader');
-jest.mock('../../services/exportService', () => ({
+jest.mock('@/services/dataLoader');
+jest.mock('@/services/exportService', () => ({
   exportToExcel: jest.fn(),
   exportToPDF: jest.fn(),
 }));
@@ -15,7 +15,7 @@ jest.mock('../../services/exportService', () => ({
 
 beforeEach(() => {
   jest.clearAllMocks();
-  App = require('../../App.jsx').default;
+  App = require('@/App.jsx').default;
   dataLoader.getAssetClassOptions.mockReturnValue([]);
   dataLoader.loadAssetClassMap.mockResolvedValue(new Map());
 });

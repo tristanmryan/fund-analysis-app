@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import UploadDialog from '../components/UploadDialog';
-import { SnapshotProvider } from '../contexts/SnapshotContext';
+import UploadDialog from '@/components/UploadDialog';
+import { SnapshotProvider } from '@/contexts/SnapshotContext';
 
 test('UploadDialog renders and disables save initially', () => {
   render(

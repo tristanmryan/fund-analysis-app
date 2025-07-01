@@ -1,4 +1,4 @@
-import { ensureBenchmarkRows } from '../dataLoader';
+import { ensureBenchmarkRows } from '@/services/dataLoader';
 
 test('ensureBenchmarkRows adds benchmarks when list empty', () => {
   const result = ensureBenchmarkRows([]);

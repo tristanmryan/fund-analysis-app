@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
-import AnalysisView from '../components/Views/AnalysisView.jsx';
+import AnalysisView from '@/components/Views/AnalysisView.jsx';
 
 const sampleFunds = [
   { assetClass: 'Large Cap', Symbol: 'IWF', isBenchmark: true, scores: { final: 60 } },

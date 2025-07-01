@@ -1,5 +1,5 @@
 import Papa from 'papaparse';
-import { assetClassBenchmarks } from '../data/config';
+import { assetClassBenchmarks } from '@/data/config';
 
 let assetClassMap = null;
 

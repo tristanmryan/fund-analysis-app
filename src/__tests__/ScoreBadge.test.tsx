@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
-import ScoreBadge from '../components/ScoreBadge'
+import ScoreBadge from '@/components/ScoreBadge'
 
 test('renders score with label', () => {
   render(<ScoreBadge score={55} />)

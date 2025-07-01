@@ -1,5 +1,5 @@
 import Dexie, { Table } from 'dexie';
-import { ParsedSnapshot } from '../utils/parseFundFile';
+import { ParsedSnapshot } from '@/utils/parseFundFile';
 
 /** YYYY-MM, e.g. “2025-05” */
 export interface SnapshotRow extends ParsedSnapshot {

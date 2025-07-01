@@ -1,6 +1,6 @@
 import React, { createContext, useState, useMemo } from 'react';
-import { assetClassBenchmarks as defaultBenchmarks } from '../data/config';
-import { getAssetClassOptions } from '../services/dataLoader';
+import { assetClassBenchmarks as defaultBenchmarks } from '@/data/config';
+import { getAssetClassOptions } from '@/services/dataLoader';
 
 const AppContext = createContext();
 

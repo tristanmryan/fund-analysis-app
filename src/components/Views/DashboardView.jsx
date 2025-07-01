@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
-import AssetClassOverview from '../Dashboard/AssetClassOverview.jsx';
-import AppContext from '../../context/AppContext.jsx';
+import AssetClassOverview from '@/components/Dashboard/AssetClassOverview.jsx';
+import AppContext from '@/context/AppContext.jsx';
 
 const DashboardView = () => {
   const { fundData, config } = useContext(AppContext);

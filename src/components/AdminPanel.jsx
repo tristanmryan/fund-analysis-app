@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Plus, Trash2 } from 'lucide-react';
-import { saveStoredConfig } from '../data/storage';
-import { isValidTicker } from '../data/validators';
+import { saveStoredConfig } from '@/data/storage';
+import { isValidTicker } from '@/data/validators';
 
 const FormErrorMessage = ({ children }) => (
   <p className="mt-1 text-sm text-red-600" role="alert">

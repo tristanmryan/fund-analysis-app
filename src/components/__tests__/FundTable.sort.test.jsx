@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import FundTable from '../FundTable';
+import FundTable from '@/components/FundTable';
 
 test('clicking numeric header sorts desc then asc', async () => {
   const data = [

@@ -1,7 +1,7 @@
 import React from 'react';
-import { getScoreColor, getScoreLabel } from '../../services/scoring';
+import { getScoreColor, getScoreLabel } from '@/services/scoring';
 import ScoreBadge from '@/components/ScoreBadge';
-import TagList from '../TagList.jsx';
+import TagList from '@/components/TagList.jsx';
 import { BarChart2 } from 'lucide-react';
 
 /**

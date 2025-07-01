@@ -9,10 +9,10 @@ import {
   MenuItem,
 } from '@mui/material';
 
-import { parseFundFile } from '../utils/parseFundFile';
-import { attachScores } from '../services/scoringUtils';
-import { applyTagRules } from '../services/tagRules';
-import { addSnapshot, setActiveSnapshot, default as db } from '../services/snapshotStore';
+import { parseFundFile } from '@/utils/parseFundFile';
+import { attachScores } from '@/services/scoringUtils';
+import { applyTagRules } from '@/services/tagRules';
+import { addSnapshot, setActiveSnapshot, default as db } from '@/services/snapshotStore';
 
 export default function UploadDialog({
   open,

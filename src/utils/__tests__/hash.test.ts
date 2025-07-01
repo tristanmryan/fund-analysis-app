@@ -1,4 +1,4 @@
-import { sha1Hex } from '../hash'
+import { sha1Hex } from '@/utils/hash'
 import { TextEncoder } from 'util'
 import { webcrypto as nodeCrypto } from 'crypto'
 
