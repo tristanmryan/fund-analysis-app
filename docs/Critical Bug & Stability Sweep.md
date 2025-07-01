@@ -339,17 +339,16 @@ root@cd6c64869659:/workspace/fund-analysis-app# cat package.json
     "papaparse": "^5.5.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-scripts": "5.0.1",
+    "react-scripts": "5.0.1",  // retained only for running tests
     "recharts": "^2.15.3",
     "tsx": "^4.20.3",
     "web-vitals": "^2.1.4",
     "xlsx": "^0.18.5"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "dev": "vite",
+    "build": "vite build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
     "audit:benchmarks": "tsx scripts/auditBenchmarks.js"
   },
   "eslintConfig": {
