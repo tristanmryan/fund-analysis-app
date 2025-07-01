@@ -17,7 +17,7 @@ describe('parseFundFile', () => {
     expect(snap.rows.length).toBeGreaterThan(100)
     const sample = snap.rows[0]
     expect(sample).toHaveProperty('symbol')
-    expect(sample).toHaveProperty('ytdReturn')
+    expect(sample).toHaveProperty('ytd')
     expect(sample).toHaveProperty('assetClass')
   })
 

@@ -12,19 +12,19 @@ export const COLUMN_MAP: Record<string, keyof NormalisedRow> = {
   'Symbol': 'symbol',
   [CUR[0]]: 'symbol',
   [CUR[1]]: 'fundName',
-  [CUR[4]]: 'ytdReturn',
-  [CUR[6]]: 'oneYearReturn',
-  'Total Return - 3 Year (%)': 'threeYearReturn',
-  'Total Return - 5 Year (%)': 'fiveYearReturn',
-  'Total Return - 10 Year (%)': 'tenYearReturn',
-  [CUR[8]]: 'threeYearReturn',
-  [CUR[10]]: 'fiveYearReturn',
-  [CUR[12]]: 'tenYearReturn',
-  'YTD Return (%)': 'ytdReturn',
-  'Return 1 Year (%)': 'oneYearReturn',
-  'Return 3 Year (%)': 'threeYearReturn',
-  'Return 5 Year (%)': 'fiveYearReturn',
-  'Return 10 Year (%)': 'tenYearReturn',
+  [CUR[4]]: 'ytd',
+  [CUR[6]]: 'oneYear',
+  'Total Return - 3 Year (%)': 'threeYear',
+  'Total Return - 5 Year (%)': 'fiveYear',
+  'Total Return - 10 Year (%)': 'tenYear',
+  [CUR[8]]: 'threeYear',
+  [CUR[10]]: 'fiveYear',
+  [CUR[12]]: 'tenYear',
+  'YTD Return (%)': 'ytd',
+  'Return 1 Year (%)': 'oneYear',
+  'Return 3 Year (%)': 'threeYear',
+  'Return 5 Year (%)': 'fiveYear',
+  'Return 10 Year (%)': 'tenYear',
   'Sharpe Ratio (3 Year)': 'sharpe3y',
   [CUR[19]]: 'sharpe3y',
   'Sharpe Ratio 3Y': 'sharpe3y',
@@ -53,11 +53,11 @@ export const COLUMN_MAP: Record<string, keyof NormalisedRow> = {
 export interface NormalisedRow {
   symbol: string
   fundName: string | null
-  ytdReturn: number | null
-  oneYearReturn: number | null
-  threeYearReturn: number | null
-  fiveYearReturn: number | null
-  tenYearReturn: number | null
+  ytd: number | null
+  oneYear: number | null
+  threeYear: number | null
+  fiveYear: number | null
+  tenYear: number | null
   sharpe3y: number | null
   stdDev3y: number | null
   stdDev5y: number | null
@@ -82,11 +82,11 @@ export interface ParsedSnapshot {
 
 const REQUIRED = [
   'symbol',
-  'ytdReturn',
-  'oneYearReturn',
-  'threeYearReturn',
-  'fiveYearReturn',
-  'tenYearReturn',
+  'ytd',
+  'oneYear',
+  'threeYear',
+  'fiveYear',
+  'tenYear',
   'sharpe3y',
   'netExpenseRatio',
   'managerTenure',
@@ -146,11 +146,11 @@ export async function parseFundFile(
     const obj: any = {
       symbol: '',
       fundName: null,
-      ytdReturn: null,
-      oneYearReturn: null,
-      threeYearReturn: null,
-      fiveYearReturn: null,
-      tenYearReturn: null,
+      ytd: null,
+      oneYear: null,
+      threeYear: null,
+      fiveYear: null,
+      tenYear: null,
       sharpe3y: null,
       stdDev3y: null,
       stdDev5y: null,
@@ -172,11 +172,11 @@ export async function parseFundFile(
         key === 'upCapture3y' ||
         key === 'downCapture3y' ||
         key === 'rankYtd' ||
-        key === 'ytdReturn' ||
-        key === 'oneYearReturn' ||
-        key === 'threeYearReturn' ||
-        key === 'fiveYearReturn' ||
-        key === 'tenYearReturn' ||
+        key === 'ytd' ||
+        key === 'oneYear' ||
+        key === 'threeYear' ||
+        key === 'fiveYear' ||
+        key === 'tenYear' ||
         key === 'sharpe3y' ||
         key === 'stdDev3y' ||
         key === 'stdDev5y' ||
