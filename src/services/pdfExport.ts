@@ -1,9 +1,14 @@
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
-import { ParsedSnapshot } from '@/utils/parseFundFile'
+
+interface AutoTableDoc extends jsPDF {
+  lastAutoTable?: { finalY: number }
+}
+import type { ParsedSnapshot } from '@/utils/parseFundFile'
+import type { SnapshotFund } from '@/types/analysis'
 
 export async function buildSnapshotPdf (snap: ParsedSnapshot) {
-  const doc = new jsPDF({ orientation: 'landscape' })
+  const doc: AutoTableDoc = new jsPDF({ orientation: 'landscape' }) as AutoTableDoc
 
   // Header
   doc.setFontSize(18)
@@ -11,7 +16,7 @@ export async function buildSnapshotPdf (snap: ParsedSnapshot) {
   doc.setFontSize(10)
   doc.text(`Generated ${new Date().toLocaleDateString()}`, 14, 20)
 
-  const scoreRows = snap.rows as any[]
+  const scoreRows = snap.rows as SnapshotFund[]
   const sort = (asc = true) =>
     [...scoreRows]
       .sort((a, b) => (asc ? 1 : -1) * (b.score - a.score))
@@ -27,19 +32,19 @@ export async function buildSnapshotPdf (snap: ParsedSnapshot) {
 
   // Bottom performers
   autoTable(doc, {
-    startY: (doc as any).lastAutoTable.finalY + 4,
+    startY: (doc.lastAutoTable?.finalY ?? 26) + 4,
     head: [['Bottom 5 (Score)', 'Score', 'Δ']],
     body: sort(true).map(r => [`${r.symbol}`, r.score, r.delta ?? '']),
     theme: 'grid'
   })
 
   // Tag summary
-  const tagCounts = snap.rows.reduce((acc: Record<string, number>, r: any) => {
-    ;(r.tags ?? []).forEach((t: string) => (acc[t] = (acc[t] ?? 0) + 1))
+  const tagCounts = snap.rows.reduce<Record<string, number>>((acc, r) => {
+    (r.tags ?? []).forEach((t) => (acc[t] = (acc[t] ?? 0) + 1))
     return acc
   }, {})
   autoTable(doc, {
-    startY: (doc as any).lastAutoTable.finalY + 4,
+    startY: (doc.lastAutoTable?.finalY ?? 26) + 4,
     head: [['Tag', 'Count']],
     body: Object.entries(tagCounts),
     theme: 'plain'
@@ -48,7 +53,7 @@ export async function buildSnapshotPdf (snap: ParsedSnapshot) {
   // Asset-class averages
   const cls: Record<string, { sum: number; cnt: number }> = {}
   scoreRows.forEach(r => {
-    const c = (r as any).assetClass ?? 'Other'
+    const c = r.assetClass ?? 'Other'
     cls[c] ??= { sum: 0, cnt: 0 }
     cls[c].sum += r.score
     cls[c].cnt++

@@ -1,7 +1,8 @@
 import React from 'react'
 import { Box, Tooltip, Typography } from '@mui/material'
 import { useSnapshot } from '@/contexts/SnapshotContext'
-import db from '@/services/snapshotStore'
+import type { SnapshotRow } from '@/services/snapshotStore'
+import type { SnapshotFund } from '@/types/analysis'
 
 export function bucket (score: number | null) {
   if (score == null) return 'blank'
@@ -19,19 +20,29 @@ const colours: Record<string,string> = {
   blank:'#e0e0e0'
 }
 
+interface HeatmapCell {
+  id: string
+  score: number | null
+}
+
+interface HeatmapRow {
+  symbol: string
+  cells: HeatmapCell[]
+}
+
 export default function AnalysisView () {
   const { list, active } = useSnapshot()
-  const last12 = React.useMemo(
-    () => [...list].sort((a,b)=>a.id.localeCompare(b.id)).slice(-12),
+  const last12 = React.useMemo<SnapshotRow[]>(
+    () => [...list].sort((a, b) => a.id.localeCompare(b.id)).slice(-12),
     [list]
   )
   if (!active) return <Typography p={3}>No snapshot selected.</Typography>
 
   // build matrix
-  const rows = active.rows.map(r => {
-    const cells = last12.map(snap => {
-      const match = snap.rows.find(x => x.symbol === r.symbol)
-      return { id: snap.id, score: (match as any)?.score ?? null }
+  const rows: HeatmapRow[] = active.rows.map((r) => {
+    const cells: HeatmapCell[] = last12.map((snap) => {
+      const match = snap.rows.find(x => x.symbol === r.symbol) as SnapshotFund | undefined
+      return { id: snap.id, score: match?.score ?? null }
     })
     return { symbol: r.symbol, cells }
   })
