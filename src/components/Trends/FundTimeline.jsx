@@ -49,8 +49,8 @@ const FundTimeline = ({ fundSymbol, dataSnapshots }) => {
   }
 
   return (
-    <div style={{ border: '1px solid #e5e7eb', borderRadius: '0.5rem', padding: '1rem', backgroundColor: '#fff' }}>
-      <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+    <div className="border border-gray-200 rounded-lg p-4 bg-white">
+      <h3 className="text-xl font-bold mb-2">
         Score Trend: {fundSymbol.toUpperCase()}
       </h3>
       <ResponsiveContainer width="100%" height={300}>

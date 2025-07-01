@@ -173,30 +173,20 @@ const App = () => {
   const reviewCandidates = identifyReviewCandidates(scoredFundData);
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+    <div className="p-8 font-sans">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold mb-2">
           Lightship Fund Analysis
         </h1>
-        <p style={{ color: '#6b7280' }}>
+        <p className="text-gray-500">
           Monthly fund performance analysis with Z-score ranking system
         </p>
       </div>
 
-      <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+      <div className="mb-4 flex gap-2 flex-wrap">
         <button
           onClick={() => setActiveTab('funds')}
-          style={{ 
-            padding: '0.5rem 1rem',
-            backgroundColor: activeTab === 'funds' ? '#3b82f6' : '#e5e7eb',
-            color: activeTab === 'funds' ? 'white' : '#374151',
-            border: 'none',
-            borderRadius: '0.375rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}
+          className={`px-4 py-2 rounded-md flex items-center gap-2 border-none ${activeTab === 'funds' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
         >
           <Award size={16} />
           Fund Scores
@@ -204,109 +194,44 @@ const App = () => {
 
         <button
           onClick={() => setActiveTab('dashboard')}
-          style={{
-            padding: '0.5rem 1rem',
-            backgroundColor: activeTab === 'dashboard' ? '#3b82f6' : '#e5e7eb',
-            color: activeTab === 'dashboard' ? 'white' : '#374151',
-            border: 'none',
-            borderRadius: '0.375rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}
+          className={`px-4 py-2 rounded-md flex items-center gap-2 border-none ${activeTab === 'dashboard' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
         >
           <Database size={16} />
           Dashboard
         </button>
         
-        <button 
-          onClick={() => setActiveTab('class')} 
-          style={{ 
-            padding: '0.5rem 1rem',
-            backgroundColor: activeTab === 'class' ? '#3b82f6' : '#e5e7eb',
-            color: activeTab === 'class' ? 'white' : '#374151',
-            border: 'none',
-            borderRadius: '0.375rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}
+        <button
+          onClick={() => setActiveTab('class')}
+          className={`px-4 py-2 rounded-md flex items-center gap-2 border-none ${activeTab === 'class' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
         >
           <LayoutGrid size={16} />
           Class View
         </button>
         
-        <button 
-          onClick={() => setActiveTab('analysis')} 
-          style={{ 
-            padding: '0.5rem 1rem',
-            backgroundColor: activeTab === 'analysis' ? '#3b82f6' : '#e5e7eb',
-            color: activeTab === 'analysis' ? 'white' : '#374151',
-            border: 'none',
-            borderRadius: '0.375rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            position: 'relative'
-          }}
+        <button
+          onClick={() => setActiveTab('analysis')}
+          className={`relative px-4 py-2 rounded-md flex items-center gap-2 border-none ${activeTab === 'analysis' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
         >
           <AlertCircle size={16} />
           Analysis
           {reviewCandidates.length > 0 && (
-            <span style={{
-              position: 'absolute',
-              top: '-0.5rem',
-              right: '-0.5rem',
-              backgroundColor: '#dc2626',
-              color: 'white',
-              borderRadius: '9999px',
-              width: '1.25rem',
-              height: '1.25rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '0.75rem',
-              fontWeight: 'bold'
-            }}>
+            <span className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
               {reviewCandidates.length}
             </span>
           )}
         </button>
         
-        <button 
-          onClick={() => setActiveTab('history')} 
-          style={{ 
-            padding: '0.5rem 1rem',
-            backgroundColor: activeTab === 'history' ? '#3b82f6' : '#e5e7eb',
-            color: activeTab === 'history' ? 'white' : '#374151',
-            border: 'none',
-            borderRadius: '0.375rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}
+        <button
+          onClick={() => setActiveTab('history')}
+          className={`px-4 py-2 rounded-md flex items-center gap-2 border-none ${activeTab === 'history' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
         >
           <Clock size={16} />
           History
         </button>
         
-        <button 
+        <button
           onClick={() => setActiveTab('admin')}
-          style={{ 
-            padding: '0.5rem 1rem',
-            backgroundColor: activeTab === 'admin' ? '#3b82f6' : '#e5e7eb',
-            color: activeTab === 'admin' ? 'white' : '#374151',
-            border: 'none',
-            borderRadius: '0.375rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}
+          className={`px-4 py-2 rounded-md flex items-center gap-2 border-none ${activeTab === 'admin' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
         >
           <Settings size={16} />
           Admin
@@ -325,28 +250,15 @@ const App = () => {
       {/* Asset Class View Tab */}
       {activeTab === 'class' && (
         <div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+          <h2 className="text-2xl font-bold mb-4">
             Asset Class Comparison
           </h2>
           
-          <div
-            style={{
-              position: 'sticky',
-              top: 0,
-              zIndex: 10,
-              background: 'white'
-            }}
-          >
+          <div className="sticky top-0 z-10 bg-white">
             <select
               value={selectedClassView}
               onChange={e => setSelectedClassView(e.target.value)}
-              style={{
-                padding: '0.5rem',
-                marginBottom: '1rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '0.375rem',
-                fontSize: '1rem'
-              }}
+              className="p-2 mb-4 border border-gray-300 rounded-md text-base"
             >
               <option value="">-- Choose an asset class --</option>
               {availableClasses.map(ac => (
@@ -358,46 +270,41 @@ const App = () => {
           {selectedClassView && (
             <>
               {classSummaries[selectedClassView] && (
-                <div style={{
-                  marginBottom: '1.5rem',
-                  padding: '1rem',
-                  backgroundColor: '#f3f4f6',
-                  borderRadius: '0.5rem'
-                }}>
-                  <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+                <div className="mb-6 p-4 bg-gray-100 rounded-lg">
+                  <h3 className="text-lg font-bold mb-2">
                     {selectedClassView} Summary
                   </h3>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem' }}>
+                  <div className="grid [grid-template-columns:repeat(auto-fit,minmax(150px,1fr))] gap-4">
                     <div>
-                      <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>Fund Count</div>
-                      <div style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
+                      <div className="text-gray-500 text-sm">Fund Count</div>
+                      <div className="text-xl font-bold">
                         {classSummaries[selectedClassView].fundCount}
                       </div>
                     </div>
                     <div>
-                      <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>Average Score</div>
-                      <div style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
+                      <div className="text-gray-500 text-sm">Average Score</div>
+                      <div className="text-xl font-bold">
                         {classSummaries[selectedClassView].averageScore}
                       </div>
                     </div>
                     <div>
-                      <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>Benchmark Score</div>
-                      <div style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
+                      <div className="text-gray-500 text-sm">Benchmark Score</div>
+                      <div className="text-xl font-bold">
                         {classSummaries[selectedClassView].benchmarkScore != null
                           ? classSummaries[selectedClassView].benchmarkScore
                           : 'N/A'}
                       </div>
                     </div>
                     <div>
-                      <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>Distribution</div>
-                      <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.875rem' }}>
-                        <span style={{ color: '#16a34a' }}>
+                      <div className="text-gray-500 text-sm">Distribution</div>
+                      <div className="flex gap-2 text-sm">
+                        <span className="text-green-600">
                           {classSummaries[selectedClassView].distribution.excellent} excellent
                         </span>
-                        <span style={{ color: '#eab308' }}>
+                        <span className="text-yellow-500">
                           {classSummaries[selectedClassView].distribution.good} good
                         </span>
-                        <span style={{ color: '#dc2626' }}>
+                        <span className="text-red-600">
                           {classSummaries[selectedClassView].distribution.poor} poor
                         </span>
                       </div>

@@ -122,7 +122,7 @@ export default function FundScores () {
         <Button startIcon={<UploadIcon />} onClick={() => setUploadOpen(true)} variant='outlined'>Quick Upload</Button>
       </Box>
       {filteredFunds.length === 0 ? (
-        <p style={{ color: '#6b7280' }}>No funds match your current filter selection.</p>
+        <p className="text-gray-500">No funds match your current filter selection.</p>
       ) : grouped ? (
         <GroupedFundTable funds={filteredFunds} onRowClick={setSelectedFund} deltas={deltas} spark={spark} />
       ) : (
