@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import FundTable from '../FundTable';
+import FundTable from '@/components/FundTable';
 
 const sample = [{
   Symbol: 'ABC',

@@ -1,6 +1,6 @@
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
-import { ParsedSnapshot } from '../utils/parseFundFile'
+import { ParsedSnapshot } from '@/utils/parseFundFile'
 
 export async function buildSnapshotPdf (snap: ParsedSnapshot) {
   const doc = new jsPDF({ orientation: 'landscape' })

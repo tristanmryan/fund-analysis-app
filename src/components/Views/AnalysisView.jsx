@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import ScoreBadge from '@/components/ScoreBadge';
-import { fmtPct, fmtNumber } from '../../utils/formatters';
-import { getClassesWhereBenchmarkLeads } from '../../selectors/benchmarkLead';
-import HeatMapGrid from '../HeatMapGrid.jsx';
+import { fmtPct, fmtNumber } from '@/utils/formatters';
+import { getClassesWhereBenchmarkLeads } from '@/selectors/benchmarkLead';
+import HeatMapGrid from '@/components/HeatMapGrid.jsx';
 
 
 const AnalysisView = ({ funds = [], reviewCandidates = [], onSelectClass }) => {

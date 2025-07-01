@@ -1,10 +1,10 @@
 import React, { useContext, useState } from 'react';
-import GlobalFilterBar from '../Filters/GlobalFilterBar.jsx';
-import TagList from '../TagList.jsx';
+import GlobalFilterBar from '@/components/Filters/GlobalFilterBar.jsx';
+import TagList from '@/components/TagList.jsx';
 import { Download } from 'lucide-react';
-import { exportToExcel } from '../../services/exportService';
-import AppContext from '../../context/AppContext.jsx';
-import FundDetailsModal from '../Modals/FundDetailsModal.jsx';
+import { exportToExcel } from '@/services/exportService';
+import AppContext from '@/context/AppContext.jsx';
+import FundDetailsModal from '@/components/Modals/FundDetailsModal.jsx';
 
 /* ---------- simple table component ---------- */
 const FundTable = ({ funds = [], onRowClick = () => {} }) => (

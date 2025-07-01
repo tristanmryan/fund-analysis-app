@@ -1,4 +1,4 @@
-import { buildSnapshotPdf } from '../pdfExport'
+import { buildSnapshotPdf } from '@/services/pdfExport'
 import { ParsedSnapshot } from '@/utils/parseFundFile'
 
 describe('buildSnapshotPdf', () => {

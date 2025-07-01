@@ -5,7 +5,7 @@ import db, {
   getActiveSnapshot,
   setActiveSnapshot,
   SnapshotRow
-} from '../services/snapshotStore'
+} from '@/services/snapshotStore'
 
 interface SnapshotCtxShape {
   active: SnapshotRow | undefined

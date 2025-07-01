@@ -2,8 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import * as XLSX from 'xlsx';
 import parseFundFile from '@/utils/parseFundFile';
-import { recommendedFunds, assetClassBenchmarks } from '../../data/config';
-import { calculateScores } from '../scoring';
+import { recommendedFunds, assetClassBenchmarks } from '@/data/config';
+import { calculateScores } from '@/services/scoring';
 
 const clean = s => s?.toUpperCase().trim().replace(/[^A-Z0-9]/g, '');
 

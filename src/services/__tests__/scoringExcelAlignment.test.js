@@ -1,4 +1,4 @@
-import { calculateScores, METRICS_CONFIG } from '../scoring';
+import { calculateScores, METRICS_CONFIG } from '@/services/scoring';
 
 function scoreWithExcelSpec(funds) {
   const metrics = Object.keys(METRICS_CONFIG.weights);

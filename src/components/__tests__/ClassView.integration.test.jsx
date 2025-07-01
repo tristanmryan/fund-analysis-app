@@ -3,11 +3,11 @@ import path from 'path';
 import * as XLSX from 'xlsx';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import BenchmarkRow from '../BenchmarkRow.jsx';
+import BenchmarkRow from '@/components/BenchmarkRow.jsx';
 import parseFundFile from '@/utils/parseFundFile';
-import { recommendedFunds, assetClassBenchmarks } from '../../data/config';
-import { calculateScores } from '../../services/scoring';
-import { ensureBenchmarkRows } from '../../services/dataLoader';
+import { recommendedFunds, assetClassBenchmarks } from '@/data/config';
+import { calculateScores } from '@/services/scoring';
+import { ensureBenchmarkRows } from '@/services/dataLoader';
 
 const clean = s => s?.toUpperCase().trim().replace(/[^A-Z0-9]/g, '');
 

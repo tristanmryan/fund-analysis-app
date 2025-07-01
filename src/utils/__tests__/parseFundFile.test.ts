@@ -1,4 +1,4 @@
-import { parseFundFile } from '../parseFundFile'
+import { parseFundFile } from '@/utils/parseFundFile'
 import fs from 'fs/promises'
 import { File as NodeFile, Blob as NodeBlob } from 'node:buffer'
 import * as crypto from 'crypto'

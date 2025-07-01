@@ -4,10 +4,10 @@ import path from 'path';
 import * as XLSX from 'xlsx';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import ClassView from '../ClassView.jsx';
-import { useSnapshot } from '../../contexts/SnapshotContext';
+import ClassView from '@/components/ClassView.jsx';
+import { useSnapshot } from '@/contexts/SnapshotContext';
 
-jest.mock('../../contexts/SnapshotContext', () => ({
+jest.mock('@/contexts/SnapshotContext', () => ({
   useSnapshot: jest.fn()
 }));
 import parseFundFile from '@/utils/parseFundFile';
@@ -15,9 +15,9 @@ import { CURRENT_PERFORMANCE_HEADERS as CUR } from '@/docs/schema';
 
 global.structuredClone =
   global.structuredClone || ((v) => JSON.parse(JSON.stringify(v)));
-import { recommendedFunds, assetClassBenchmarks } from '../../data/config';
-import { calculateScores } from '../../services/scoring';
-import { ensureBenchmarkRows } from '../../services/dataLoader';
+import { recommendedFunds, assetClassBenchmarks } from '@/data/config';
+import { calculateScores } from '@/services/scoring';
+import { ensureBenchmarkRows } from '@/services/dataLoader';
 
 const clean = s => s?.toUpperCase().trim().replace(/[^A-Z0-9]/g, '');
 

@@ -1,4 +1,4 @@
-import { getScoreLabel, getScoreColor } from '../scoreTags';
+import { getScoreLabel, getScoreColor } from '@/utils/scoreTags';
 
 test('score label bands', () => {
   expect(getScoreLabel(65)).toBe('Strong');

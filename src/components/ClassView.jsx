@@ -1,1 +1,1 @@
-export { default } from '../routes/ClassView'
+export { default } from '@/routes/ClassView'

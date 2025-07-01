@@ -1,8 +1,8 @@
-import { process } from '../fundProcessingService';
+import { process } from '@/services/fundProcessingService';
 import parseFundFile from '@/utils/parseFundFile';
-import { ensureBenchmarkRows } from '../dataLoader';
-import { calculateScores } from '../scoring';
-import { applyTagRules } from '../tagEngine';
+import { ensureBenchmarkRows } from '@/services/dataLoader';
+import { calculateScores } from '@/services/scoring';
+import { applyTagRules } from '@/services/tagEngine';
 import * as XLSX from 'xlsx';
 
 afterEach(() => {
@@ -10,9 +10,9 @@ afterEach(() => {
 });
 
 jest.mock('@/utils/parseFundFile');
-jest.mock('../dataLoader', () => ({ ensureBenchmarkRows: jest.fn() }));
-jest.mock('../scoring', () => ({ calculateScores: jest.fn() }));
-jest.mock('../tagEngine', () => ({ applyTagRules: jest.fn() }));
+jest.mock('@/services/dataLoader', () => ({ ensureBenchmarkRows: jest.fn() }));
+jest.mock('@/services/scoring', () => ({ calculateScores: jest.fn() }));
+jest.mock('@/services/tagEngine', () => ({ applyTagRules: jest.fn() }));
 jest.mock('xlsx');
 
 test('process executes helpers in order', async () => {

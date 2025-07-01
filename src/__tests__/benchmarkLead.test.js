@@ -1,4 +1,4 @@
-import { getClassesWhereBenchmarkLeads } from '../selectors/benchmarkLead';
+import { getClassesWhereBenchmarkLeads } from '@/selectors/benchmarkLead';
 
 describe('getClassesWhereBenchmarkLeads', () => {
   const sample = [

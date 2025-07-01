@@ -5,8 +5,8 @@
  * Implements weighted Z-score ranking system within asset classes
  */
 
-import { getScoreColor, getScoreLabel } from '../utils/scoreTags';
-import { CURRENT_PERFORMANCE_HEADERS as CUR } from '../docs/schema'
+import { getScoreColor, getScoreLabel } from '@/utils/scoreTags';
+import { CURRENT_PERFORMANCE_HEADERS as CUR } from '@/docs/schema'
 
 // Metric weights configuration - these match your Word document
 const METRIC_WEIGHTS = {
@@ -431,7 +431,7 @@ const METRIC_WEIGHTS = {
    * @param {number} score - Score value (0-100)
    * @returns {string} Color hex code
    */
-export { getScoreColor, getScoreLabel } from '../utils/scoreTags';
+export { getScoreColor, getScoreLabel } from '@/utils/scoreTags';
   
   // Export all metric information for UI use
   export const METRICS_CONFIG = {

@@ -1,4 +1,4 @@
-import { ParsedSnapshot } from '../utils/parseFundFile'
+import { ParsedSnapshot } from '@/utils/parseFundFile'
 
 export function applyTagRules (snapshots: ParsedSnapshot[]): ParsedSnapshot {
   const latest = snapshots[snapshots.length - 1]

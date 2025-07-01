@@ -1,4 +1,4 @@
-import { calculateScores, generateClassSummary } from '../scoring';
+import { calculateScores, generateClassSummary } from '@/services/scoring';
 
 describe('per-class scoring with benchmark integration', () => {
   test('benchmark scored within its asset class', () => {

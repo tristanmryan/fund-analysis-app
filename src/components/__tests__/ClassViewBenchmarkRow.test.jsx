@@ -1,9 +1,9 @@
 import 'fake-indexeddb/auto';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import ClassView from '../ClassView.jsx';
+import ClassView from '@/components/ClassView.jsx';
 
-jest.mock('../../contexts/SnapshotContext', () => ({
+jest.mock('@/contexts/SnapshotContext', () => ({
   useSnapshot: jest.fn()
 }));
 
@@ -41,7 +41,7 @@ const mockLargeCapGrowth = [
 ];
 
 
-import { useSnapshot } from '../../contexts/SnapshotContext';
+import { useSnapshot } from '@/contexts/SnapshotContext';
 
 test('benchmark row visible in class view', () => {
   useSnapshot.mockReturnValue({ active: { rows: mockLargeCapGrowth }, setActive: jest.fn(), list: [] });

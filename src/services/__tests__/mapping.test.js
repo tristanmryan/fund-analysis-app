@@ -1,4 +1,4 @@
-import { loadAssetClassMap, lookupAssetClass, clearAssetClassMap, getAssetClassOptions } from '../dataLoader';
+import { loadAssetClassMap, lookupAssetClass, clearAssetClassMap, getAssetClassOptions } from '@/services/dataLoader';
 
 describe('asset class mapping', () => {
   beforeAll(async () => {

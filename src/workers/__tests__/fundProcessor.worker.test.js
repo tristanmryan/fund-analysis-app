@@ -1,9 +1,9 @@
 const mockProcess = jest.fn();
-jest.mock('../../services/fundProcessingService', () => ({
+jest.mock('@/services/fundProcessingService', () => ({
   process: mockProcess
 }));
 
-const { process } = require('../../services/fundProcessingService');
+const { process } = require('@/services/fundProcessingService');
 
 describe('fundProcessor worker', () => {
   beforeEach(() => {
@@ -17,7 +17,7 @@ describe('fundProcessor worker', () => {
     Object.defineProperty(global, 'self', { writable: true, value: { postMessage } });
 
     // Require after setting self so the handler registers
-    require('../fundProcessor.worker.js');
+    require('@/workers/fundProcessor.worker.js');
 
     await global.self.onmessage({ data: { file: 'file', config: { a: 1 } } });
 

@@ -1,9 +1,9 @@
 import 'fake-indexeddb/auto';
 import { render } from '@testing-library/react';
-import ClassView from '../ClassView.jsx';
-import { useSnapshot } from '../../contexts/SnapshotContext';
+import ClassView from '@/components/ClassView.jsx';
+import { useSnapshot } from '@/contexts/SnapshotContext';
 
-jest.mock('../../contexts/SnapshotContext', () => ({
+jest.mock('@/contexts/SnapshotContext', () => ({
   useSnapshot: jest.fn()
 }));
 

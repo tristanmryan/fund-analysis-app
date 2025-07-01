@@ -1,4 +1,4 @@
-import { applyTagRules } from '../tagRules'
+import { applyTagRules } from '@/services/tagRules'
 import { ParsedSnapshot } from '@/utils/parseFundFile'
 
 describe('applyTagRules', () => {

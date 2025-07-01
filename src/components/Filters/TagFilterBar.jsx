@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import AppContext from '../../context/AppContext.jsx';
+import AppContext from '@/context/AppContext.jsx';
 
 const TAGS = [
   'Review',

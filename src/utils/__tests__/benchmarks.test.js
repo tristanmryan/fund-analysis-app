@@ -1,4 +1,4 @@
-import { lookupBenchmarkTicker, lookupBenchmark } from '../benchmarks';
+import { lookupBenchmarkTicker, lookupBenchmark } from '@/utils/benchmarks';
 
 test('lookupBenchmarkTicker returns correct symbol', () => {
   expect(lookupBenchmarkTicker('Large Cap Growth')).toBe('IWF');

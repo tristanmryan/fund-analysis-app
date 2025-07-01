@@ -7,12 +7,12 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import CheckIcon from '@mui/icons-material/Check'
 import UploadIcon from '@mui/icons-material/Upload'
 import DownloadIcon from '@mui/icons-material/Download'
-import { parseFundFile } from '../utils/parseFundFile'
-import { attachScores } from '../services/scoringUtils'
-import db, { addSnapshot, softDeleteSnapshot, setActiveSnapshot } from '../services/snapshotStore'
-import { applyTagRules } from '../services/tagRules'
-import { useSnapshot } from '../contexts/SnapshotContext'
-import { buildSnapshotPdf } from '../services/pdfExport'
+import { parseFundFile } from '@/utils/parseFundFile'
+import { attachScores } from '@/services/scoringUtils'
+import db, { addSnapshot, softDeleteSnapshot, setActiveSnapshot } from '@/services/snapshotStore'
+import { applyTagRules } from '@/services/tagRules'
+import { useSnapshot } from '@/contexts/SnapshotContext'
+import { buildSnapshotPdf } from '@/services/pdfExport'
 
 export default function HistoricalManager () {
   const { active, setActive, list } = useSnapshot()
