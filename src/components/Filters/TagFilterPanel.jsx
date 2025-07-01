@@ -1,9 +1,10 @@
 import React from 'react';
 
-const TAG_COLORS = {
-  underperformer : '#dc2626',
-  outperformer   : '#16a34a',
-  'review-needed': '#eab308'
+const COLOR_CLASSES = {
+  underperformer: 'border-red-600/50 bg-red-600/20 text-red-600',
+  outperformer: 'border-green-600/50 bg-green-600/20 text-green-600',
+  'review-needed': 'border-yellow-500/50 bg-yellow-500/20 text-yellow-500',
+  default: 'border-gray-500/50 bg-gray-500/20 text-gray-500'
 };
 
 /**
@@ -25,19 +26,14 @@ const TagFilterPanel = ({ availableTags = [], selectedTags = [], onToggleTag }) 
     <div className="flex flex-wrap gap-2">
       {availableTags.map(tag => {
         const active = Array.isArray(selectedTags) && selectedTags.includes(tag);
-        const color  = TAG_COLORS[tag] || '#6b7280';
+        const classes = COLOR_CLASSES[tag] || COLOR_CLASSES.default;
 
         return (
           <button
             key={tag}
             type="button"
             onClick={() => handleToggle(tag)}
-            style={{
-              borderColor: active ? color : '#d1d5db',
-              backgroundColor: active ? `${color}20` : 'transparent',
-              color: active ? color : '#374151'
-            }}
-            className={`cursor-pointer rounded-full border px-3 py-1 text-xs ${active ? 'font-semibold' : ''}`}
+            className={`cursor-pointer rounded-full border px-3 py-1 text-xs ${active ? `font-semibold ${classes}` : 'border-gray-300 text-gray-700 bg-transparent'}`}
           >
             {tag}
           </button>

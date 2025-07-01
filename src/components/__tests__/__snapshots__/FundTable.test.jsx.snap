@@ -3,10 +3,10 @@
 exports[`renders table snapshot 1`] = `
 <DocumentFragment>
   <div
-    style="overflow-x: auto;"
+    class="overflow-x-auto"
   >
     <table
-      style="width: 100%; border-collapse: collapse;"
+      class="w-full border-collapse"
     >
       <colgroup>
         <col />
@@ -26,75 +26,75 @@ exports[`renders table snapshot 1`] = `
       </colgroup>
       <thead>
         <tr
-          style="border-bottom: 2px solid #e5e7eb;"
+          class="border-b-2 border-gray-200"
         >
           <th
-            style="padding: 0.75rem; text-align: left; font-weight: 500; cursor: pointer;"
+            class="cursor-pointer p-3 font-medium text-left"
           >
             Symbol
           </th>
           <th
-            style="padding: 0.75rem; text-align: left; font-weight: 500; cursor: pointer;"
+            class="cursor-pointer p-3 font-medium text-left"
           >
             Fund Name
           </th>
           <th
-            style="padding: 0.75rem; text-align: left; font-weight: 500; cursor: pointer;"
+            class="cursor-pointer p-3 font-medium text-left"
           >
             Type
           </th>
           <th
-            style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
+            class="cursor-pointer p-3 font-medium text-right"
           >
             Score
           </th>
           <th
-            style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
+            class="cursor-pointer p-3 font-medium text-right"
           >
             Δ
           </th>
           <th
-            style="padding: 0.75rem; text-align: left; font-weight: 500; cursor: pointer;"
+            class="cursor-pointer p-3 font-medium text-left"
           >
             Trend
           </th>
           <th
-            style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
+            class="cursor-pointer p-3 font-medium text-right"
           >
             YTD
           </th>
           <th
-            style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
+            class="cursor-pointer p-3 font-medium text-right"
           >
             1Y
           </th>
           <th
-            style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
+            class="cursor-pointer p-3 font-medium text-right"
           >
             3Y
           </th>
           <th
-            style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
+            class="cursor-pointer p-3 font-medium text-right"
           >
             5Y
           </th>
           <th
-            style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
+            class="cursor-pointer p-3 font-medium text-right"
           >
             Sharpe
           </th>
           <th
-            style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
+            class="cursor-pointer p-3 font-medium text-right"
           >
             Std Dev (5Y)
           </th>
           <th
-            style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
+            class="cursor-pointer p-3 font-medium text-right"
           >
             Expense
           </th>
           <th
-            style="padding: 0.75rem; text-align: left; font-weight: 500; cursor: pointer;"
+            class="cursor-pointer p-3 font-medium text-left"
           >
             Tags
           </th>
@@ -102,55 +102,56 @@ exports[`renders table snapshot 1`] = `
       </thead>
       <tbody>
         <tr
+          class="border-b border-gray-100 cursor-pointer "
           role="button"
-          style="border-bottom: 1px solid #f3f4f6; cursor: pointer; background-color: transparent;"
           tabindex="0"
         >
           <td
-            style="padding: 0.5rem;"
+            class="p-2"
           >
             ABC
           </td>
           <td
-            style="padding: 0.5rem;"
+            class="p-2"
           >
             Alpha Fund
           </td>
           <td
-            style="padding: 0.5rem;"
+            class="p-2"
           />
           <td
-            style="padding: 0.5rem; text-align: center;"
+            class="p-2 text-center"
           >
             <span
-              style="background-color: rgba(22, 163, 74, 0.125); color: rgb(22, 163, 74); border: 1px solid #16a34a50; border-radius: 9999px; font-weight: bold; text-align: center; display: inline-block; font-size: 0.75rem; padding: 0.25rem 0.5rem; min-width: 3rem;"
+              class="inline-block min-w-[3rem] rounded-full border px-2 py-1 text-center text-xs font-bold"
+              style="background-color: rgba(22, 163, 74, 0.125); color: rgb(22, 163, 74); border-color: #16a34a50;"
             >
               75.0 - Strong
             </span>
           </td>
           <td
-            style="padding: 0.5rem; text-align: center;"
+            class="p-2 text-center"
           />
           <td
-            style="padding: 0.5rem;"
+            class="p-2"
           />
           <td
-            style="padding: 0.5rem; text-align: right;"
+            class="p-2 text-right"
           >
             2.00 %
           </td>
           <td
-            style="padding: 0.5rem; text-align: right;"
+            class="p-2 text-right"
           >
             10.00 %
           </td>
           <td
-            style="padding: 0.5rem; text-align: right;"
+            class="p-2 text-right"
           >
             12.00 %
           </td>
           <td
-            style="padding: 0.5rem; text-align: right;"
+            class="p-2 text-right"
           >
             15.00 %
           </td>
@@ -165,26 +166,21 @@ exports[`renders table snapshot 1`] = `
             18.00 %
           </td>
           <td
-            style="padding: 0.5rem; text-align: right;"
+            class="p-2 text-right"
           >
             0.50 %
           </td>
           <td
-            style="padding: 0.5rem;"
+            class="p-2"
           >
             <div
-              style="display: flex; flex-wrap: wrap; gap: 0.25rem;"
+              class="flex flex-wrap gap-1"
             >
-              <div
-                class="MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-outlinedDefault css-1d2be57-MuiChip-root"
-                style="background-color: rgba(107, 114, 128, 0.125); color: rgb(107, 114, 128); border-color: #6b728040;"
+              <span
+                class="rounded-full border px-2 py-0.5 text-xs bg-gray-500/20 text-gray-500 border-gray-500/40"
               >
-                <span
-                  class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
-                >
-                  outperformer
-                </span>
-              </div>
+                outperformer
+              </span>
             </div>
           </td>
         </tr>

@@ -17,31 +17,24 @@ import { BarChart2 } from 'lucide-react';
  */
 
 const FundRow = ({ fund }) => (
-  <tr style={{ borderBottom: '1px solid #f3f4f6' }}>
-    <td style={{ padding: '0.5rem' }}>{fund.fundName}</td>
-    <td style={{ padding: '0.5rem' }}>{fund.Symbol}</td>
-    <td style={{ padding: '0.5rem' }}>{fund.assetClass}</td>
-    <td style={{ padding: '0.5rem', textAlign: 'center' }}>
+  <tr className="border-b border-gray-100">
+    <td className="p-2">{fund.fundName}</td>
+    <td className="p-2">{fund.Symbol}</td>
+    <td className="p-2">{fund.assetClass}</td>
+    <td className="p-2 text-center">
       <ScoreBadge score={fund.scores?.final || 0} />
     </td>
-    <td style={{ padding: '0.5rem' }}>
+    <td className="p-2">
       {Array.isArray(fund.tags) && fund.tags.length > 0 ? (
         <TagList tags={fund.tags} />
       ) : (
-        <span style={{ color: '#9ca3af' }}>-</span>
+        <span className="text-gray-400">-</span>
       )}
     </td>
-    <td style={{ padding: '0.5rem' }}>
+    <td className="p-2">
       {fund.isBenchmark && (
         <span
-          style={{
-            backgroundColor: '#fbbf24',
-            color: '#78350f',
-            padding: '0.125rem 0.5rem',
-            borderRadius: '0.25rem',
-            fontSize: '0.75rem',
-            fontWeight: '500'
-          }}
+          className="rounded bg-yellow-400 px-2 py-0.5 text-xs font-medium text-amber-900"
         >
           Benchmark
         </span>
@@ -67,23 +60,23 @@ const TopBottomPerformers = ({ funds }) => {
   const bottom = sorted.slice(-5).reverse();
 
   return (
-    <div style={{ marginBottom: '1.5rem' }}>
-      <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+    <div className="mb-6">
+      <h3 className="mb-2 flex items-center gap-2 text-xl font-bold">
         <BarChart2 size={18} /> Top &amp; Bottom Performers
       </h3>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
+      <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(300px,1fr))]">
         <div>
-          <h4 style={{ fontWeight: 'bold', marginBottom: '0.25rem' }}>Top 5</h4>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <h4 className="mb-1 font-bold">Top 5</h4>
+          <table className="w-full border-collapse">
             <thead>
-              <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
-                <th style={{ textAlign: 'left', padding: '0.5rem' }}>Fund</th>
-                <th style={{ textAlign: 'left', padding: '0.5rem' }}>Ticker</th>
-                <th style={{ textAlign: 'left', padding: '0.5rem' }}>Class</th>
-                <th style={{ textAlign: 'center', padding: '0.5rem' }}>Score</th>
-                <th style={{ textAlign: 'left', padding: '0.5rem' }}>Tags</th>
-                <th style={{ padding: '0.5rem' }}></th>
+              <tr className="border-b-2 border-gray-200">
+                <th className="p-2 text-left">Fund</th>
+                <th className="p-2 text-left">Ticker</th>
+                <th className="p-2 text-left">Class</th>
+                <th className="p-2 text-center">Score</th>
+                <th className="p-2 text-left">Tags</th>
+                <th className="p-2"></th>
               </tr>
             </thead>
             <tbody>
@@ -95,16 +88,16 @@ const TopBottomPerformers = ({ funds }) => {
         </div>
 
         <div>
-          <h4 style={{ fontWeight: 'bold', marginBottom: '0.25rem' }}>Bottom 5</h4>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <h4 className="mb-1 font-bold">Bottom 5</h4>
+          <table className="w-full border-collapse">
             <thead>
-              <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
-                <th style={{ textAlign: 'left', padding: '0.5rem' }}>Fund</th>
-                <th style={{ textAlign: 'left', padding: '0.5rem' }}>Ticker</th>
-                <th style={{ textAlign: 'left', padding: '0.5rem' }}>Class</th>
-                <th style={{ textAlign: 'center', padding: '0.5rem' }}>Score</th>
-                <th style={{ textAlign: 'left', padding: '0.5rem' }}>Tags</th>
-                <th style={{ padding: '0.5rem' }}></th>
+              <tr className="border-b-2 border-gray-200">
+                <th className="p-2 text-left">Fund</th>
+                <th className="p-2 text-left">Ticker</th>
+                <th className="p-2 text-left">Class</th>
+                <th className="p-2 text-center">Score</th>
+                <th className="p-2 text-left">Tags</th>
+                <th className="p-2"></th>
               </tr>
             </thead>
             <tbody>
