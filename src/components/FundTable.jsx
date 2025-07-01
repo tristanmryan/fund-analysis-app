@@ -8,6 +8,22 @@ import SparkLine from './SparkLine';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
+const ScoreBadge = ({ score }) => {
+  const color = getScoreColor(score);
+  const label = getScoreLabel(score);
+  return (
+    <span
+      style={{
+        backgroundColor: `${color}20`,
+        color,
+        borderColor: `${color}50`
+      }}
+      className="inline-block min-w-[3rem] rounded-full border px-2 py-1 text-center text-xs font-bold"
+    >
+      {Number(score).toFixed(1)} - {label}
+    </span>
+  );
+};
 
 const columns = [
   { key: 'Symbol', label: 'Symbol', numeric: false },
@@ -63,20 +79,20 @@ const FundTable = ({ funds = [], rows, benchmark, onRowClick = () => {}, deltas 
   }, [data, sort]);
 
   return (
-    <div style={{ overflowX: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+    <div className="overflow-x-auto">
+      <table className="w-full border-collapse">
       <colgroup>
         {columns.map((c, idx) => (
           <col key={idx} />
         ))}
       </colgroup>
       <thead>
-        <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
+        <tr className="border-b-2 border-gray-200">
           {columns.map(col => (
             <th
               key={col.key}
               onClick={() => handleSort(col.key, col.numeric)}
-              style={{ padding: '0.75rem', textAlign: col.numeric ? 'right' : col.key === 'Score' ? 'center' : 'left', fontWeight: 500, cursor: 'pointer' }}
+              className={`cursor-pointer p-3 font-medium ${col.numeric ? 'text-right' : col.key === 'Score' ? 'text-center' : 'text-left'}`}
             >
               {col.label}
               {sort.key === col.key && (sort.dir === 'asc' ? ' ▲' : ' ▼')}
@@ -89,29 +105,25 @@ const FundTable = ({ funds = [], rows, benchmark, onRowClick = () => {}, deltas 
         {sorted.map(fund => (
           <tr
             key={fund.Symbol}
-            style={{
-              borderBottom: '1px solid #f3f4f6',
-              cursor: 'pointer',
-              backgroundColor: fund.isBenchmark ? '#fffbeb' : 'transparent'
-            }}
+            className={`border-b border-gray-100 cursor-pointer ${fund.isBenchmark ? 'bg-amber-50' : ''}`}
             role="button"
             tabIndex={0}
             onKeyDown={e => e.key === 'Enter' && onRowClick(fund)}
             onClick={() => onRowClick(fund)}
           >
-            <td style={{ padding: '0.5rem' }}>{fund.Symbol}</td>
-            <td style={{ padding: '0.5rem' }}>{fund.fundName}</td>
-            <td style={{ padding: '0.5rem' }}>
+            <td className="p-2">{fund.Symbol}</td>
+            <td className="p-2">{fund.fundName}</td>
+            <td className="p-2">
               {fund.isBenchmark ? 'Benchmark' : fund.isRecommended ? 'Recommended' : ''}
             </td>
-            <td style={{ padding: '0.5rem', textAlign: 'center' }}>
+            <td className="p-2 text-center">
               {fund.score != null
                 ? <ScoreBadge score={fund.score} />
                 : fund.scores
                   ? <ScoreBadge score={fund.scores.final} />
                   : '—'}
             </td>
-            <td style={{ padding: '0.5rem', textAlign: 'center' }}>
+            <td className="p-2 text-center">
               {(() => {
                 const d = deltas[fund.Symbol]
                 return d == null ? '' : d > 0
@@ -121,19 +133,19 @@ const FundTable = ({ funds = [], rows, benchmark, onRowClick = () => {}, deltas 
                     : '—'
               })()}
             </td>
-            <td style={{ padding: '0.5rem' }}>
+            <td className="p-2">
               <SparkLine data={spark[fund.Symbol] ?? []} />
             </td>
-            <td style={{ padding: '0.5rem', textAlign: 'right' }}>
+            <td className="p-2 text-right">
               {fmtPct(fund.ytd)}
             </td>
-            <td style={{ padding: '0.5rem', textAlign: 'right' }}>
+            <td className="p-2 text-right">
               {fmtPct(fund.oneYear)}
             </td>
-            <td style={{ padding: '0.5rem', textAlign: 'right' }}>
+            <td className="p-2 text-right">
               {fmtPct(fund.threeYear)}
             </td>
-            <td style={{ padding: '0.5rem', textAlign: 'right' }}>
+            <td className="p-2 text-right">
               {fmtPct(fund.fiveYear)}
             </td>
             <td style={{ padding: '0.5rem', textAlign: 'right' }}>
@@ -142,14 +154,14 @@ const FundTable = ({ funds = [], rows, benchmark, onRowClick = () => {}, deltas 
             <td style={{ padding: '0.5rem', textAlign: 'right' }}>
               {fmtPct(fund.stdDev5Y)}
             </td>
-            <td style={{ padding: '0.5rem', textAlign: 'right' }}>
+            <td className="p-2 text-right">
               {fmtPct(fund.expenseRatio)}
             </td>
-            <td style={{ padding: '0.5rem' }}>
+            <td className="p-2">
               {Array.isArray(fund.tags) && fund.tags.length > 0 ? (
                 <TagList tags={fund.tags} />
               ) : (
-                <span style={{ color: '#9ca3af' }}>-</span>
+                <span className="text-gray-400">-</span>
               )}
             </td>
           </tr>
