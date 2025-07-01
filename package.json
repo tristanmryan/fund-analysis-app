@@ -38,7 +38,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "audit:benchmarks": "tsx scripts/auditBenchmarks.js"
+    "audit:benchmarks": "tsx scripts/auditBenchmarks.js",
+    "typecheck": "tsc --noEmit",
+    "lint:fix": "eslint . --fix"
   },
   "jest": {
     "moduleNameMapper": {
