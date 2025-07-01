@@ -1,5 +1,5 @@
 import { buildSnapshotPdf } from '../pdfExport'
-import { ParsedSnapshot } from '../../utils/parseFundFile'
+import { ParsedSnapshot } from '@/utils/parseFundFile'
 
 describe('buildSnapshotPdf', () => {
   test('returns landscape jsPDF instance', async () => {

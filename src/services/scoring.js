@@ -130,9 +130,11 @@ const METRIC_WEIGHTS = {
       threeYear: parseMetricValue(fundData.threeYear),
       fiveYear: parseMetricValue(fundData.fiveYear),
       tenYear: parseMetricValue(fundData.tenYear),
-      sharpeRatio3Y: parseMetricValue(fundData.sharpe3y),
-      stdDev3Y: parseMetricValue(fundData.stdDev3y),
-      stdDev5Y: parseMetricValue(fundData.stdDev5y),
+      sharpeRatio3Y: parseMetricValue(
+        fundData.sharpeRatio3Y ?? fundData.sharpe3Y ?? fundData.sharpe3y
+      ),
+      stdDev3Y: parseMetricValue(fundData.stdDev3Y ?? fundData.stdDev3y),
+      stdDev5Y: parseMetricValue(fundData.stdDev5Y ?? fundData.stdDev5y),
       upCapture3Y: parseMetricValue(fundData.upCapture3Y),
       downCapture3Y: parseMetricValue(fundData.downCapture3Y),
       alpha5Y: parseMetricValue(fundData.alpha5Y),

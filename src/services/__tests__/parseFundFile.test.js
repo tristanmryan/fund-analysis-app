@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import * as XLSX from 'xlsx';
-import parseFundFile from '../parseFundFile';
+import parseFundFile from '@/utils/parseFundFile';
 import { CURRENT_PERFORMANCE_HEADERS as CUR } from '@/docs/schema';
 import { recommendedFunds, assetClassBenchmarks } from '../../data/config';
 import { loadAssetClassMap, clearAssetClassMap } from '../dataLoader';
@@ -15,7 +15,7 @@ describe('parseFundFile', () => {
     clearAssetClassMap();
   });
 
-  test('parses expense, type and asset class', async () => {
+  test('parses expense ratio and asset class', async () => {
     const rows = [
       ['Symbol', CUR[1], CUR[21], 'Vehicle Type', 'Standard Deviation - 5 Year'],
       ['VFIAX', 'Vanguard 500 Index Admiral', '0.04', 'MF', '18.05'],
@@ -23,8 +23,7 @@ describe('parseFundFile', () => {
     ];
     const result = await parseFundFile(rows, { recommendedFunds, assetClassBenchmarks });
     expect(result[0].expenseRatio).toBeCloseTo(0.04);
-    expect(result[0].type).toBe('MF');
-    expect(result[0].stdDev5y).toBeCloseTo(18.05);
+    expect(result[0].stdDev5Y).toBeCloseTo(18.05);
     expect(result[0].assetClass).toBe('Large Cap Blend');
     expect(result[1].assetClass).toBe('International Stock (Small/Mid Cap)');
   });

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import * as XLSX from 'xlsx';
-import parseFundFile from '../parseFundFile';
+import parseFundFile from '@/utils/parseFundFile';
 import { recommendedFunds, assetClassBenchmarks } from '../../data/config';
 import { calculateScores } from '../scoring';
 

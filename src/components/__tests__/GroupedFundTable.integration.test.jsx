@@ -5,7 +5,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import GroupedFundTable from '../GroupedFundTable.jsx';
-import parseFundFile from '../../services/parseFundFile';
+import parseFundFile from '@/utils/parseFundFile';
 import { recommendedFunds, assetClassBenchmarks } from '../../data/config';
 import { calculateScores } from '../../services/scoring';
 import { ensureBenchmarkRows } from '../../services/dataLoader';

@@ -10,7 +10,7 @@ import { useSnapshot } from '../../contexts/SnapshotContext';
 jest.mock('../../contexts/SnapshotContext', () => ({
   useSnapshot: jest.fn()
 }));
-import parseFundFile from '../../services/parseFundFile';
+import parseFundFile from '@/utils/parseFundFile';
 import { CURRENT_PERFORMANCE_HEADERS as CUR } from '@/docs/schema';
 
 global.structuredClone =

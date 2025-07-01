@@ -4,7 +4,7 @@ import * as XLSX from 'xlsx';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import BenchmarkRow from '../BenchmarkRow.jsx';
-import parseFundFile from '../../services/parseFundFile';
+import parseFundFile from '@/utils/parseFundFile';
 import { recommendedFunds, assetClassBenchmarks } from '../../data/config';
 import { calculateScores } from '../../services/scoring';
 import { ensureBenchmarkRows } from '../../services/dataLoader';

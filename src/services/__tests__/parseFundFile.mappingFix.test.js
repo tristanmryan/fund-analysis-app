@@ -1,4 +1,4 @@
-import parseFundFile from '../parseFundFile';
+import parseFundFile from '@/utils/parseFundFile';
 import { CURRENT_PERFORMANCE_HEADERS as CUR } from '@/docs/schema';
 
 const headers = [

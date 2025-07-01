@@ -1,5 +1,5 @@
 import * as XLSX from 'xlsx';
-import parseFundFile from './parseFundFile';
+import parseFundFile from '@/utils/parseFundFile';
 import { ensureBenchmarkRows } from './dataLoader';
 import { calculateScores } from './scoring';
 import { applyTagRules } from './tagEngine';
