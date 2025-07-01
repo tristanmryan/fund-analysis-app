@@ -1,5 +1,4 @@
 import React from 'react';
-import ScoreBadge from '@/components/ScoreBadge';
 import { fmtPct, fmtNumber } from '../utils/formatters';
 
 const BenchmarkRow = ({ fund }) => {

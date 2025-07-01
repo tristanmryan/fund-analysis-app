@@ -6,10 +6,10 @@ exports[`benchmark row aligns with table 1`] = `
     class="class-view"
   >
     <div
-      style="overflow-x: auto;"
+      class="overflow-x-auto"
     >
       <table
-        style="width: 100%; border-collapse: collapse;"
+        class="w-full border-collapse"
       >
         <colgroup>
           <col />
@@ -29,75 +29,75 @@ exports[`benchmark row aligns with table 1`] = `
         </colgroup>
         <thead>
           <tr
-            style="border-bottom: 2px solid #e5e7eb;"
+            class="border-b-2 border-gray-200"
           >
             <th
-              style="padding: 0.75rem; text-align: left; font-weight: 500; cursor: pointer;"
+              class="cursor-pointer p-3 font-medium text-left"
             >
               Symbol
             </th>
             <th
-              style="padding: 0.75rem; text-align: left; font-weight: 500; cursor: pointer;"
+              class="cursor-pointer p-3 font-medium text-left"
             >
               Fund Name
             </th>
             <th
-              style="padding: 0.75rem; text-align: left; font-weight: 500; cursor: pointer;"
+              class="cursor-pointer p-3 font-medium text-left"
             >
               Type
             </th>
             <th
-              style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
+              class="cursor-pointer p-3 font-medium text-right"
             >
               Score
             </th>
             <th
-              style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
+              class="cursor-pointer p-3 font-medium text-right"
             >
               Δ
             </th>
             <th
-              style="padding: 0.75rem; text-align: left; font-weight: 500; cursor: pointer;"
+              class="cursor-pointer p-3 font-medium text-left"
             >
               Trend
             </th>
             <th
-              style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
+              class="cursor-pointer p-3 font-medium text-right"
             >
               YTD
             </th>
             <th
-              style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
+              class="cursor-pointer p-3 font-medium text-right"
             >
               1Y
             </th>
             <th
-              style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
+              class="cursor-pointer p-3 font-medium text-right"
             >
               3Y
             </th>
             <th
-              style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
+              class="cursor-pointer p-3 font-medium text-right"
             >
               5Y
             </th>
             <th
-              style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
+              class="cursor-pointer p-3 font-medium text-right"
             >
               Sharpe
             </th>
             <th
-              style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
+              class="cursor-pointer p-3 font-medium text-right"
             >
               Std Dev (5Y)
             </th>
             <th
-              style="padding: 0.75rem; text-align: right; font-weight: 500; cursor: pointer;"
+              class="cursor-pointer p-3 font-medium text-right"
             >
               Expense
             </th>
             <th
-              style="padding: 0.75rem; text-align: left; font-weight: 500; cursor: pointer;"
+              class="cursor-pointer p-3 font-medium text-left"
             >
               Tags
             </th>

@@ -4,6 +4,7 @@ import BenchmarkRow from './BenchmarkRow.jsx';
 import { getScoreColor, getScoreLabel } from '@/utils/scoreTags';
 import { fmtPct, fmtNumber } from '@/utils/formatters';
 import { LABELS } from '../constants/labels';
+import { getScoreColor, getScoreLabel } from '../services/scoring';
 import SparkLine from './SparkLine';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
