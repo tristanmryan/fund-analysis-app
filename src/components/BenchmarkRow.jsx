@@ -1,6 +1,5 @@
 import React from 'react';
 import { fmtPct, fmtNumber } from '../utils/formatters';
-import { getScoreColor, getScoreLabel } from '../services/scoring';
 
 const BenchmarkRow = ({ fund }) => {
   const row = fund;

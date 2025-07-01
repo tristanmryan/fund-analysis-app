@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
-import FundTable from '../components/FundTable.jsx'
-import { useSnapshot } from '../contexts/SnapshotContext'
-import { NormalisedRow } from '../utils/parseFundFile'
+import FundTable from '@/components/FundTable.jsx'
+import { useSnapshot } from '@/contexts/SnapshotContext'
+import type { Fund } from '@/types/fund'
 
 interface Props {
   defaultAssetClass?: string
@@ -9,11 +9,11 @@ interface Props {
 
 export default function ClassView ({ defaultAssetClass }: Props) {
   const { active } = useSnapshot()
-  const rows: NormalisedRow[] = active?.rows ?? []
+  const rows: Fund[] = (active?.rows ?? []) as Fund[]
 
   const funds = useMemo(() => {
-    return (rows as any[]).filter(f =>
-      defaultAssetClass ? (f as any).assetClass === defaultAssetClass : true
+    return rows.filter(f =>
+      defaultAssetClass ? f.assetClass === defaultAssetClass : true
     )
   }, [rows, defaultAssetClass])
 
@@ -21,14 +21,14 @@ export default function ClassView ({ defaultAssetClass }: Props) {
     return <div>No snapshot selected</div>
   }
 
-  const benchmark = funds.find(f => (f as any).isBenchmark)
+  const benchmark = funds.find(f => f.isBenchmark)
   const peers = funds
-    .filter(f => !(f as any).isBenchmark)
-    .sort((a, b) => ((b as any).scores?.final || 0) - ((a as any).scores?.final || 0))
+    .filter(f => !f.isBenchmark)
+    .sort((a, b) => (b.scores?.final || 0) - (a.scores?.final || 0))
 
   return (
     <div className="class-view">
-      <FundTable rows={peers as any} benchmark={benchmark as any} />
+      <FundTable rows={peers} benchmark={benchmark} />
     </div>
   )
 }
