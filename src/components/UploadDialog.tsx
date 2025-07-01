@@ -12,8 +12,7 @@ import {
 import { parseFundFile } from '../utils/parseFundFile';
 import { attachScores } from '../services/scoringUtils';
 import { applyTagRules } from '../services/tagRules';
-import { addSnapshot, default as db } from '../services/snapshotStore';
-import { useSnapshot } from '../contexts/SnapshotContext';   // ← NEW
+import { addSnapshot, setActiveSnapshot, default as db } from '../services/snapshotStore';
 
 export default function UploadDialog({
   open,
@@ -26,8 +25,6 @@ export default function UploadDialog({
   const [year, setYear] = useState('');
   const [month, setMonth] = useState('');
 
-  /* hook into SnapshotContext so the UI hears about changes */
-  const { setActive } = useSnapshot();                      // ← NEW
 
   const years = Array.from({ length: 10 }, (_, i) => 2020 + i);
   const months = [
@@ -57,10 +54,10 @@ export default function UploadDialog({
 
     /* 2 · Persist snapshot (idempotent) ----------------------------------- */
     const id = `${year}-${month}`;
-    const finalId = await addSnapshot(snap, id, 'quick upload');
+    await addSnapshot(snap, id, 'quick upload');
 
-    /* 3 · Tell the context which snapshot is current ---------------------- */
-    await setActive(finalId);                               // ← use context setter
+    /* 3 · Mark snapshot active ------------------------------------------- */
+    await setActiveSnapshot(id);
 
     onClose();
   }

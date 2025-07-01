@@ -1,7 +1,7 @@
 // App.jsx
 import React, { useState, useEffect, useContext } from 'react';
 import { toast } from 'react-hot-toast';
-import { Settings, Plus, Trash2, LayoutGrid, AlertCircle, TrendingUp, Award, Clock, Database, Calendar } from 'lucide-react';
+import { Settings, LayoutGrid, AlertCircle, Award, Clock, Database } from 'lucide-react';
 import { getStoredConfig, saveStoredConfig } from './data/storage';
 import {
   recommendedFunds as defaultRecommendedFunds,
@@ -9,12 +9,12 @@ import {
 } from './data/config';
 import {
   identifyReviewCandidates,
-  getScoreColor,
-  getScoreLabel
+
 } from './services/scoring';
 import dataStore, { savePref, getPref } from './services/dataStore';
 import { loadAssetClassMap } from './services/dataLoader';
-import { fmtPct, fmtNumber } from './utils/formatters';
+
+import { useSnapshot } from './contexts/SnapshotContext';
 import FundScores from './routes/FundScores';
 import DashboardView from './components/Views/DashboardView.jsx';
 import ClassView from './routes/ClassView';
@@ -23,32 +23,7 @@ import AppContext from './context/AppContext.jsx';
 import TagFilterBar from './components/Filters/TagFilterBar.jsx';
 import AnalysisView from './routes/AnalysisView';
 import HistoricalManager from './routes/HistoricalManager';
-import UploadDialog from './components/UploadDialog';
 import { Button } from '@mui/material';
-// Score badge component for visual display
-const ScoreBadge = ({ score, size = 'normal' }) => {
-  const color = getScoreColor(score);
-  const label = getScoreLabel(score);
-  
-  const sizeClasses = {
-    small: 'text-xs px-1.5 py-0.5',
-    normal: 'text-sm px-2 py-1',
-    large: 'text-base px-3 py-1.5'
-  };
-  
-  return (
-    <span
-      className={`inline-flex items-center rounded-full font-medium ${sizeClasses[size]}`}
-      style={{
-        backgroundColor: `${color}20`,
-        color: color,
-        border: `1px solid ${color}50`
-      }}
-    >
-      {Number(score).toFixed(1)} - {label}
-    </span>
-  );
-};
 
 
 const App = () => {
@@ -61,6 +36,8 @@ const App = () => {
     setHistorySnapshots,
   } = useContext(AppContext);
 
+  const { active } = useSnapshot();
+  
   const [scoredFundData, setScoredFundData] = useState([]);
   const [activeTab, setActiveTab] = useState('funds');
   const [selectedClassView, setSelectedClassView] = useState('');
@@ -74,7 +51,19 @@ const App = () => {
 
   const [recommendedFunds, setRecommendedFunds] = useState([]);
   const [assetClassBenchmarks, setAssetClassBenchmarks] = useState({});
-  const [uploadOpen, setUploadOpen] = useState(false);
+  
+    // when active snapshot changes, propagate rows
+    useEffect(() => {
+      if (active) {
+        setFundData(active.rows);
+        setScoredFundData(active.rows);
+        setClassSummaries(active.classSummaries || {});
+      } else {
+        setFundData([]);
+        setScoredFundData([]);
+        setClassSummaries({});
+      }
+    }, [active, setFundData]);
 
   // Load history snapshots from storage on startup
   useEffect(() => {
@@ -331,57 +320,7 @@ const App = () => {
       )}
 
       {/* Fund Scores Tab */}
-      {activeTab === 'funds' && (
-        fundData.length > 0 ? (
-          <>
-            <div>
-              {scoredFundData.length > 0 ? (
-                <div>
-                  {/* Header with title and subtitle */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '1rem'
-                    }}
-                  >
-                    <div>
-                      <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-                        All Funds with Scores
-                      </h2>
-                      <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                        Scores calculated using weighted&nbsp;Z-score methodology within each asset class
-                      </p>
-                    </div>
-                  </div>
-
-                </div>
-              ) : (
-                <p style={{ color: '#6b7280' }}>No scored funds to display.</p>
-              )}
-            </div>
-            <FundScores />
-          </>
-        ) : (
-          <div
-            style={{
-              textAlign: 'center',
-              padding: '3rem',
-              backgroundColor: '#f9fafb',
-              borderRadius: '0.5rem',
-              color: '#6b7280'
-            }}
-          >
-            <TrendingUp size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-            <p>Upload a fund performance file to see scores</p>
-            <Button variant="contained" onClick={() => setUploadOpen(true)} style={{ marginTop: '1rem' }}>
-              Quick Upload
-            </Button>
-            <UploadDialog open={uploadOpen} onClose={() => setUploadOpen(false)} />
-          </div>
-        )
-      )}
+      {activeTab === 'funds' && <FundScores />}
 
       {/* Asset Class View Tab */}
       {activeTab === 'class' && (

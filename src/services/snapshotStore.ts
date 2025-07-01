@@ -17,10 +17,8 @@ class SnapshotDB extends Dexie {
 
   constructor() {
     super('LightshipSnapshots');
-
-    /* v2 schema adds a UNIQUE index on checksum (“&checksum”) */
-    this.version(2).stores({
-      snapshots: 'id, &checksum, uploaded, active',
+    this.version(1).stores({
+      snapshots: 'id, uploaded, active',
     });
   }
 }
@@ -39,24 +37,11 @@ export async function addSnapshot(
   snap: ParsedSnapshot,
   id: string,
   note: string | null = null
-): Promise<string> {
-  // 1 · Fast lookup for duplicate checksum ------------------------------
-  const existing = await db.snapshots
-    .where('checksum')
-    .equals(snap.checksum)
+): Promise<void> {
+  const duplicate = await db.snapshots
+    .filter(r => r.checksum === snap.checksum && r.deleted !== true)
     .first();
-
-  if (existing) {
-    /* NEW — undelete & update timestamp so it’s visible again */
-    await db.snapshots.update(existing.id, {
-      deleted: false,
-      uploaded: new Date().toISOString(),
-    });
-    return existing.id;
-  }
-
-
-  /* 2 · No duplicate – insert new row ----------------------------------- */
+  if (duplicate) throw new Error('duplicate checksum');
   await db.snapshots.add({
     ...snap,
     id,
@@ -65,8 +50,6 @@ export async function addSnapshot(
     active: false,
     deleted: false,
   });
-
-  return id;                             // brand-new row
 }
 
 export async function listSnapshots(): Promise<SnapshotRow[]> {
