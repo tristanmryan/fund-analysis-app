@@ -23,6 +23,14 @@ See the section about [running tests](https://facebook.github.io/create-react-ap
 
 Runs the ESLint linter using the flat configuration in `eslint.config.mjs`.
 
+### `npm run lint:fix`
+
+Runs ESLint and automatically fixes fixable issues.
+
+### `npm run typecheck`
+
+Runs the TypeScript compiler to perform a type check without emitting output.
+
 ### `npm run build`
 
 Builds the app for production to the `build` folder.\
