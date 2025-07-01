@@ -140,7 +140,7 @@ const AnalysisView = ({ funds = [], reviewCandidates = [], onSelectClass }) => {
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-sm mt-2">
                   <div><span className="text-gray-600">1Y Return:</span> <strong>{fmtPct(fund.oneYear)}</strong></div>
-                  <div><span className="text-gray-600">Sharpe:</span> <strong>{fmtNumber(fund.sharpe3y)}</strong></div>
+                  <div><span className="text-gray-600">Sharpe:</span> <strong>{fmtNumber(fund.sharpe3Y)}</strong></div>
                   <div><span className="text-gray-600">Expense:</span> <strong>{fmtPct(fund.expenseRatio)}</strong></div>
                 </div>
               </div>

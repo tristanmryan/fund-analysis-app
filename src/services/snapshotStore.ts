@@ -37,11 +37,14 @@ export async function addSnapshot(
   snap: ParsedSnapshot,
   id: string,
   note: string | null = null
-): Promise<void> {
+): Promise<string> {
   const duplicate = await db.snapshots
-    .filter(r => r.checksum === snap.checksum && r.deleted !== true)
+    .filter(r => r.checksum === snap.checksum)
     .first();
-  if (duplicate) throw new Error('duplicate checksum');
+  if (duplicate) {
+    await db.snapshots.update(duplicate.id, { deleted: false });
+    return duplicate.id;
+  }
   await db.snapshots.add({
     ...snap,
     id,
@@ -50,6 +53,7 @@ export async function addSnapshot(
     active: false,
     deleted: false,
   });
+  return id;
 }
 
 export async function listSnapshots(): Promise<SnapshotRow[]> {

@@ -42,8 +42,8 @@ const columns = [
   { key: '1Y', label: '1Y', numeric: true, accessor: f => f.oneYear },
   { key: '3Y', label: '3Y', numeric: true, accessor: f => f.threeYear },
   { key: '5Y', label: '5Y', numeric: true, accessor: f => f.fiveYear },
-  { key: 'Sharpe', label: 'Sharpe', numeric: true, accessor: f => f.sharpe3y },
-  { key: 'Std Dev (5Y)', label: 'Std Dev (5Y)', numeric: true, accessor: f => f.stdDev5y },
+  { key: 'Sharpe', label: 'Sharpe', numeric: true, accessor: f => f.sharpe3Y },
+  { key: 'Std Dev (5Y)', label: 'Std Dev (5Y)', numeric: true, accessor: f => f.stdDev5Y },
   { key: 'Expense', label: 'Expense', numeric: true, accessor: f => f.expenseRatio },
   { key: 'Tags', label: 'Tags', numeric: false, accessor: f => f.tags }
 ];
@@ -159,10 +159,10 @@ const FundTable = ({ funds = [], rows, benchmark, onRowClick = () => {}, deltas 
               {fmtPct(fund.fiveYear)}
             </td>
             <td style={{ padding: '0.5rem', textAlign: 'right' }}>
-              {fmtNumber(fund.sharpe3y)}
+              {fmtNumber(fund.sharpe3Y)}
             </td>
             <td style={{ padding: '0.5rem', textAlign: 'right' }}>
-              {fmtPct(fund.stdDev5y)}
+              {fmtPct(fund.stdDev5Y)}
             </td>
             <td style={{ padding: '0.5rem', textAlign: 'right' }}>
               {fmtPct(fund.expenseRatio)}

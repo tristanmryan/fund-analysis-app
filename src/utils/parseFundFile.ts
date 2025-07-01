@@ -25,27 +25,27 @@ export const COLUMN_MAP: Record<string, keyof NormalisedRow> = {
   'Return 3 Year (%)': 'threeYear',
   'Return 5 Year (%)': 'fiveYear',
   'Return 10 Year (%)': 'tenYear',
-  'Sharpe Ratio (3 Year)': 'sharpe3y',
-  [CUR[19]]: 'sharpe3y',
-  'Sharpe Ratio 3Y': 'sharpe3y',
-  'Standard Deviation (3 Year) (%)': 'stdDev3y',
-  [CUR[20]]: 'stdDev3y',
-  'Std Dev 3Y (%)': 'stdDev3y',
-  'Standard Deviation (5 Year) (%)': 'stdDev5y',
-  [CUR[15]]: 'stdDev5y',
-  'Std Dev 5Y (%)': 'stdDev5y',
-  [CUR[14]]: 'alpha5y',
-  'Alpha 5Y (%)': 'alpha5y',
-  'Net Expense Ratio (%)': 'netExpenseRatio',
-  [CUR[21]]: 'netExpenseRatio',
-  'Expense Ratio Net (%)': 'netExpenseRatio',
+  'Sharpe Ratio (3 Year)': 'sharpe3Y',
+  [CUR[19]]: 'sharpe3Y',
+  'Sharpe Ratio 3Y': 'sharpe3Y',
+  'Standard Deviation (3 Year) (%)': 'stdDev3Y',
+  [CUR[20]]: 'stdDev3Y',
+  'Std Dev 3Y (%)': 'stdDev3Y',
+  'Standard Deviation (5 Year) (%)': 'stdDev5Y',
+  [CUR[15]]: 'stdDev5Y',
+  'Std Dev 5Y (%)': 'stdDev5Y',
+  [CUR[14]]: 'alpha5Y',
+  'Alpha 5Y (%)': 'alpha5Y',
+  'Net Expense Ratio (%)': 'expenseRatio',
+  [CUR[21]]: 'expenseRatio',
+  'Expense Ratio Net (%)': 'expenseRatio',
   'Manager Tenure (Years)': 'managerTenure',
   [CUR[22]]: 'managerTenure',
   'Manager Tenure (Yrs)': 'managerTenure',
-  'Up Capture Ratio 3Y (%)': 'upCapture3y',
-  [CUR[16]]: 'upCapture3y',
-  'Down Capture Ratio 3Y (%)': 'downCapture3y',
-  [CUR[17]]: 'downCapture3y',
+  'Up Capture Ratio 3Y (%)': 'upCapture3Y',
+  [CUR[16]]: 'upCapture3Y',
+  'Down Capture Ratio 3Y (%)': 'downCapture3Y',
+  [CUR[17]]: 'downCapture3Y',
   [CUR[5]]: 'rankYtd',
   'Category Rank (%) Total Return  YTD': 'rankYtd'
 }
@@ -58,14 +58,14 @@ export interface NormalisedRow {
   threeYear: number | null
   fiveYear: number | null
   tenYear: number | null
-  sharpe3y: number | null
-  stdDev3y: number | null
-  stdDev5y: number | null
-  alpha5y: number | null
-  netExpenseRatio: number | null
+  sharpe3Y: number | null
+  stdDev3Y: number | null
+  stdDev5Y: number | null
+  alpha5Y: number | null
+  expenseRatio: number | null
   managerTenure: number | null
-  upCapture3y?: number | null
-  downCapture3y?: number | null
+  upCapture3Y?: number | null
+  downCapture3Y?: number | null
   rankYtd?: number | null
   tags?: string[]
   assetClass?: string
@@ -87,10 +87,10 @@ const REQUIRED = [
   'threeYear',
   'fiveYear',
   'tenYear',
-  'sharpe3y',
-  'netExpenseRatio',
+  'sharpe3Y',
+  'expenseRatio',
   'managerTenure',
-  'alpha5y'
+  'alpha5Y'
 ] as const
 
 function parseNumber(val: any): number | null {
@@ -136,8 +136,8 @@ export async function parseFundFile(
       throw new Error(`Missing required column: ${req}`)
     }
   })
-  if (!columnsPresent.has('stdDev3y') && !columnsPresent.has('stdDev5y')) {
-    throw new Error('Missing required column: stdDev3y or stdDev5y')
+  if (!columnsPresent.has('stdDev3Y') && !columnsPresent.has('stdDev5Y')) {
+    throw new Error('Missing required column: stdDev3Y or stdDev5Y')
   }
   const dataRows = rows.slice(headerIndex + 1)
   const list: NormalisedRow[] = []
@@ -151,14 +151,14 @@ export async function parseFundFile(
       threeYear: null,
       fiveYear: null,
       tenYear: null,
-      sharpe3y: null,
-      stdDev3y: null,
-      stdDev5y: null,
-      alpha5y: null,
-      netExpenseRatio: null,
+      sharpe3Y: null,
+      stdDev3Y: null,
+      stdDev5Y: null,
+      alpha5Y: null,
+      expenseRatio: null,
       managerTenure: null,
-      upCapture3y: null,
-      downCapture3y: null,
+      upCapture3Y: null,
+      downCapture3Y: null,
       rankYtd: null
     }
     for (const [idxStr, key] of Object.entries(map)) {
@@ -169,19 +169,19 @@ export async function parseFundFile(
       } else if (key === 'fundName') {
         obj.fundName = val ? String(val).trim() : null
       } else if (
-        key === 'upCapture3y' ||
-        key === 'downCapture3y' ||
+        key === 'upCapture3Y' ||
+        key === 'downCapture3Y' ||
         key === 'rankYtd' ||
         key === 'ytd' ||
         key === 'oneYear' ||
         key === 'threeYear' ||
         key === 'fiveYear' ||
         key === 'tenYear' ||
-        key === 'sharpe3y' ||
-        key === 'stdDev3y' ||
-        key === 'stdDev5y' ||
-        key === 'alpha5y' ||
-        key === 'netExpenseRatio' ||
+        key === 'sharpe3Y' ||
+        key === 'stdDev3Y' ||
+        key === 'stdDev5Y' ||
+        key === 'alpha5Y' ||
+        key === 'expenseRatio' ||
         key === 'managerTenure'
       ) {
         obj[key] = parseNumber(val)

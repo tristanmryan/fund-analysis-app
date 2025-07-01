@@ -2,8 +2,8 @@ import { render } from '@testing-library/react';
 import BenchmarkRow from '../BenchmarkRow.jsx';
 import { fmtPct, fmtNumber } from '../../utils/formatters';
 
-const benchmark = { Symbol: 'IWF', fundName: 'Index', ytd: 1, oneYear: 2, threeYear: 3, fiveYear: 4, sharpe3y: 1, stdDev5y: 10, expenseRatio: 0.2 };
-const fund = { Symbol: 'AAA', fundName: 'Fund A', ytd: null, oneYear: 5, threeYear: null, fiveYear: 7, sharpe3y: 0.8, stdDev5y: 12, expenseRatio: 0.3 };
+const benchmark = { Symbol: 'IWF', fundName: 'Index', ytd: 1, oneYear: 2, threeYear: 3, fiveYear: 4, sharpe3Y: 1, stdDev5Y: 10, expenseRatio: 0.2 };
+const fund = { Symbol: 'AAA', fundName: 'Fund A', ytd: null, oneYear: 5, threeYear: null, fiveYear: 7, sharpe3Y: 0.8, stdDev5Y: 12, expenseRatio: 0.3 };
 
 test('class view table renders', () => {
   render(
@@ -19,8 +19,8 @@ test('class view table renders', () => {
             <td>{fmtPct(fund.oneYear)}</td>
             <td>{fmtPct(fund.threeYear)}</td>
             <td>{fmtPct(fund.fiveYear)}</td>
-            <td>{fmtNumber(fund.sharpe3y)}</td>
-            <td>{fmtPct(fund.stdDev5y)}</td>
+            <td>{fmtNumber(fund.sharpe3Y)}</td>
+            <td>{fmtPct(fund.stdDev5Y)}</td>
             <td>{fmtPct(fund.expenseRatio)}</td>
           </tr>
         </tbody>
