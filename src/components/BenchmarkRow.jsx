@@ -2,19 +2,6 @@ import React from 'react';
 import ScoreBadge from '@/components/ScoreBadge';
 import { fmtPct, fmtNumber } from '../utils/formatters';
 
-const ScoreBadge = ({ score }) => {
-  const color = getScoreColor(score);
-  const label = getScoreLabel(score);
-  return (
-    <span
-      style={{ backgroundColor: `${color}20`, color, borderColor: `${color}50` }}
-      className="inline-block min-w-[3rem] rounded-full border px-2 py-1 text-center text-xs font-bold"
-    >
-      {Number(score).toFixed(1)} - {label}
-    </span>
-  );
-};
-
 const BenchmarkRow = ({ fund }) => {
   const row = fund;
   if (!row) return null;
