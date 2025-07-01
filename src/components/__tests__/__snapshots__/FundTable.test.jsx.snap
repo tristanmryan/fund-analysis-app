@@ -123,7 +123,7 @@ exports[`renders table snapshot 1`] = `
             style="padding: 0.5rem; text-align: center;"
           >
             <span
-              style="background-color: rgba(22, 163, 74, 0.125); color: rgb(22, 163, 74); border: 1px solid #16a34a50; border-radius: 9999px; font-size: 0.75rem; font-weight: bold; padding: 0.25rem 0.5rem; display: inline-block; min-width: 3rem; text-align: center;"
+              style="background-color: rgba(22, 163, 74, 0.125); color: rgb(22, 163, 74); border: 1px solid #16a34a50; border-radius: 9999px; font-weight: bold; text-align: center; display: inline-block; font-size: 0.75rem; padding: 0.25rem 0.5rem; min-width: 3rem;"
             >
               75.0 - Strong
             </span>

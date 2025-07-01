@@ -1,5 +1,6 @@
 import React from 'react';
 import { getScoreColor } from '../../services/scoring';
+import ScoreBadge from '@/components/ScoreBadge';
 import { LayoutGrid } from 'lucide-react';
 import TagList from '../TagList.jsx';
 
@@ -15,26 +16,6 @@ import TagList from '../TagList.jsx';
  *   - isRecommended
  *   - isBenchmark
  */
-const ScoreBadge = ({ score }) => {
-  const color = getScoreColor(score);
-  return (
-    <span
-      style={{
-        backgroundColor: `${color}20`,
-        color,
-        border: `1px solid ${color}50`,
-        borderRadius: '9999px',
-        fontSize: '0.75rem',
-        padding: '0.125rem 0.5rem',
-        display: 'inline-block',
-        minWidth: '2.5rem',
-        textAlign: 'center'
-      }}
-    >
-      {Number(score).toFixed(1)}
-    </span>
-  );
-};
 
 const FundTile = ({ fund }) => {
   const color = getScoreColor(fund.scores?.final || 0);
@@ -61,7 +42,7 @@ const FundTile = ({ fund }) => {
     >
       <div style={{ fontWeight: 600 }}>{fund.fundName}</div>
       <div style={{ fontSize: '0.875rem', color: '#374151' }}>{fund.Symbol}</div>
-      <ScoreBadge score={fund.scores?.final || 0} />
+      <ScoreBadge score={fund.scores?.final || 0} showLabel={false} size="small" />
       {Array.isArray(fund.tags) && fund.tags.length > 0 && (
         <TagList tags={fund.tags} />
       )}

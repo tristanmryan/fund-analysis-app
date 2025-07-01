@@ -1,5 +1,6 @@
 import React from 'react';
 import { getScoreColor, getScoreLabel } from '../../services/scoring';
+import ScoreBadge from '@/components/ScoreBadge';
 import TagList from '../TagList.jsx';
 import { BarChart2 } from 'lucide-react';
 
@@ -14,27 +15,6 @@ import { BarChart2 } from 'lucide-react';
  *   - isBenchmark
  *   - isRecommended
  */
-const ScoreBadge = ({ score }) => {
-  const color = getScoreColor(score);
-  const label = getScoreLabel(score);
-  return (
-    <span
-      style={{
-        backgroundColor: `${color}20`,
-        color,
-        border: `1px solid ${color}50`,
-        borderRadius: '9999px',
-        fontSize: '0.75rem',
-        padding: '0.25rem 0.5rem',
-        display: 'inline-block',
-        minWidth: '3rem',
-        textAlign: 'center'
-      }}
-    >
-      {Number(score).toFixed(1)} - {label}
-    </span>
-  );
-};
 
 const FundRow = ({ fund }) => (
   <tr style={{ borderBottom: '1px solid #f3f4f6' }}>
