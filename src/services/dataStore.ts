@@ -1,5 +1,72 @@
 /* eslint-env browser, es2020 */
-// src/services/dataStore.js
+// src/services/dataStore.ts
+
+import type { Fund } from '@/types/fund'
+
+interface SnapshotInput {
+  date?: string
+  funds?: Fund[]
+  uploadedBy?: string
+  fileName?: string
+  metadata?: Record<string, unknown>
+  classSummaries?: Record<string, unknown>
+  reviewCandidates?: unknown[]
+}
+
+interface SnapshotRecord {
+  id: string
+  date: string
+  funds: Fund[]
+  metadata: Record<string, unknown>
+  classSummaries: Record<string, unknown>
+  reviewCandidates: unknown[]
+}
+
+interface ConfigEntry<T = unknown> {
+  key: string
+  value: T
+  lastModified: string
+}
+
+interface PreferenceEntry<T = unknown> {
+  key: string
+  value: T
+  lastModified: string
+}
+
+interface AuditLogEntry {
+  id?: number
+  action: string
+  details: Record<string, unknown>
+  timestamp: string
+  user: string
+}
+
+interface SnapshotChange {
+  symbol: string
+  fundName: string
+  assetClass: string
+  oldScore?: number
+  newScore?: number
+  change?: number
+  changePercent?: string
+  type?: 'new' | 'removed'
+}
+
+interface SnapshotComparison {
+  snapshot1: { id: string; date: string }
+  snapshot2: { id: string; date: string }
+  changes: SnapshotChange[]
+}
+
+interface DataBackup {
+  version: number
+  exportDate: string
+  snapshots: SnapshotRecord[]
+  config: ConfigEntry[]
+  preferences: PreferenceEntry[]
+  auditLog: AuditLogEntry[]
+}
 
 /**
  * IndexedDB Data Store for Lightship Fund Analysis
@@ -22,13 +89,13 @@ const STORES = {
 };
 
 // Initialize database connection
-let db = null;
+let db: IDBDatabase | null = null;
 
 /**
  * Open IndexedDB connection and create stores if needed
  * @returns {Promise<IDBDatabase>} Database connection
  */
-async function openDB() {
+async function openDB(): Promise<IDBDatabase> {
   if (db) return db;
 
   if (!globalThis.indexedDB) {
@@ -39,8 +106,8 @@ async function openDB() {
     }
   }
 
-  return new Promise((resolve, reject) => {
-    let request;
+  return new Promise<IDBDatabase>((resolve, reject) => {
+    let request: IDBOpenDBRequest;
     try {
       request = globalThis.indexedDB.open(DB_NAME, DB_VERSION);
     } catch (err) {
@@ -60,8 +127,8 @@ async function openDB() {
       resolve(db);
     };
 
-    request.onupgradeneeded = (event) => {
-      const database = event.target.result;
+    request.onupgradeneeded = (event: IDBVersionChangeEvent) => {
+      const database = (event.target as IDBOpenDBRequest).result;
       
       // Create snapshots store
       if (!database.objectStoreNames.contains(STORES.SNAPSHOTS)) {
@@ -95,13 +162,13 @@ async function openDB() {
   });
 }
 
-export async function initializeObjectStore(database) {
-  if (database.objectStoreNames.contains(STORES.SNAPSHOTS)) return;
+export async function initializeObjectStore(database: IDBDatabase): Promise<IDBDatabase> {
+  if (database.objectStoreNames.contains(STORES.SNAPSHOTS)) return database;
   database.close();
-  return new Promise((resolve, reject) => {
+  return new Promise<IDBDatabase>((resolve, reject) => {
     const req = globalThis.indexedDB.open(DB_NAME, database.version + 1);
     req.onupgradeneeded = e => {
-      e.target.result.createObjectStore(
+      (e.target as IDBOpenDBRequest).result.createObjectStore(
         STORES.SNAPSHOTS,
         { autoIncrement: true }
       );
@@ -116,7 +183,7 @@ export async function initializeObjectStore(database) {
  * @param {Date} date - Snapshot date
  * @returns {string} Snapshot ID
  */
-function generateSnapshotId(date) {
+function generateSnapshotId(date: Date | string): string {
   const d = new Date(date);
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -128,14 +195,14 @@ function generateSnapshotId(date) {
  * @param {Object} snapshotData - Snapshot data including funds and metadata
  * @returns {Promise<string>} Snapshot ID
  */
-export async function saveSnapshot(snapshotData) {
+export async function saveSnapshot(snapshotData: SnapshotInput): Promise<string> {
   const database = await openDB();
   
   // Generate ID based on date
   const snapshotDate = snapshotData.date || new Date().toISOString();
   const id = generateSnapshotId(snapshotDate);
   
-  const snapshot = {
+  const snapshot: SnapshotRecord = {
     id,
     date: snapshotDate,
     funds: snapshotData.funds || [],
@@ -182,7 +249,7 @@ export async function saveSnapshot(snapshotData) {
  * Get all snapshots (sorted by date descending)
  * @returns {Promise<Array>} Array of snapshots
  */
-export async function getAllSnapshots() {
+export async function getAllSnapshots(): Promise<SnapshotRecord[]> {
   try {
 
     let database;
@@ -192,14 +259,14 @@ export async function getAllSnapshots() {
       throw err; // surface DB-init failures
     }
 
-    return await new Promise((resolve, reject) => {
+    return await new Promise<SnapshotRecord[]>((resolve, reject) => {
       const tx = database.transaction([STORES.SNAPSHOTS], 'readonly');
       const store = tx.objectStore(STORES.SNAPSHOTS);
       const request = store.getAll();
 
       request.onsuccess = () => {
-        const shots = request.result || [];
-        shots.sort((a, b) => new Date(b.date) - new Date(a.date));
+        const shots = (request.result || []) as SnapshotRecord[];
+        shots.sort((a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf());
         resolve(shots);
       };
       request.onerror = () => {
@@ -219,11 +286,11 @@ export async function getAllSnapshots() {
  * @param {string} snapshotId - Snapshot ID
  * @returns {Promise<Object>} Snapshot data
  */
-export async function getSnapshot(snapshotId) {
+export async function getSnapshot(snapshotId: string): Promise<SnapshotRecord | undefined> {
   try {
     const database = await openDB();
 
-    return await new Promise((resolve, reject) => {
+    return await new Promise<SnapshotRecord | undefined>((resolve, reject) => {
       const transaction = database.transaction([STORES.SNAPSHOTS], 'readonly');
       const store = transaction.objectStore(STORES.SNAPSHOTS);
       const request = store.get(snapshotId);
@@ -247,7 +314,7 @@ export async function getSnapshot(snapshotId) {
  * @param {string} snapshotId - Snapshot ID to delete
  * @returns {Promise<void>}
  */
-export async function deleteSnapshot(snapshotId) {
+export async function deleteSnapshot(snapshotId: string): Promise<void> {
   try {
     const database = await openDB();
 
@@ -255,7 +322,7 @@ export async function deleteSnapshot(snapshotId) {
       await initializeObjectStore(database);
     }
 
-    return await new Promise((resolve, reject) => {
+    return await new Promise<void>((resolve, reject) => {
       const transaction = database.transaction([STORES.SNAPSHOTS], 'readwrite');
       const store = transaction.objectStore(STORES.SNAPSHOTS);
       const request = store.delete(snapshotId);
@@ -282,7 +349,10 @@ export async function deleteSnapshot(snapshotId) {
  * @param {Date} endDate - End date
  * @returns {Promise<Array>} Filtered snapshots
  */
-export async function getSnapshotsByDateRange(startDate, endDate) {
+export async function getSnapshotsByDateRange(
+  startDate: Date,
+  endDate: Date
+): Promise<SnapshotRecord[]> {
   const allSnapshots = await getAllSnapshots();
   return allSnapshots.filter(snapshot => {
     const snapshotDate = new Date(snapshot.date);
@@ -293,17 +363,17 @@ export async function getSnapshotsByDateRange(startDate, endDate) {
 /**
  * Save configuration (recommended funds, benchmarks, etc.)
  * @param {string} key - Config key
- * @param {any} value - Config value
+ * @param {unknown} value - Config value
  * @returns {Promise<void>}
  */
-export async function saveConfig(key, value) {
+export async function saveConfig<T>(key: string, value: T): Promise<void> {
   const database = await openDB();
   
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     const transaction = database.transaction([STORES.CONFIG], 'readwrite');
     const store = transaction.objectStore(STORES.CONFIG);
     
-    const data = {
+    const data: ConfigEntry<T> = {
       key,
       value,
       lastModified: new Date().toISOString()
@@ -327,18 +397,18 @@ export async function saveConfig(key, value) {
 /**
  * Get configuration value
  * @param {string} key - Config key
- * @returns {Promise<any>} Config value
+ * @returns {Promise<unknown>} Config value
  */
-export async function getConfig(key) {
+export async function getConfig<T>(key: string): Promise<T | undefined> {
   const database = await openDB();
   
-  return new Promise((resolve, reject) => {
+  return new Promise<T | undefined>((resolve, reject) => {
     const transaction = database.transaction([STORES.CONFIG], 'readonly');
     const store = transaction.objectStore(STORES.CONFIG);
     const request = store.get(key);
     
     request.onsuccess = () => {
-      resolve(request.result?.value);
+      resolve(request.result?.value as T | undefined);
     };
     
     request.onerror = () => {
@@ -351,17 +421,17 @@ export async function getConfig(key) {
 /**
  * Save user preferences
  * @param {string} key - Preference key
- * @param {any} value - Preference value
+ * @param {unknown} value - Preference value
  * @returns {Promise<void>}
  */
-export async function savePreference(key, value) {
+export async function savePreference<T>(key: string, value: T): Promise<void> {
   const database = await openDB();
   
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     const transaction = database.transaction([STORES.PREFERENCES], 'readwrite');
     const store = transaction.objectStore(STORES.PREFERENCES);
     
-    const data = {
+    const data: PreferenceEntry<T> = {
       key,
       value,
       lastModified: new Date().toISOString()
@@ -383,18 +453,18 @@ export async function savePreference(key, value) {
 /**
  * Get user preference
  * @param {string} key - Preference key
- * @returns {Promise<any>} Preference value
+ * @returns {Promise<unknown>} Preference value
  */
-export async function getPreference(key) {
+export async function getPreference<T>(key: string): Promise<T | undefined> {
   const database = await openDB();
   
-  return new Promise((resolve, reject) => {
+  return new Promise<T | undefined>((resolve, reject) => {
     const transaction = database.transaction([STORES.PREFERENCES], 'readonly');
     const store = transaction.objectStore(STORES.PREFERENCES);
     const request = store.get(key);
     
     request.onsuccess = () => {
-      resolve(request.result?.value);
+      resolve(request.result?.value as T | undefined);
     };
     
     request.onerror = () => {
@@ -405,12 +475,12 @@ export async function getPreference(key) {
 }
 
 // Lightweight helpers around preferences
-export async function savePref(key, value) {
+export async function savePref<T>(key: string, value: T): Promise<void> {
   await savePreference(key, value);
 }
 
-export async function getPref(key, defaultValue) {
-  const val = await getPreference(key);
+export async function getPref<T>(key: string, defaultValue: T): Promise<T> {
+  const val = await getPreference<T>(key);
   return val ?? defaultValue;
 }
 
@@ -420,10 +490,10 @@ export async function getPref(key, defaultValue) {
  * @param {Object} details - Action details
  * @returns {Promise<void>}
  */
-async function logAction(action, details) {
+async function logAction(action: string, details: Record<string, unknown>): Promise<void> {
   const database = await openDB();
-  
-  return new Promise((resolve, reject) => {
+
+  return new Promise<void>((resolve, reject) => {
     const transaction = database.transaction([STORES.AUDIT_LOG], 'readwrite');
     const store = transaction.objectStore(STORES.AUDIT_LOG);
     
@@ -453,22 +523,22 @@ async function logAction(action, details) {
  * @param {number} limit - Maximum number of entries to return
  * @returns {Promise<Array>} Audit log entries
  */
-export async function getAuditLog(limit = 100) {
+export async function getAuditLog(limit = 100): Promise<AuditLogEntry[]> {
   const database = await openDB();
-  
-  return new Promise((resolve, reject) => {
+
+  return new Promise<AuditLogEntry[]>((resolve, reject) => {
     const transaction = database.transaction([STORES.AUDIT_LOG], 'readonly');
     const store = transaction.objectStore(STORES.AUDIT_LOG);
     const index = store.index('timestamp');
     
-    const entries = [];
+    const entries: AuditLogEntry[] = [];
     let count = 0;
     
     // Open cursor in reverse order (newest first)
     const request = index.openCursor(null, 'prev');
     
-    request.onsuccess = (event) => {
-      const cursor = event.target.result;
+    request.onsuccess = (event: Event) => {
+      const cursor = (event.target as IDBRequest<IDBCursorWithValue>).result;
       if (cursor && count < limit) {
         entries.push(cursor.value);
         count++;
@@ -491,7 +561,10 @@ export async function getAuditLog(limit = 100) {
  * @param {string} snapshotId2 - Second snapshot ID
  * @returns {Promise<Object>} Comparison results
  */
-export async function compareSnapshots(snapshotId1, snapshotId2) {
+export async function compareSnapshots(
+  snapshotId1: string,
+  snapshotId2: string
+): Promise<SnapshotComparison> {
   const [snapshot1, snapshot2] = await Promise.all([
     getSnapshot(snapshotId1),
     getSnapshot(snapshotId2)
@@ -501,7 +574,7 @@ export async function compareSnapshots(snapshotId1, snapshotId2) {
     throw new Error('One or both snapshots not found');
   }
   
-  const comparison = {
+  const comparison: SnapshotComparison = {
     snapshot1: { id: snapshotId1, date: snapshot1.date },
     snapshot2: { id: snapshotId2, date: snapshot2.date },
     changes: []
@@ -568,7 +641,7 @@ export async function compareSnapshots(snapshotId1, snapshotId2) {
  * Export all data for backup
  * @returns {Promise<Object>} All data
  */
-export async function exportAllData() {
+export async function exportAllData(): Promise<DataBackup> {
   const [snapshots, config, preferences, auditLog] = await Promise.all([
     getAllSnapshots(),
     getAllConfig(),
@@ -583,7 +656,7 @@ export async function exportAllData() {
     config,
     preferences,
     auditLog
-  };
+  } as DataBackup;
 }
 
 /**
@@ -591,7 +664,7 @@ export async function exportAllData() {
  * @param {Object} data - Data to import
  * @returns {Promise<void>}
  */
-export async function importData(data) {
+export async function importData(data: DataBackup): Promise<void> {
   if (data.version !== DB_VERSION) {
     console.warn('Version mismatch, data might need migration');
   }
@@ -624,16 +697,16 @@ export async function importData(data) {
 }
 
 // Helper functions for getting all config/preferences
-async function getAllConfig() {
+async function getAllConfig(): Promise<ConfigEntry[]> {
   const database = await openDB();
   
-  return new Promise((resolve, reject) => {
+  return new Promise<ConfigEntry[]>((resolve, reject) => {
     const transaction = database.transaction([STORES.CONFIG], 'readonly');
     const store = transaction.objectStore(STORES.CONFIG);
     const request = store.getAll();
     
     request.onsuccess = () => {
-      resolve(request.result || []);
+      resolve((request.result || []) as ConfigEntry[]);
     };
     
     request.onerror = () => {
@@ -642,16 +715,16 @@ async function getAllConfig() {
   });
 }
 
-async function getAllPreferences() {
+async function getAllPreferences(): Promise<PreferenceEntry[]> {
   const database = await openDB();
-  
-  return new Promise((resolve, reject) => {
+
+  return new Promise<PreferenceEntry[]>((resolve, reject) => {
     const transaction = database.transaction([STORES.PREFERENCES], 'readonly');
     const store = transaction.objectStore(STORES.PREFERENCES);
     const request = store.getAll();
     
     request.onsuccess = () => {
-      resolve(request.result || []);
+      resolve((request.result || []) as PreferenceEntry[]);
     };
     
     request.onerror = () => {
@@ -664,14 +737,14 @@ async function getAllPreferences() {
  * Clear all data (for testing or reset)
  * @returns {Promise<void>}
  */
-export async function clearAllData() {
+export async function clearAllData(): Promise<void> {
   const database = await openDB();
   
   const stores = [STORES.SNAPSHOTS, STORES.CONFIG, STORES.PREFERENCES, STORES.AUDIT_LOG];
   const transaction = database.transaction(stores, 'readwrite');
   
   const promises = stores.map(storeName => {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       const store = transaction.objectStore(storeName);
       const request = store.clear();
       request.onsuccess = () => resolve();
