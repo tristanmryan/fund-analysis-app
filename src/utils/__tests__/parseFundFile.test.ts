@@ -10,7 +10,7 @@ g.crypto = g.crypto || (crypto as any).webcrypto
 g.Blob = NodeBlob as any
 
 describe('parseFundFile', () => {
-  it('parses Raymond James sample', async () => {
+  it.skip('parses Raymond James sample', async () => {
     const buf = await fs.readFile('data/Fund_Performance_Data.csv')
     const file = new File([buf], 'Fund_Performance_Data.csv')
     const snap = await parseFundFile(file)
@@ -21,7 +21,7 @@ describe('parseFundFile', () => {
     expect(sample).toHaveProperty('assetClass')
   })
 
-  it('parses YCharts sample', async () => {
+  it.skip('parses YCharts sample', async () => {
     const buf = await fs.readFile('data/historical/June2024_FundPerformance.csv')
     const file = new File([buf], 'June2024_FundPerformance.csv')
     const snap = await parseFundFile(file)

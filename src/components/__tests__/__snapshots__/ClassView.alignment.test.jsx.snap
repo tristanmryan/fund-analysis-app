@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`benchmark row aligns with table 1`] = `
 <DocumentFragment>
@@ -32,72 +32,72 @@ exports[`benchmark row aligns with table 1`] = `
             class="border-b-2 border-gray-200"
           >
             <th
-              class="cursor-pointer p-3 font-medium text-left"
+              class="p-3 font-medium cursor-pointer text-left"
             >
               Symbol
             </th>
             <th
-              class="cursor-pointer p-3 font-medium text-left"
+              class="p-3 font-medium cursor-pointer text-left"
             >
               Fund Name
             </th>
             <th
-              class="cursor-pointer p-3 font-medium text-left"
+              class="p-3 font-medium cursor-pointer text-left"
             >
               Type
             </th>
             <th
-              class="cursor-pointer p-3 font-medium text-right"
+              class="p-3 font-medium cursor-pointer text-right"
             >
               Score
             </th>
             <th
-              class="cursor-pointer p-3 font-medium text-right"
+              class="p-3 font-medium cursor-pointer text-right"
             >
               Δ
             </th>
             <th
-              class="cursor-pointer p-3 font-medium text-left"
+              class="p-3 font-medium cursor-pointer text-left"
             >
               Trend
             </th>
             <th
-              class="cursor-pointer p-3 font-medium text-right"
+              class="p-3 font-medium cursor-pointer text-right"
             >
               YTD
             </th>
             <th
-              class="cursor-pointer p-3 font-medium text-right"
+              class="p-3 font-medium cursor-pointer text-right"
             >
               1Y
             </th>
             <th
-              class="cursor-pointer p-3 font-medium text-right"
+              class="p-3 font-medium cursor-pointer text-right"
             >
               3Y
             </th>
             <th
-              class="cursor-pointer p-3 font-medium text-right"
+              class="p-3 font-medium cursor-pointer text-right"
             >
               5Y
             </th>
             <th
-              class="cursor-pointer p-3 font-medium text-right"
+              class="p-3 font-medium cursor-pointer text-right"
             >
               Sharpe
             </th>
             <th
-              class="cursor-pointer p-3 font-medium text-right"
+              class="p-3 font-medium cursor-pointer text-right"
             >
               Std Dev (5Y)
             </th>
             <th
-              class="cursor-pointer p-3 font-medium text-right"
+              class="p-3 font-medium cursor-pointer text-right"
             >
               Expense
             </th>
             <th
-              class="cursor-pointer p-3 font-medium text-left"
+              class="p-3 font-medium cursor-pointer text-left"
             >
               Tags
             </th>
