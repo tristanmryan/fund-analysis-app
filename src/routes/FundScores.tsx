@@ -44,7 +44,7 @@ export default function FundScores () {
     resetFilters
   } = useContext(AppContext)
 
-  const [selectedFund, setSelectedFund] = useState<any>(null)
+  const [selectedFund, setSelectedFund] = useState<Fund | null>(null)
   const [grouped, setGrouped] = useState(false)
 
   const [uploadOpen, setUploadOpen] = useState(false)

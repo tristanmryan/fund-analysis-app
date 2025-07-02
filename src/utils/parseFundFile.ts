@@ -100,25 +100,37 @@ function parseNumber(val: any): number | null {
   return Number.isNaN(n) ? null : n
 }
 
-async function readFileAsRows(file: File): Promise<any[][]> {
+type RawRow = (string | number | null)[]
+
+async function readFileAsRows(file: File): Promise<RawRow[]> {
   if (file.name.toLowerCase().endsWith('.csv')) {
     const text = await file.text()
     const wb = XLSX.read(text, { type: 'string' })
     const sheet = wb.Sheets[wb.SheetNames[0]]
-    return XLSX.utils.sheet_to_json(sheet, { header: 1 }) as any[][]
+    return XLSX.utils.sheet_to_json(sheet, { header: 1 }) as RawRow[]
   }
   const buf = await file.arrayBuffer()
   const wb = XLSX.read(new Uint8Array(buf), { type: 'array' })
   const sheet = wb.Sheets[wb.SheetNames[0]]
-  return XLSX.utils.sheet_to_json(sheet, { header: 1 }) as any[][]
+  return XLSX.utils.sheet_to_json(sheet, { header: 1 }) as RawRow[]
 }
 
 
 export async function parseFundFile(
   file: File,
-  columnMap = COLUMN_MAP
-): Promise<ParsedSnapshot> {
-  const rows = await readFileAsRows(file)
+  columnMap?: Record<string, keyof NormalisedRow>
+): Promise<ParsedSnapshot>
+export async function parseFundFile(
+  rows: RawRow[],
+  columnMap?: Record<string, keyof NormalisedRow>
+): Promise<NormalisedRow[]>
+export async function parseFundFile(
+  fileOrRows: File | RawRow[],
+  columnMap: Record<string, keyof NormalisedRow> = COLUMN_MAP
+): Promise<ParsedSnapshot | NormalisedRow[]> {
+  const rows: RawRow[] = Array.isArray(fileOrRows)
+    ? fileOrRows
+    : await readFileAsRows(fileOrRows)
   await loadAssetClassMap()
   const headerIndex = rows.findIndex(r =>
     r.some(c => typeof c === 'string' && c.toLowerCase().includes('symbol'))
@@ -217,11 +229,14 @@ export async function parseFundFile(
 
     list.push(obj as NormalisedRow)
   }
+  if (Array.isArray(fileOrRows)) {
+    return list
+  }
   return {
     id: undefined,
     rows: list,
-    source: file.name,
-    checksum: await sha1Hex(file)
+    source: fileOrRows.name,
+    checksum: await sha1Hex(fileOrRows)
   }
 }
 

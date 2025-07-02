@@ -1,11 +1,15 @@
-import { ParsedSnapshot } from '@/utils/parseFundFile'
+import { ParsedSnapshot, type NormalisedRow } from '@/utils/parseFundFile'
+
+interface ScoredRow extends NormalisedRow {
+  score?: number
+}
 
 const W = { ytd:0.05, one:0.10, three:0.20, five:0.15,
             sharpe:0.25, std:-0.10, exp:-0.10, tenure:0.05 }
 
 /** Add .score to each row using z-scores within its asset class */
-export function attachScores (snap: ParsedSnapshot) {
-  const rows = snap.rows as any[]
+export function attachScores<T extends ParsedSnapshot> (snap: T): T {
+  const rows = snap.rows as ScoredRow[]
   const classes = Array.from(new Set(rows.map(r => r.assetClass)))
   classes.forEach(cls=>{
     const set = rows.filter(r=>r.assetClass===cls)
