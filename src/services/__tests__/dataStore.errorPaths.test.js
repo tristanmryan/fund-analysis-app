@@ -51,7 +51,7 @@ afterEach(() => {
 
 test.skip('dataStore methods rethrow transaction errors', async () => {
   const err = setupFailingDB();
-  const dataStore = require('@/dataStore').default;
+  const dataStore = require('@/services/dataStore').default;
 
   const snapshot = { date: '2024-01-01', funds: [] };
 
