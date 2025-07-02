@@ -23,7 +23,7 @@ export function exportToExcel(filteredFunds, filename) {
     Score: fund.scores?.final ?? '',
     Tags: Array.isArray(fund.tags) ? fund.tags.join(', ') : '',
     'Expense Ratio': fund.metrics?.expenseRatio ?? '',
-    'Sharpe Ratio': fund.metrics?.sharpeRatio3Y ?? '',
+    'Sharpe Ratio': fund.metrics?.sharpe3Y ?? '',
     'Std Dev':
       fund.metrics?.stdDev5Y ?? fund.metrics?.stdDev3Y ?? '',
     Alpha: fund.metrics?.alpha5Y ?? '',

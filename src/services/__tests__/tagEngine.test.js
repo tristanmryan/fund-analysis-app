@@ -9,7 +9,7 @@ describe('tag engine rules', () => {
       threeYear: 10,
       fiveYear: 10,
       stdDev5Y: 14,
-      sharpeRatio3Y: 1,
+      sharpe3Y: 1,
       managerTenure: 5,
       ytd: 5,
       oneYear: 8
@@ -25,7 +25,7 @@ describe('tag engine rules', () => {
       threeYear: 11,
       fiveYear: 11,
       stdDev5Y: 16,
-      sharpeRatio3Y: 1.2,
+      sharpe3Y: 1.2,
       managerTenure: 6,
       ytd: 6,
       oneYear: 9
@@ -92,7 +92,7 @@ describe('tag engine rules', () => {
     const c = {
       Symbol: 'C',
       assetClass: 'X',
-      metrics: { ...peer1.metrics, stdDev5Y: 13, sharpeRatio3Y: 1.3 },
+      metrics: { ...peer1.metrics, stdDev5Y: 13, sharpe3Y: 1.3 },
       scores: { final: 50 }
     };
     expect(getTags(c)).toContain('Consistent');

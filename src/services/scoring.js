@@ -9,13 +9,13 @@ import { getScoreColor, getScoreLabel } from '@/utils/scoreTags';
 import { CURRENT_PERFORMANCE_HEADERS as CUR } from '@/docs/schema'
 
 // Metric weights configuration - these match your Word document
-const METRIC_WEIGHTS = {
+  const METRIC_WEIGHTS = {
     ytd: 0.025,           // 2.5%
     oneYear: 0.05,        // 5%
     threeYear: 0.10,      // 10%
     fiveYear: 0.15,       // 15%
     tenYear: 0.10,        // 10%
-    sharpeRatio3Y: 0.10,  // 10%
+    sharpe3Y: 0.10,       // 10%
     stdDev3Y: -0.075,     // -7.5% (negative weight penalizes volatility)
     stdDev5Y: -0.125,     // -12.5%
     upCapture3Y: 0.075,   // 7.5%
@@ -32,7 +32,7 @@ const METRIC_WEIGHTS = {
     threeYear: '3-Year Return',
     fiveYear: '5-Year Return',
     tenYear: '10-Year Return',
-    sharpeRatio3Y: '3Y Sharpe Ratio',
+    sharpe3Y: '3Y Sharpe Ratio',
     stdDev3Y: '3Y Std Deviation',
     stdDev5Y: '5Y Std Deviation',
     upCapture3Y: '3Y Up Capture',
@@ -130,11 +130,9 @@ const METRIC_WEIGHTS = {
       threeYear: parseMetricValue(fundData.threeYear),
       fiveYear: parseMetricValue(fundData.fiveYear),
       tenYear: parseMetricValue(fundData.tenYear),
-      sharpeRatio3Y: parseMetricValue(
-        fundData.sharpeRatio3Y ?? fundData.sharpe3Y ?? fundData.sharpe3y
-      ),
-      stdDev3Y: parseMetricValue(fundData.stdDev3Y ?? fundData.stdDev3y),
-      stdDev5Y: parseMetricValue(fundData.stdDev5Y ?? fundData.stdDev5y),
+      sharpe3Y: parseMetricValue(fundData.sharpe3Y),
+      stdDev3Y: parseMetricValue(fundData.stdDev3Y),
+      stdDev5Y: parseMetricValue(fundData.stdDev5Y),
       upCapture3Y: parseMetricValue(fundData.upCapture3Y),
       downCapture3Y: parseMetricValue(fundData.downCapture3Y),
       alpha5Y: parseMetricValue(fundData.alpha5Y),
@@ -398,8 +396,8 @@ const METRIC_WEIGHTS = {
       }
       
       const breakdown = fund.scores.breakdown || {};
-      
-      if (breakdown.sharpeRatio3Y?.percentile < 30) {
+
+      if (breakdown.sharpe3Y?.percentile < 30) {
         reasons.push('Poor risk-adjusted returns');
       }
       

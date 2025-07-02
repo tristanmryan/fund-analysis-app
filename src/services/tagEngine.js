@@ -19,7 +19,7 @@ export function applyTagRules(funds = []) {
         threeYear: [],
         fiveYear: [],
         stdDev5Y: [],
-        sharpeRatio3Y: [],
+        sharpe3Y: [],
         managerTenure: [],
         ytd: [],
         oneYear: []
@@ -80,9 +80,9 @@ export function applyTagRules(funds = []) {
     if (
       stats.stdDev5Y &&
       ((m.stdDev5Y != null && m.stdDev5Y > stats.stdDev5Y.mean + stats.stdDev5Y.sd) ||
-        (m.sharpeRatio3Y != null &&
-          stats.sharpeRatio3Y &&
-          m.sharpeRatio3Y < stats.sharpeRatio3Y.mean - stats.sharpeRatio3Y.sd))
+        (m.sharpe3Y != null &&
+          stats.sharpe3Y &&
+          m.sharpe3Y < stats.sharpe3Y.mean - stats.sharpe3Y.sd))
     ) {
       tags.push('High Risk');
     }
@@ -91,11 +91,11 @@ export function applyTagRules(funds = []) {
 
     if (
       stats.stdDev5Y &&
-      stats.sharpeRatio3Y &&
+      stats.sharpe3Y &&
       m.stdDev5Y != null &&
-      m.sharpeRatio3Y != null &&
+      m.sharpe3Y != null &&
       m.stdDev5Y < stats.stdDev5Y.mean - stats.stdDev5Y.sd &&
-      m.sharpeRatio3Y > stats.sharpeRatio3Y.mean + 0.5 * stats.sharpeRatio3Y.sd
+      m.sharpe3Y > stats.sharpe3Y.mean + 0.5 * stats.sharpe3Y.sd
     ) {
       tags.push('Consistent');
     }
